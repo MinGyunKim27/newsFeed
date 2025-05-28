@@ -51,7 +51,7 @@ public class CommentController {
     // 삭제 D
     @DeleteMapping("/api/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
-        commentService.deletePlan(commentId);
+        commentService.deleteComment(commentId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
