@@ -4,14 +4,16 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class UserNotFoundException extends RuntimeException{
+public class UserNotFoundException extends RuntimeException {
 
-    private final HttpStatus status;
-    private final String message;
+    private static final HttpStatus STATUS = HttpStatus.NOT_FOUND;
+    private static final String MESSAGE = "사용자를 찾을 수 없습니다.";
 
-    public UserNotFoundException(HttpStatus status, String message) {
-        super(message);
-        this.status = status;
-        this.message = message;
+    public UserNotFoundException() {
+        super(MESSAGE);
+    }
+
+    public HttpStatus getStatus() {
+        return STATUS;
     }
 }
