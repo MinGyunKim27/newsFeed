@@ -1,6 +1,7 @@
 package org.example.newsfeed.user.controller;
 
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.user.dto.PasswordUpdateRequestDto;
 import org.example.newsfeed.user.dto.ProfileUpdateRequestDto;
@@ -16,20 +17,21 @@ public class UserController {
 
     private final UserService userService;
 
+    // api/users/{userId}
     @GetMapping("/{userId}")
-    public UserResponseDto getUser(@PathVariable Long userId) {
-        return userService.getUser(userId);
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getUser(userId));
     }
 
+    // api/users/profile
     @PutMapping("/profile")
-    public ResponseEntity<String> updateProfile(@RequestParam Long userId, @RequestBody ProfileUpdateRequestDto requestDto) {
-        userService.updateProfile(userId, requestDto);
-        return ResponseEntity.ok("프로필 수정 완료");
+    public ResponseEntity<UserResponseDto> updateProfile(@RequestBody ProfileUpdateRequestDto requestDto, HttpSession session) {
+        return ResponseEntity.ok(userService.updateProfile(session, requestDto));
     }
 
+    // api/users/password
     @PutMapping("/password")
-    public ResponseEntity<String> updatePassword(@RequestParam Long userId, @RequestBody PasswordUpdateRequestDto requestDto) {
-        userService.updatePassword(userId, requestDto);
-        return ResponseEntity.ok("비밀번호 변경 완료");
+    public ResponseEntity<UserResponseDto> updatePassword(@RequestBody PasswordUpdateRequestDto requestDto, HttpSession session) {
+        return ResponseEntity.ok(userService.updatePassword(session, requestDto));
     }
 }

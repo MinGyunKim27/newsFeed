@@ -21,14 +21,20 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private String profileImage;
+
+    private String bio;
+
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
     }
 
-    public void updateProfile(String username) {
+    public void updateProfile(String username, String profileImage, String bio) {
         this.username = username;
+        this.profileImage = profileImage;
+        this.bio = bio;
     }
 
     public void updatePassword(String newPassword) {
