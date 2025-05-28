@@ -3,6 +3,7 @@ package org.example.newsfeed.post.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.post.dto.CreatePostRequestDto;
+import org.example.newsfeed.post.dto.PostListResponseDto;
 import org.example.newsfeed.post.dto.PostResponseDto;
 import org.example.newsfeed.post.dto.UpdatePostRequestDto;
 import org.example.newsfeed.post.service.PostService;
@@ -53,12 +54,12 @@ public class PostController {
     // 쿼리 스트링을 통해 페이지 정보를 전달 받자
     // 기본 0번 페이지부터 5개씩
     @GetMapping
-    public ResponseEntity<Page<PostResponseDto>> getPostList(
+    public ResponseEntity<PostListResponseDto> getPostList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
         Page<PostResponseDto> list = postService.getPostList(page, size);
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(new PostListResponseDto(list));
     }
 
     @PutMapping("/{postId}")
@@ -69,7 +70,7 @@ public class PostController {
             ) {
         User user = (User) request.getAttribute("user");
         postService.updatePost(postId, dto,user);
-        return ResponseEntity.ok("게시글이 수정되었습니다.")
+        return ResponseEntity.ok("게시글이 수정되었습니다.");
     }
 }
 
