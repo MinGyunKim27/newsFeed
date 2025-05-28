@@ -14,7 +14,7 @@ public class CommentResponseDto {
     private LocalDateTime createdAt;
 
     public CommentResponseDto(Comment comment) {
-        this.name = comment.getUserName();
+        // todo: 추후 작성자 이름 매칭
         this.content = comment.getContent();
         this.createdAt = comment.getCreatedAt();
     }

@@ -20,10 +20,12 @@ public class CommentServiceImpl implements CommentService{
         // todo: 추후 로그인을 통해 id 값 설정
         Long tempUserId = 1L;
 
-        // todo: 추후 UserId키값을 통해 맵핑
-        String tempUserName = "temp";
+        // todo: 추후 UserId키값을 통해 작성자 맵핑
 
-        Comment comment = new Comment(content, tempUserName, tempUserId, postId);
+
+        Comment comment = new Comment(content, tempUserId, postId);
+
+        commentRepository.save(comment);
 
         return new CommentResponseDto(comment);
     }
