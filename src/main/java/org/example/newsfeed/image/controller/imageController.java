@@ -1,4 +1,4 @@
-package org.example.newsfeed.image.comtroller;
+package org.example.newsfeed.image.controller;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
