@@ -1,6 +1,5 @@
 package org.example.newsfeed.user.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.global.util.JwtTokenProvider;
 import org.example.newsfeed.user.dto.PasswordUpdateRequestDto;
@@ -9,6 +8,7 @@ import org.example.newsfeed.user.dto.UserResponseDto;
 import org.example.newsfeed.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,13 +30,8 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<UserResponseDto> updateProfile(
             @RequestBody UpdateUserRequestDto requestDto,
-            HttpServletRequest request
+            @AuthenticationPrincipal Long userId
             ){
-
-        String token = request.getHeader("Authorization");
-
-        token = token.substring(7);
-        Long userId = jwtTokenProvider.getUserId(token);
 
         UserResponseDto responseDto = userService.update(userId,requestDto);
         return new ResponseEntity<>(responseDto,HttpStatus.OK);
@@ -45,14 +40,8 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity<Void> updatePassword(
             @RequestBody PasswordUpdateRequestDto requestDto,
-            HttpServletRequest request
+            @AuthenticationPrincipal Long userId
     ){
-
-        String token = request.getHeader("Authorization");
-
-        token = token.substring(7);
-        Long userId = jwtTokenProvider.getUserId(token);
-
         userService.updatePassword(userId,requestDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }

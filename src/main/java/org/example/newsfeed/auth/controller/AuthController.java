@@ -1,6 +1,5 @@
 package org.example.newsfeed.auth.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.auth.dto.LoginRequestDto;
 import org.example.newsfeed.auth.dto.SignupRequestDto;
@@ -11,6 +10,7 @@ import org.example.newsfeed.global.util.JwtTokenProvider;
 import org.example.newsfeed.user.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -42,16 +42,8 @@ public class AuthController {
     @DeleteMapping("/withdraw")
     public ResponseEntity<Void> withdraw(
             @RequestBody WithdrawRequestDto withdrawRequestDto,
-            HttpServletRequest request
+            @AuthenticationPrincipal Long userId
     ){
-        String token = request.getHeader("Authorization");
-
-        if (token == null || !token.startsWith("Bearer ")) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        token = token.substring(7); // Bearer 제거
-        Long userId = jwtTokenProvider.getUserId(token);
 
         authService.withdraw(withdrawRequestDto, userId);
 
