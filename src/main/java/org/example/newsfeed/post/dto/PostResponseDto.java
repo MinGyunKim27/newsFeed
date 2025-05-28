@@ -2,6 +2,7 @@ package org.example.newsfeed.post.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import org.example.newsfeed.post.entitiy.Post;
 
 @AllArgsConstructor
 @Builder
@@ -17,4 +18,11 @@ public class PostResponseDto {
 
     private String author;
 
+    public PostResponseDto(Post post) {
+        this.id = post.getId();
+        this.title = post.getTitle();
+        this.content = post.getContent();
+        this.imageUrl = post.getImageUrl();
+        this.author = post.getUser().getUserName();
+    }
 }
