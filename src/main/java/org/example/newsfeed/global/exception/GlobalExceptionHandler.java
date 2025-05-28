@@ -7,13 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // ValidException 예외처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex){
         Map<String, String> errors = new HashMap<>();
@@ -22,9 +23,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
-    // BaseException 상속받는 예외처리
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ErrorResponseDto> handlePlannerException(BaseException e) {
+    public ResponseEntity<ErrorResponseDto> handleBaseException(BaseException e) {
         ErrorResponseDto response = new ErrorResponseDto(e.getStatus(), e.getMessage());
         return new ResponseEntity<>(response, e.getStatus());
     }
@@ -32,5 +32,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ImageUploadException.class)
     public ResponseEntity<String> handleImageUploadException(ImageUploadException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미지 업로드 실패: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleGenericException(Exception e) {
+        e.printStackTrace();
+        ErrorResponseDto response = new ErrorResponseDto(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "서버 오류가 발생했습니다."
+        );
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
