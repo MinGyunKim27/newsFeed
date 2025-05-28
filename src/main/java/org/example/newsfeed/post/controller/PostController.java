@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("/api/posts") // api를 명시함으로 써 프론트용 API 요청이라는 것을 확실히 한다.
 @RequiredArgsConstructor
@@ -29,7 +31,10 @@ public class PostController {
 
         Long postId = postService.createPost(dto, user);
 
-        return ResponseEntity.ok(postId);
+        // 반환할 URI 생성
+        URI location = URI.create("/post");
+
+        return ResponseEntity.created(location).body(postId);
     }
 
     @GetMapping("/{postId}")
