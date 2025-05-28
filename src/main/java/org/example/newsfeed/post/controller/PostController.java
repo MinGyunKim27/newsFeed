@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.post.dto.CreatePostRequestDto;
 import org.example.newsfeed.post.dto.PostResponseDto;
 import org.example.newsfeed.post.service.PostService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,17 @@ public class PostController {
 
         postService.deletePost(postId, user);
         return ResponseEntity.noContent().build();
+    }
+
+    // 쿼리 스트링을 통해 페이지 정보를 전달 받자
+    // 기본 0번 페이지부터 5개씩
+    @GetMapping
+    public ResponseEntity<Page<PostResponseDto>> getPostList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<PostResponseDto> list = postService.getPostList(page, size);
+        return ResponseEntity.ok(list);
     }
 
 }
