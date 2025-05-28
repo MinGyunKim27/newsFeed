@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/posts") // api를 명시함으로 써 프론트용 API 요청이라는 것을 확실히 한다.
 @RequiredArgsConstructor
 public class PostController {
 
@@ -19,10 +19,10 @@ public class PostController {
     public ResponseEntity<Long> createPost(
             @RequestBody CreatePostRequestDto dto,
             HttpServletRequest request
-            ) {
+    ) {
 
-        // 필터에서 JWT 검증하고 인증된 User 객체를 직접 request에 넣어준다.
-        User user =(User) request.getAttribute("user");
+        // 필터에서 JWT 검증하고 User를 꺼내서 넣은 User 객체를 직접 request에서 꺼내서 사용한다.
+        User user = (User) request.getAttribute("user");
 
         Long postId = postService.createPost(dto, user);
 
@@ -35,4 +35,19 @@ public class PostController {
         return ResponseEntity.ok(dto);
     }
 
+
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Void> deletePost(
+            @PathVariable Long postId,
+            HttpServletRequest request
+    ) {
+        User user = (User) request.getAttribute("user");
+
+        postService.deletePost(postId, user);
+        return ResponseEntity.noContent().build();
+    }
+
 }
+
+

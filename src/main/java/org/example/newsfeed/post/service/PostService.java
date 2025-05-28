@@ -9,4 +9,6 @@ public interface PostService {
     Long createPost(CreatePostRequestDto dto, User user);
 
     PostResponseDto findById(Long postId);
+
+    void deletePost(Long postId, User user);
 }

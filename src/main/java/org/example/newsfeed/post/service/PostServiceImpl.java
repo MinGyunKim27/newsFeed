@@ -12,11 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
 
-    private  final PostRepository postRepository;
+    private final PostRepository postRepository;
 
     @Override
+    @Transactional
     public Long createPost(CreatePostRequestDto dto, User user) {
 
         // 저장할 포스트 엔티티 생성
@@ -40,5 +41,20 @@ public class PostServiceImpl implements PostService{
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
         return new PostResponseDto(post);
+    }
+
+    @Override
+
+    public void deletePost(Long postId, User user) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
+
+        // 본인 글만 지울 수 있게 확인
+        If(!post.getUser().getId().equels(user.getId())) {
+            throw new BaseException("권한이 없습니다.")
+        }
+
+        postRepository.delete(post);
+
     }
 }
