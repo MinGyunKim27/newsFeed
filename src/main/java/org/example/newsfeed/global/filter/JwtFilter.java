@@ -5,7 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.example.newsfeed.global.util.JwtUtil;
+import org.example.newsfeed.global.util.JwtProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
 
 
     @Override
@@ -28,8 +28,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String token = getToken(request);
 
-        if (token != null && jwtUtil.validateToken(token)) {
-            Long userId = jwtUtil.getUserId(token);
+        if (token != null && jwtProvider.validateToken(token)) {
+            Long userId = jwtProvider.getUserId(token);
 
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());

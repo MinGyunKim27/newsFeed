@@ -1,13 +1,14 @@
 package org.example.newsfeed.user.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.example.newsfeed.global.util.JwtProvider;
 import org.example.newsfeed.user.dto.PasswordUpdateRequestDto;
 import org.example.newsfeed.user.dto.UpdateUserRequestDto;
 import org.example.newsfeed.user.dto.UserResponseDto;
 import org.example.newsfeed.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final JwtProvider jwtProvider;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> findUserById(
@@ -29,8 +31,11 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<UserResponseDto> updateProfile(
             @Validated @RequestBody UpdateUserRequestDto requestDto,
-            @AuthenticationPrincipal Long userId
+            HttpServletRequest request
             ){
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        Long userId = jwtProvider.getUserId(token);
 
         UserResponseDto responseDto = userService.update(userId,requestDto);
         return new ResponseEntity<>(responseDto,HttpStatus.OK);
@@ -39,9 +44,11 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity<Void> updatePassword(
             @Validated @RequestBody PasswordUpdateRequestDto requestDto,
-            @AuthenticationPrincipal Long userId
+            HttpServletRequest request
     ){
-        userService.updatePassword(userId,requestDto);
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        Long userId = jwtProvider.getUserId(token);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
