@@ -33,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
             Long userId = jwtUtil.getUserIdFromToken(token);
 
             UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(email, userId, Collections.emptyList());
+                    new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
