@@ -1,6 +1,5 @@
 package org.example.newsfeed.global.util;
 
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -9,19 +8,24 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+
 @Component
-public class JwtTokenProvider {
+public class JwtUtil {
 
     @Value("${jwt.secret}")
     private String secret;
 
-    private final long EXPIRATION = 1000 * 60 * 60; // 1시간
+    @Value("${jwt.expiration}")
+    private long expiration;
 
-    public String createToken(Long userId) {
+    public String generateToken( Long userId) {
+        Date now = new Date();
+        Date expireDate = new Date(now.getTime() + expiration);
+
         return Jwts.builder()
                 .setSubject(userId.toString())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .setIssuedAt(now)
+                .setExpiration(expireDate)
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -30,7 +34,7 @@ public class JwtTokenProvider {
         try {
             Jwts.parserBuilder().setSigningKey(secret.getBytes()).build().parseClaimsJws(token);
             return true;
-        } catch (JwtException e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -43,4 +47,5 @@ public class JwtTokenProvider {
                 .getBody()
                 .getSubject());
     }
+
 }

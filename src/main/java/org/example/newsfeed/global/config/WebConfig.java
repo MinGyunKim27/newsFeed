@@ -1,5 +1,9 @@
 package org.example.newsfeed.global.config;
 
+import jakarta.servlet.Filter;
+import org.example.newsfeed.global.filter.CustomFilter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -23,6 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
         filterRegistrationBean.addUrlPatterns("/*");
 
         return filterRegistrationBean;
+    }
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 요청 경로 /images/** → 실제 파일 위치 C:/upload/images/

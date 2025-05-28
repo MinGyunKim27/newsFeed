@@ -1,7 +1,6 @@
 package org.example.newsfeed.user.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.newsfeed.global.util.JwtTokenProvider;
 import org.example.newsfeed.user.dto.PasswordUpdateRequestDto;
 import org.example.newsfeed.user.dto.UpdateUserRequestDto;
 import org.example.newsfeed.user.dto.UserResponseDto;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> findUserById(

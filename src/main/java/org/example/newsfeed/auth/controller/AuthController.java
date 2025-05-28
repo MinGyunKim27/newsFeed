@@ -6,7 +6,7 @@ import org.example.newsfeed.auth.dto.SignupRequestDto;
 import org.example.newsfeed.auth.dto.TokenResponse;
 import org.example.newsfeed.auth.dto.WithdrawRequestDto;
 import org.example.newsfeed.auth.service.AuthService;
-import org.example.newsfeed.global.util.JwtTokenProvider;
+import org.example.newsfeed.global.util.JwtUtil;
 import org.example.newsfeed.user.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtTokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(
@@ -35,7 +35,7 @@ public class AuthController {
             @RequestBody LoginRequestDto requestDto
     ){
         User user = authService.login(requestDto);
-        String token = jwtTokenProvider.createToken(user.getId());
+        String token = jwtTokenProvider.generateToken(user.getId());
         return ResponseEntity.ok(new TokenResponse(token,user.getId()));
     }
 
