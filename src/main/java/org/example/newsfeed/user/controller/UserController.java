@@ -8,6 +8,7 @@ import org.example.newsfeed.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,7 +28,7 @@ public class UserController {
 
     @PutMapping("/profile")
     public ResponseEntity<UserResponseDto> updateProfile(
-            @RequestBody UpdateUserRequestDto requestDto,
+            @Validated @RequestBody UpdateUserRequestDto requestDto,
             @AuthenticationPrincipal Long userId
             ){
 
@@ -37,7 +38,7 @@ public class UserController {
 
     @PutMapping("/password")
     public ResponseEntity<Void> updatePassword(
-            @RequestBody PasswordUpdateRequestDto requestDto,
+            @Validated @RequestBody PasswordUpdateRequestDto requestDto,
             @AuthenticationPrincipal Long userId
     ){
         userService.updatePassword(userId,requestDto);

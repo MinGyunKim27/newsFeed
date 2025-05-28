@@ -47,7 +47,7 @@ public class AuthController {
 
         authService.withdraw(withdrawRequestDto, userId);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
