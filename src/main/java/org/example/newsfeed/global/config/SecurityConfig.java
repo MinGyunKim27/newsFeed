@@ -24,14 +24,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/**",
+                                "/api/auth/signup",
+                                "api/auth/login",
                                 "/signup.html",
                                 "/login.html",
                                 "/mypage.html",
                                 "/images/**",
                                 "/edit-profile.html",
-                                "/favicon.ico",
-                                "/images/**").permitAll()
+                                "/favicon.ico").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
