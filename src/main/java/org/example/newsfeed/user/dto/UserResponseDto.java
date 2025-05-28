@@ -11,15 +11,25 @@ public class UserResponseDto {
 
     private String email;
 
+    private String profileImage;
+
+    private String bio;
+
+
+
     public void toDto(User user){
         this.userId = user.getId();
         this.username = user.getUsername();
         this.email = user.getEmail();
+        this.profileImage = user.getProfileImage();
+        this.bio = user.getBio();
     }
 
     public UserResponseDto(User user){
         this.userId = user.getId();
         this.username = user.getUsername();
         this.email = user.getEmail();
+        this.profileImage = user.getProfileImage();
+        this.bio = user.getBio();
     }
 }
