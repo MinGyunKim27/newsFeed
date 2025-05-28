@@ -49,7 +49,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public void deletePlan(Long commentId) {
+    public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
 
         // todo: 추후 유저검증 예외처리
