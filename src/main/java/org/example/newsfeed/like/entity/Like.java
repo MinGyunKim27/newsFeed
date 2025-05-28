@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import org.example.newsfeed.global.common.entity.BaseEntity;
 
 @Entity
-@Table(name = "like")
+@Table(name = "`like`")
 @NoArgsConstructor
 public class Like extends BaseEntity {
 
