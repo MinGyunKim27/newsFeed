@@ -17,7 +17,7 @@ public class Post {
     // PK
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     // 작성자
     @ManyToOne(fetch = FetchType.LAZY) // N 대 1 매칭, 성능 향상을 위해 LAZY 로딩

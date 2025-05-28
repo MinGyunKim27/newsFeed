@@ -55,9 +55,10 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
         // 본인 글만 지울 수 있게 확인
-        If(!post.getUser().getId().equels(user.getId())) {
+        if(!post.getUser().getId().equals(user.getId())) {
             throw new BaseException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
         }
+
 
         postRepository.delete(post);
 
@@ -68,7 +69,7 @@ public class PostServiceImpl implements PostService {
 
     // 페이지 구현, 생성시각을 기준으로 내림차순 정렬
     public Page<PostResponseDto> getPostList(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("CreatedAt").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         // 페이지 안에 있는 모든 post 꺼내고
         return postRepository.findAll(pageable)
                 // 모든 post를 dto로 변환해서 넘겨주자
@@ -81,9 +82,10 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
-        if (!post.getUser().getId().equels(user.getId())) {
+        if (!post.getUser().getId().equals(user.getId())) {
             throw new BaseException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
         }
+
 
         // 업데이트
         post.update(dto.getTitle(), dto.getContent(), dto.getImageUrl());
