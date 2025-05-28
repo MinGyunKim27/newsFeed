@@ -1,5 +1,4 @@
 package org.example.newsfeed.global.config;
-
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.global.filter.JwtAuthenticationFilter;
 import org.example.newsfeed.global.util.JwtTokenProvider;
@@ -40,4 +39,3 @@ public class SecurityConfig {
     }
 
 }
-

@@ -1,5 +1,4 @@
 package org.example.newsfeed.global.config;
-
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +19,7 @@ public class PasswordEncoder {
         return BCrypt.withDefaults().hashToString(BCrypt.MIN_COST, rawPassword.toCharArray());
     }
 
+
     /**
      * 입력한 평문 비밀번호와 암호화된 비밀번호가 일치하는지 검사합니다.
      *
@@ -27,6 +27,7 @@ public class PasswordEncoder {
      * @param encodedPassword 저장된 암호화된 비밀번호
      * @return 일치하면 true, 그렇지 않으면 false
      */
+
     public boolean matches(String rawPassword, String encodedPassword) {
         BCrypt.Result result = BCrypt.verifyer().verify(rawPassword.toCharArray(), encodedPassword);
         return result.verified;

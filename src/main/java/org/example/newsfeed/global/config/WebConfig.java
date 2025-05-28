@@ -7,6 +7,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new PasswordEncoder();
+    }
+
+    @Bean
+    public FilterRegistrationBean customFilter() {
+        FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<>();
+        // Filter 등록
+        filterRegistrationBean.setFilter(new CustomFilter());
+        // Filter 순서 설정
+        filterRegistrationBean.setOrder(1);
+        filterRegistrationBean.addUrlPatterns("/*");
+
+        return filterRegistrationBean;
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 요청 경로 /images/** → 실제 파일 위치 C:/upload/images/
