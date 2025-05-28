@@ -19,15 +19,14 @@ public class Comment extends BaseEntity {
     private String content;
 
     // todo: 임시값 추후 user랑 연결
-    private String userName;
+
     @Column(nullable = false)
     private Long userId;
     @Column(nullable = false)
     private Long postId;
 
-    public Comment(String content, String userName, Long userId, Long postId) {
+    public Comment(String content, Long userId, Long postId) {
         this.content = content;
-        this.userName = userName;
         this.userId = userId;
         this.postId = postId;
     }
