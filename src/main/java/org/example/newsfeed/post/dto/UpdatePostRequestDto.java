@@ -7,5 +7,5 @@ public class UpdatePostRequestDto {
 
     private String title;
     private String Content;
-    private String
+    private String imageUrl;
 }

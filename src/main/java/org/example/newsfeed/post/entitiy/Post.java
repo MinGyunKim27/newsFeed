@@ -36,4 +36,10 @@ public class Post {
     @Column(length = 500, nullable = true)
     private String imageUrl;
 
+    public void update(String title, String content, String imageUrl) {
+        this.title = title;
+        this.content = content;
+        this.imageUrl = imageUrl;
+    }
+
 }
