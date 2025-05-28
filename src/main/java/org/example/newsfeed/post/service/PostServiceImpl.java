@@ -1,7 +1,6 @@
 package org.example.newsfeed.post.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.example.newsfeed.global.exception.BaseException;
 import org.example.newsfeed.post.dto.CreatePostRequestDto;
 import org.example.newsfeed.post.dto.PostResponseDto;

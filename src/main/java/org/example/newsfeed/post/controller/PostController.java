@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.post.dto.CreatePostRequestDto;
 import org.example.newsfeed.post.dto.PostResponseDto;
+import org.example.newsfeed.post.dto.UpdatePostRequestDto;
 import org.example.newsfeed.post.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +61,16 @@ public class PostController {
         return ResponseEntity.ok(list);
     }
 
+    @PutMapping("/{postId}")
+    public ResponseEntity<String> updatePost(
+            @PathVariable Long postId,
+            @RequestBody UpdatePostRequestDto dto,
+            HttpServletRequest request
+            ) {
+        User user = (User) request.getAttribute("user");
+        postService.updatePost(postId, dto,user);
+        return ResponseEntity.ok("게시글이 수정되었습니다.")
+    }
 }
 
 
