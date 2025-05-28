@@ -4,7 +4,9 @@ package org.example.newsfeed.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.auth.dto.LoginRequestDto;
 import org.example.newsfeed.auth.dto.SignupRequestDto;
+import org.example.newsfeed.auth.dto.WithdrawRequestDto;
 import org.example.newsfeed.global.config.PasswordEncoder;
+import org.example.newsfeed.global.exception.UserNotFoundException;
 import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -32,7 +34,7 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public void login(LoginRequestDto requestDto) {
+    public User login(LoginRequestDto requestDto) {
         User byEmail = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.CONFLICT,"사용자가 존재하지 않습니다!"));
 
@@ -40,5 +42,17 @@ public class AuthService {
             throw new  ResponseStatusException(HttpStatus.CONFLICT,"비밀번호가 일치하지 않습니다!");
         }
 
+        return byEmail;
+    }
+
+    public void withdraw(WithdrawRequestDto withdrawRequestDto, Long id) {
+        User byId = userRepository.findById(id).
+                orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"사용자가 존재하지 않음"));
+
+        if (!encoder.matches(withdrawRequestDto.getPassword(), byId.getPassword())){
+            throw new  ResponseStatusException(HttpStatus.CONFLICT,"비밀번호가 일치하지 않습니다!");
+        }
+
+        userRepository.delete(byId);
     }
 }

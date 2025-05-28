@@ -1,4 +1,4 @@
 package org.example.newsfeed.global.config;
 
-public class WebConfig {
+public class SecurityConfig {
 }

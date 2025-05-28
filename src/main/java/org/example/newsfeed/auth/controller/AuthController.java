@@ -1,15 +1,17 @@
 package org.example.newsfeed.auth.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.auth.dto.LoginRequestDto;
 import org.example.newsfeed.auth.dto.SignupRequestDto;
+import org.example.newsfeed.auth.dto.TokenResponse;
+import org.example.newsfeed.auth.dto.WithdrawRequestDto;
 import org.example.newsfeed.auth.service.AuthService;
+import org.example.newsfeed.global.util.JwtTokenProvider;
+import org.example.newsfeed.user.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(
@@ -28,11 +31,31 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(
+    public ResponseEntity<?> login(
             @RequestBody LoginRequestDto requestDto
     ){
-        authService.login(requestDto);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        User user = authService.login(requestDto);
+        String token = jwtTokenProvider.createToken(user.getId());
+        return ResponseEntity.ok(new TokenResponse(token,user.getId()));
     }
+
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<Void> withdraw(
+            @RequestBody WithdrawRequestDto withdrawRequestDto,
+            HttpServletRequest request
+    ){
+        String token = request.getHeader("Authorization");
+
+        if (token == null || !token.startsWith("Bearer ")) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        token = token.substring(7); // Bearer 제거
+        Long userId = jwtTokenProvider.getUserId(token);
+
+        authService.withdraw(withdrawRequestDto, userId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
