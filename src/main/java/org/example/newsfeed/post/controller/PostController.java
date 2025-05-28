@@ -32,7 +32,7 @@ public class PostController {
         Long postId = postService.createPost(dto, user);
 
         // 반환할 URI 생성
-        URI location = URI.create("/post");
+        URI location = URI.create("/api/posts/" + postId);
 
         return ResponseEntity.created(location).body(postId);
     }
