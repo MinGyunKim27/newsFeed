@@ -1,4 +1,16 @@
 package org.example.newsfeed.global.config;
 
-public class WebConfig {
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 요청 경로 /images/** → 실제 파일 위치 C:/upload/images/
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:///C:/upload/images/");
+    }
 }
