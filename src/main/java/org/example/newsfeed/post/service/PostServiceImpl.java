@@ -33,7 +33,7 @@ public class PostServiceImpl implements PostService {
                 .imageUrl(dto.getImageUrl())
                 .build();
 
-        // 저장
+
         postRepository.save(post);
 
         // id값 반환
