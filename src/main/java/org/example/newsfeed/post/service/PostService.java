@@ -2,6 +2,7 @@ package org.example.newsfeed.post.service;
 
 import org.example.newsfeed.post.dto.CreatePostRequestDto;
 import org.example.newsfeed.post.dto.PostResponseDto;
+import org.springframework.data.domain.Page;
 
 public interface PostService {
 
@@ -11,4 +12,6 @@ public interface PostService {
     PostResponseDto findById(Long postId);
 
     void deletePost(Long postId, User user);
+
+    Page<PostResponseDto> getPostList(int page, int size);
 }

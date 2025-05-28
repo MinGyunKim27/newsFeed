@@ -6,6 +6,10 @@ import org.example.newsfeed.post.dto.CreatePostRequestDto;
 import org.example.newsfeed.post.dto.PostResponseDto;
 import org.example.newsfeed.post.entitiy.Post;
 import org.example.newsfeed.post.repository.PostRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +48,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-
+    @Transactional
     public void deletePost(Long postId, User user) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
@@ -57,4 +61,18 @@ public class PostServiceImpl implements PostService {
         postRepository.delete(post);
 
     }
+
+    @Override
+    @Transactional
+
+    // 페이지 구현, 생성시각을 기준으로 내림차순 정렬
+    public Page<PostResponseDto> getPostList(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("CreatedAt").descending());
+        // 페이지 안에 있는 모든 post 꺼내고
+        return postRepository.findAll(pageable)
+                // 모든 post를 dto로 변환해서 넘겨주자
+                .map(PostResponseDto::new);
+    }
+
+
 }
