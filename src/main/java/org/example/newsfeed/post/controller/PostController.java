@@ -7,6 +7,7 @@ import org.example.newsfeed.post.dto.PostListResponseDto;
 import org.example.newsfeed.post.dto.PostResponseDto;
 import org.example.newsfeed.post.dto.UpdatePostRequestDto;
 import org.example.newsfeed.post.service.PostService;
+import org.example.newsfeed.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

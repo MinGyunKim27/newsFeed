@@ -3,6 +3,7 @@ package org.example.newsfeed.post.service;
 import org.example.newsfeed.post.dto.CreatePostRequestDto;
 import org.example.newsfeed.post.dto.PostResponseDto;
 import org.example.newsfeed.post.dto.UpdatePostRequestDto;
+import org.example.newsfeed.user.entity.User;
 import org.springframework.data.domain.Page;
 
 public interface PostService {

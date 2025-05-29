@@ -15,7 +15,7 @@ public class UpdatePostRequestDto {
     // 내용 (빈 값이 될 수 없다.) (길이는 1자 이상)
     @NotBlank(message = "내용을 반드시 입력해주세요.")
     @Size(min = 1, message = "내용은 1자 이상으로 입력해주세요.")
-    private String Content;
+    private String content;
 
     // 이미지Url (빈 값이 될 수 있다.) (이미지는 로컬 경로 사용)
     private String imageUrl; // 파일 존재 여부를 서버에서 처리

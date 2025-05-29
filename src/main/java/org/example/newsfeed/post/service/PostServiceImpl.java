@@ -7,6 +7,7 @@ import org.example.newsfeed.post.dto.PostResponseDto;
 import org.example.newsfeed.post.dto.UpdatePostRequestDto;
 import org.example.newsfeed.post.entitiy.Post;
 import org.example.newsfeed.post.repository.PostRepository;
+import org.example.newsfeed.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

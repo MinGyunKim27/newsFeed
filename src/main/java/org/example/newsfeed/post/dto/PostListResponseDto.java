@@ -14,12 +14,12 @@ public class PostListResponseDto {
 
     private int totalPages;
 
-    private int currnetPage;
+    private int currentPage;
 
     public PostListResponseDto(Page<PostResponseDto> page) {
         this.posts = page.getContent();
         this.totalPages = page.getTotalPages();
-        this.currnetPage = page.getNumber();
+        this.currentPage = page.getNumber();
     }
 }
 
