@@ -1,6 +1,11 @@
+-- 개발용****************************
+-- DROP DATABASE newsfeed_db;
+-- *********************************
+CREATE DATABASE IF NOT EXISTS newsfeed_db;
+
 use newsfeed_db;
 
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
                          `id`	BIGINT	NOT NULL	AUTO_INCREMENT PRIMARY KEY	COMMENT '유저 고유 식별자',
                          `email`	VARCHAR(255)	NOT NULL UNIQUE COMMENT '이메일',
                          `password`	VARCHAR(255)	NOT NULL	COMMENT '비밀번호',
@@ -11,18 +16,18 @@ CREATE TABLE `users` (
                          `updated_at`	TIMESTAMP	NOT NULL	COMMENT '수정일'
 );
 
-CREATE TABLE `post` (
+CREATE TABLE IF NOT EXISTS `post` (
                         `id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY	COMMENT '게시글 고유 식별자',
                         `user_id`	BIGINT	NOT NULL	COMMENT '유저 고유 식별자',
                         `title`	VARCHAR(200)	NOT NULL	COMMENT '제목',
                         `content`	TEXT	NOT NULL	COMMENT '내용',
-                        `image`	VARCHAR(500)	NULL	COMMENT '업로드 사진',
+                        `image_url`	VARCHAR(500)	NULL	COMMENT '업로드 사진',
                         `created_at`	TIMESTAMP	NOT NULL	COMMENT '생성일',
                         `updated_at`	TIMESTAMP	NOT NULL	COMMENT '수정일',
                         foreign key (user_id) references users(id)
 );
 
-CREATE TABLE `like` (
+CREATE TABLE IF NOT EXISTS `like` (
                         `id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY	COMMENT '좋아요 고유 식별자',
                         `user_id`	BIGINT	NOT NULL	COMMENT '유저 고유 식별자',
                         `post_id`	BIGINT	NOT NULL	COMMENT '게시글 고유 식별자',
@@ -33,7 +38,7 @@ CREATE TABLE `like` (
                         foreign key (post_id) references post(id)
 );
 
-CREATE TABLE `comment` (
+CREATE TABLE IF NOT EXISTS `comment` (
                            `id`	BIGINT	AUTO_INCREMENT PRIMARY KEY	COMMENT '댓글 고유 식별자',
                            `post_id`	BIGINT	NOT NULL	COMMENT '게시글 고유 식별자',
                            `user_id`	BIGINT	NOT NULL	COMMENT '유저 고유 식별자',
@@ -44,7 +49,7 @@ CREATE TABLE `comment` (
                            foreign key (post_id) references post(id)
 );
 
-CREATE TABLE `follow` (
+CREATE TABLE IF NOT EXISTS `follows` (
                           `id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY	COMMENT '팔로우 고유 식별자',
                           `follower_id`	BIGINT	NOT NULL	COMMENT '팔로워아이디',
                           `following_id`	BIGINT	NOT NULL	COMMENT '팔로잉아이디',
