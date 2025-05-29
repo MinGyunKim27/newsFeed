@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>마이페이지</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .mypage-container {
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .mypage-container h2 {
+            margin-bottom: 24px;
+            color: #111827;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #e5e7eb;
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        .info {
+            text-align: center;
+        }
+
+        .info p {
+            margin: 8px 0;
+            color: #374151;
+        }
+
+        .placeholder {
+            color: #9ca3af;
+        }
+
+        .logout-btn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+<div class="mypage-container">
+    <h2>마이페이지</h2>
+    <img id="profileImage" class="profile-img" src="" alt="프로필 이미지" />
+    <div class="info">
+        <p><strong>이메일:</strong> <span id="email"></span></p>
+        <p><strong>이름:</strong> <span id="username"></span></p>
+        <p><strong>소개:</strong> <span id="bio"></span></p>
+    </div>
+    <button onclick="location.href='edit-profile.html'" style="
+        margin-top: 20px;
+        width: 100%;
+        padding: 12px;
+        background-color: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s;">
+        ✏️ 프로필 수정하기
+    </button>
+    <button class="logout-btn" onclick="logout()">🚪 로그아웃</button>
+</div>
+
+<script>
+    const baseUrl = "http://localhost:8080";
+
+    function loadMyPage() {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("userId");
+
+        if (!token || !userId) {
+            alert("로그인이 필요합니다.");
+            window.location.href = "login.html";
+            return;
+        }
+
+        fetch(`${baseUrl}/api/users/${userId}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        })
+            .then(async res => {
+                const text = await res.text();
+                const data = text ? JSON.parse(text) : {};
+                return { ok: res.ok, status: res.status, body: data };
+            })
+            .then(({ ok, status, body }) => {
+                if (!ok) throw new Error(body.message || `요청 실패: ${status}`);
+
+                document.getElementById("email").textContent = body.email || "-";
+                document.getElementById("username").textContent = body.username || "-";
+
+                const bio = body.bio?.trim();
+                document.getElementById("bio").textContent = bio ? bio : "(자기소개 없음)";
+                if (!bio) document.getElementById("bio").classList.add("placeholder");
+
+                const profileImage = body.profileImage?.trim();
+                const imageEl = document.getElementById("profileImage");
+                if (profileImage) {
+                    imageEl.src = `${baseUrl}/images/${profileImage}`;
+                } else {
+                    imageEl.src = "https://via.placeholder.com/120x120.png?text=No+Image";
+                }
+            })
+            .catch(err => {
+                console.error("❌ 마이페이지 로딩 실패", err);
+                alert("마이페이지 로딩 실패: " + err.message);
+            });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadMyPage);
+
+
+    function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        window.location.href = "login.html";
+    }
+
+    document.addEventListener("DOMContentLoaded", loadMyPage);
+</script>
+</body>
+</html>
