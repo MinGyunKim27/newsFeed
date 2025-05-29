@@ -1,11 +1,10 @@
 package org.example.newsfeed.like.controller;
 
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.example.newsfeed.global.util.JwtProvider;
 import org.example.newsfeed.like.dto.LikeResponseDto;
 import org.example.newsfeed.like.service.LikeService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,12 +16,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LikeController {
     private final LikeService likeService;
+    private final JwtProvider jwtProvider;
 
     // 생성 C
     @PostMapping("/api/posts/{postId}/likes")
-    public ResponseEntity<LikeResponseDto> createLike(@PathVariable Long postId) {
+    public ResponseEntity<LikeResponseDto> createLike(@PathVariable Long postId, HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        Long userId = jwtProvider.getUserId(token);
 
-        return new ResponseEntity<>(likeService.createLike(postId), HttpStatus.CREATED);
+        return new ResponseEntity<>(likeService.createLike(postId, userId), HttpStatus.CREATED);
     }
 
     // 조회 R
@@ -33,8 +36,12 @@ public class LikeController {
 
     // 삭제 D
     @DeleteMapping("/api/likes/{likeId}")
-    public ResponseEntity<Void> deleteLike(@PathVariable Long likeId) {
-        likeService.deleteLike(likeId);
+    public ResponseEntity<Void> deleteLike(@PathVariable Long likeId, HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        Long userId = jwtProvider.getUserId(token);
+
+        likeService.deleteLike(likeId, userId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

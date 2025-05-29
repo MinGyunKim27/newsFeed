@@ -5,9 +5,9 @@ import org.example.newsfeed.like.dto.LikeResponseDto;
 import java.util.List;
 
 public interface LikeService {
-    LikeResponseDto createLike(Long postId);
+    LikeResponseDto createLike(Long postId, Long userId);
 
     List<LikeResponseDto> getLikeList(Long postId);
 
-    void deleteLike(Long likeId);
+    void deleteLike(Long likeId, Long userId);
 }
