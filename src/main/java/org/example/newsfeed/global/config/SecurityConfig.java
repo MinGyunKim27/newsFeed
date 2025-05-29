@@ -33,6 +33,7 @@ public class SecurityConfig {
                                 "/newsfeed.html",
                                 "/create-post.html",
                                 "/search.html",
+                                "user-comments.html",
                                 "/favicon.ico").permitAll()
                         .anyRequest().authenticated()
                 )
