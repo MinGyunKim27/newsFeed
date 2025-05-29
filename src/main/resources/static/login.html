@@ -98,7 +98,7 @@
         localStorage.setItem("token", data.accessToken);
         localStorage.setItem("userId", data.userId);
         alert("✅ 로그인 성공!");
-        window.location.href = "mypage.html";
+        window.location.href = "newsfeed.html";
       } else {
         const error = await res.text();
         alert("❌ 로그인 실패: " + error);

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>PicFlow 검색</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fafafa;
+            display: flex;
+        }
+
+        .sidebar {
+            position: fixed;          /* ✅ 화면 고정 */
+            top: 0;                   /* 화면 상단부터 시작 */
+            left: 0;                  /* 화면 좌측에 고정 */
+            width: 190px;
+            height: 100vh;            /* 화면 전체 높이 */
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
+
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .sidebar h1 {
+            font-size: 24px;
+            color: #007aff;
+            margin-bottom: 40px;
+            margin-left: 24px;
+        }
+
+        .sidebar .menu-item {
+            width: 80%;
+            padding: 12px 24px; /* ← 왼쪽 여백 추가 */
+            color: #374151;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* ← 왼쪽 정렬 */
+            cursor: pointer;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+
+        }
+
+        .menu-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 수직 중앙 정렬 */
+            width: 100%;
+            align-items: center;
+        }
+
+        .sidebar .menu-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .sidebar .menu-item svg {
+            margin-right: 8px;
+            fill: #6b7280;
+        }
+
+
+        .main {
+            margin-left: 260px;
+            padding: 40px 20px;
+            flex: 1;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #007aff;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #005ecc;
+        }
+
+        .results {
+            max-width: 600px;
+        }
+
+        .result-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .result-item strong {
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .result-item p {
+            color: #374151;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h1>PicFlow</h1>
+    <div class="menu-wrapper">
+        <div class="menu-item" onclick="goTo('newsfeed.html')">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M3 9.5l9-7 9 7v11.5a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>
+            홈
+        </div>
+        <div class="menu-item" onclick="goTo('search.html')">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/></svg>
+            검색
+        </div>
+        <div class="menu-item" onclick="goTo('create-post.html')">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            만들기
+        </div>
+        <div class="menu-item" onclick="goTo('mypage.html')">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>
+            프로필
+        </div>
+    </div>
+</div>
+
+<div class="main">
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="사용자명 또는 게시글 제목 입력..." />
+        <button onclick="performSearch()">검색</button>
+    </div>
+
+    <div id="results" class="results"></div>
+</div>
+
+<script>
+    const baseUrl = "http://localhost:8080";
+    const token = localStorage.getItem("token");
+
+    function goTo(path) {
+        window.location.href = `/${path}`;
+    }
+
+    function performSearch() {
+        const query = document.getElementById("searchInput").value.trim();
+        if (!query) return alert("검색어를 입력해주세요.");
+
+        fetch(`${baseUrl}/api/search?query=${encodeURIComponent(query)}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                const resultsEl = document.getElementById("results");
+                resultsEl.innerHTML = "";
+
+                if (data.length === 0) {
+                    resultsEl.innerHTML = "<p>검색 결과가 없습니다.</p>";
+                    return;
+                }
+
+                data.forEach(item => {
+                    const div = document.createElement("div");
+                    div.className = "result-item";
+                    div.innerHTML = `
+              <strong>${item.username || item.title}</strong>
+              <p>${item.bio || item.content || ""}</p>
+            `;
+                    resultsEl.appendChild(div);
+                });
+            })
+            .catch(err => {
+                console.error("검색 오류:", err);
+                alert("검색에 실패했습니다: " + err.message);
+            });
+    }
+</script>
+</body>
+</html>

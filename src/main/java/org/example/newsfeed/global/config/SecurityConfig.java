@@ -30,6 +30,9 @@ public class SecurityConfig {
                                 "/mypage.html",
                                 "/images/**",
                                 "/edit-profile.html",
+                                "/newsfeed.html",
+                                "/create-post.html",
+                                "/search.html",
                                 "/favicon.ico").permitAll()
                         .anyRequest().authenticated()
                 )
