@@ -47,6 +47,8 @@ public class UserService {
         }
 
         user.updatePassword(requestDto.getNewPassword());
+
+        userRepository.save(user);
         return new UserResponseDto(user);
 
     }
