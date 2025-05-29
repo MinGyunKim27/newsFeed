@@ -8,7 +8,6 @@ import org.example.newsfeed.global.config.AuthUtil;
 import org.example.newsfeed.global.exception.BaseException;
 import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,65 +24,76 @@ public class FollowService {
     private final UserRepository userRepository;
     private final AuthUtil authUtil;
 
+    /**
+     * 사용자 팔로우
+     * 현재 로그인한 사용자가 특정 사용자를 팔로우
+     *
+     * @param followingId 팔로우할 사용자 ID
+     * @throws BaseException 사용자가 존재하지 않거나 이미 팔로우 중인 경우
+     */
     @Transactional
-    public void followUser(Long followerId) {
+    public void followUser(Long followingId) {
         Long currentUserId = authUtil.getCurrentUserId();
 
-        // 사용자 존재 확인
+        //사용자 존재 확인
         User follower = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "현재 사용자를 찾을 수 없습니다."));
 
-        User following = userRepository.findById(followerId)
-                .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."));
+        User following = userRepository.findById(followingId)
+                .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "팔로우 하려는 사용자를 찾을 수 없습니다."));
 
-        if (followRepository.existsByFollowerIdAndFollowingId(followerId)) {
+        // 중복 팔로우 확인
+        if (followRepository.existsByFollowerIdAndFollowingId(currentUserId, followingId)) {
             throw new BaseException(HttpStatus.CONFLICT, "이미 팔로우 중인 사용자입니다.");
         }
 
-        // 팔로우 관계 생성 및 저장
         Follow follow = Follow.create(follower, following);
         followRepository.save(follow);
     }
 
     /**
      * 사용자 언팔로우
-     * 팔로우 관계가 존재하는지 확인 후 삭제
+     * 현재 로그인한 사용자가 특정 사용자를 언팔로우
      *
-     * @param followerId 팔로우 하는 사용자 ID
-     * @param followingId 팔로우 당하는 사용자 ID
+     * @param followingId 언팔로우할 사용자 ID
+     * @throws BaseException 팔로우 관계가 존재하지 않는 경우
      */
     @Transactional
-    public void unFollowUser(Long followerId, Long followingId) {
-        // 팔로우 관계 존재 확인
-        Follow follow = followRepository.findByFollowerIdAndFollowingId(followerId, followingId)
-                .orElseThrow(() -> new IllegalArgumentException("팔로우 관계가 존재하지 않습니다."));
+    public void unfollowUser(Long followingId) {
+        Long currentUserId = authUtil.getCurrentUserId();
 
-        // 팔로우 관계 삭제
+        Follow follow = followRepository.findByFollowerIdAndFollowingId(currentUserId, followingId)
+                .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "팔로우 관계가 존재하지 않습니다."));
+
         followRepository.delete(follow);
     }
 
     /**
-     * 팔로잉 목록 조회 (내가 팔로우 하는사람들)
+     * 내 팔로잉 목록 조회 (내가 팔로우하는 사람들)
+     * API 명세서에 따라 현재 로그인한 사용자의 팔로잉 목록만 조회
      *
-     * @param userId 조회할 사용자 ID
-     * @return  팔로잉 목록
+     * @return 팔로잉 목록
      */
-    public List<FollowResponseDto> getFollowingList(Long userId) {
-        List<Follow> followerList = followRepository.findFollowersByFollowingId(userId);
+    public List<FollowResponseDto> getMyFollowingList() {
+        Long currentUserId = authUtil.getCurrentUserId();
 
-        return followerList.stream()
-                .map(follow ->  new FollowResponseDto(follow.getFollower()))
+        List<Follow> followingList = followRepository.findFollowingByFollowerId(currentUserId);
+
+        return followingList.stream()
+                .map(follow -> new FollowResponseDto(follow.getFollowing()))
                 .collect(Collectors.toList());
     }
 
     /**
-     * 팔로워 목록 조회 (나를 팔로우하는 사람들)
+     * 내 팔로워 목록 조회 (나를 팔로우하는 사람들)
+     * API 명세서에 따라 현재 로그인한 사용자의 팔로워 목록만 조회
      *
-     * @param userId 조회할 사용자 ID
      * @return 팔로워 목록
      */
-    public List<FollowResponseDto> getFollowersList(Long userId) {
-        List<Follow> followersList = followRepository.findFollowersByFollowingId(userId);
+    public List<FollowResponseDto> getMyFollowersList() {
+        Long currentUserId = authUtil.getCurrentUserId();
+
+        List<Follow> followersList = followRepository.findFollowersByFollowingId(currentUserId);
 
         return followersList.stream()
                 .map(follow -> new FollowResponseDto(follow.getFollower()))
@@ -91,9 +101,20 @@ public class FollowService {
     }
 
     /**
+     * 회원 탈퇴 시 해당 사용자의 모든 팔로우 관계 삭제
+     * UserService에서 회원 탈퇴 시 호출됨
+     *
+     * @param userId 탈퇴하는 사용자 ID
+     */
+    @Transactional
+    public void deleteAllFollowByUserId(Long userId) {
+        followRepository.deleteAllByUserId(userId);
+    }
+
+    /**
      * 팔로우 관계 확인
      *
-     * @param followerId  팔로우하는 사용자 ID
+     * @param followerId 팔로우하는 사용자 ID
      * @param followingId 팔로우 당하는 사용자 ID
      * @return 팔로우 관계 존재 여부
      */
@@ -102,7 +123,7 @@ public class FollowService {
     }
 
     /**
-     * 팔로잉 수 조회
+     * 팔로잉 수 조회 (내가 팔로우하는 사람 수)
      *
      * @param userId 사용자 ID
      * @return 팔로잉 수
@@ -112,7 +133,7 @@ public class FollowService {
     }
 
     /**
-     * 팔로워 수 조회
+     * 팔로워 수 조회 (나를 팔로우하는 사람 수)
      *
      * @param userId 사용자 ID
      * @return 팔로워 수
@@ -120,4 +141,5 @@ public class FollowService {
     public long getFollowerCount(Long userId) {
         return followRepository.countByFollowingId(userId);
     }
+
 }

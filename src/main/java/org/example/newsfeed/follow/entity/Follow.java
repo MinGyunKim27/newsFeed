@@ -8,7 +8,6 @@ import org.example.newsfeed.global.exception.BaseException;
 import org.example.newsfeed.user.entity.User;
 import org.springframework.http.HttpStatus;
 
-import java.time.LocalDateTime;
 
 @Entity
 @Getter

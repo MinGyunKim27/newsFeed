@@ -2,6 +2,7 @@ package org.example.newsfeed.follow.repository;
 
 import org.example.newsfeed.follow.entity.Follow;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
@@ -56,9 +57,13 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     long countByFollowingId(Long followingId);
 
     /**
-     * 사용자 탈퇴 시 모든 팔로우 관계 삭제
+     * 회원 탈퇴 시 해당 사용자와 관련된 모든 팔로우 관계 삭제
+     * - 해당 사용자가 팔로우하는 관계 (follower_id = userId)
+     * - 해당 사용자를 팔로우하는 관계 (following_id = userId)
      *
-     * @param userId 탈퇴하는 사용자 Id
+     * @param userId 탈퇴하는 사용자 ID
      */
-    void deleteByFollowerIdOrFollowingId(Long userId, Long userId2);
+    @Modifying
+    @Query("DELETE FROM Follow f WHERE f.follower.id = :userId OR f.following.id = :userId")
+    void deleteAllByUserId(@Param("userId") Long userId);
 }
