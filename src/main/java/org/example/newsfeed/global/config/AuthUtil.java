@@ -7,13 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthUtil {
 
-    public String getCurrentUserEmail() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return (String) auth.getPrincipal();
-    }
-
     public Long getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return (Long) auth.getCredentials();
+        return (Long) auth.getPrincipal();
     }
 }

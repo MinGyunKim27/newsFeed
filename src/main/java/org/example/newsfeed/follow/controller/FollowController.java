@@ -28,15 +28,14 @@ public class FollowController {
      * @return 성공 메시지
      */
     @PostMapping("/{userId}")
-    public ResponseEntity<Map<String, String>> followUser(@PathVariable Long userId,
-                                                          HttpServletRequest request) {
+    public ResponseEntity<Void> followUser(
+            @PathVariable Long userId,
+            HttpServletRequest request) {
 
         String token = request.getHeader("Authorization").substring(7);
         Long currentUserId = jwtProvider.getUserId(token);
         followService.followUser(currentUserId, userId);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "팔로우 완료");
-        return ResponseEntity.status(201).body(response);
+        return ResponseEntity.status(201).body(null);
     }
 
     /**
@@ -47,16 +46,15 @@ public class FollowController {
      * @return 성공 메시지
      */
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Map<String, String>> unfollowUser(@PathVariable Long userId,
-                                                            HttpServletRequest request) {
+    public ResponseEntity<Void> unfollowUser(
+            @PathVariable Long userId,
+            HttpServletRequest request) {
 
         String token = request.getHeader("Authorization").substring(7);
         Long currentUserId = jwtProvider.getUserId(token);
         followService.unfollowUser(currentUserId, userId);
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "언팔로우 완료");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(null);
     }
 
     /**
@@ -66,7 +64,8 @@ public class FollowController {
      * @return 팔로잉 목록
      */
     @GetMapping("/following")
-    public ResponseEntity<List<FollowResponseDto>> getMyFollowings(HttpServletRequest request) {
+    public ResponseEntity<List<FollowResponseDto>> getMyFollowings(
+            HttpServletRequest request) {
 
         String token = request.getHeader("Authorization").substring(7);
         Long currentUserId = jwtProvider.getUserId(token);
@@ -82,7 +81,9 @@ public class FollowController {
      * @return 팔로워 목록
      */
     @GetMapping("/followers")
-    public ResponseEntity<List<FollowResponseDto>> getMyFollowers(HttpServletRequest request) {
+    public ResponseEntity<List<FollowResponseDto>> getMyFollowers(
+            HttpServletRequest request) {
+
         String token = request.getHeader("Authorization").substring(7);
         Long currentUserId = jwtProvider.getUserId(token);
 
