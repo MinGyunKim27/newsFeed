@@ -9,13 +9,13 @@ import org.springframework.data.domain.Page;
 public interface PostService {
 
     // 포스트 생성
-    Long createPost(CreatePostRequestDto dto, User user);
+    Long createPost(CreatePostRequestDto dto, Long userId);
 
     PostResponseDto findById(Long postId);
 
-    void deletePost(Long postId, User user);
+    void deletePost(Long postId, Long userId);
 
     Page<PostResponseDto> getPostList(int page, int size);
 
-    void updatePost(Long postId, UpdatePostRequestDto dto, User user);
+    void updatePost(Long postId, UpdatePostRequestDto dto, Long userId);
 }

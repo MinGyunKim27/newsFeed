@@ -8,6 +8,7 @@ import org.example.newsfeed.post.dto.UpdatePostRequestDto;
 import org.example.newsfeed.post.entitiy.Post;
 import org.example.newsfeed.post.repository.PostRepository;
 import org.example.newsfeed.user.entity.User;
+import org.example.newsfeed.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
-    public Long createPost(CreatePostRequestDto dto, User user) {
+    public Long createPost(CreatePostRequestDto dto, Long userId) {
 
+        User user =userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
         // 저장할 포스트 엔티티 생성
         Post post = Post.builder()
                 .user(user)
@@ -52,15 +56,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deletePost(Long postId, User user) {
+    public void deletePost(Long postId, Long userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
         // 본인 글만 지울 수 있게 확인
-        if(!post.getUser().getId().equals(user.getId())) {
+        if(!post.getUser().getId().equals(userId)) {
             throw new BaseException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
         }
-
 
         postRepository.delete(post);
 
@@ -80,11 +83,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void updatePost(Long postId, UpdatePostRequestDto dto, User user) {
+    public void updatePost(Long postId, UpdatePostRequestDto dto, Long userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
-        if (!post.getUser().getId().equals(user.getId())) {
+        if (!post.getUser().getId().equals(userId)) {
             throw new BaseException(HttpStatus.FORBIDDEN, "작성자만 수정할 수 있습니다.");
         }
 

@@ -9,6 +9,7 @@ import org.example.newsfeed.post.dto.PostResponseDto;
 import org.example.newsfeed.post.dto.UpdatePostRequestDto;
 import org.example.newsfeed.post.service.PostService;
 import org.example.newsfeed.user.entity.User;
+import org.example.newsfeed.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,10 +30,10 @@ public class PostController {
             HttpServletRequest request
     ) {
 
-        // 필터에서 JWT 검증하고 User를 꺼내서 넣은 User 객체를 직접 request에서 꺼내서 사용한다.
-        User user = (User) request.getAttribute("user");
+        // 필터에서 JWT 검증하고 userId를 직접 request에서 꺼내서 사용한다.
+        Long userId = (Long) request.getAttribute("userId");
 
-        Long postId = postService.createPost(dto, user);
+        Long postId = postService.createPost(dto, userId);
 
         // 반환할 URI 생성
         URI location = URI.create("/api/posts/" + postId);
@@ -53,9 +54,9 @@ public class PostController {
             @PathVariable Long postId,
             HttpServletRequest request
     ) {
-        User user = (User) request.getAttribute("user");
+        Long userId = (Long) request.getAttribute("userId");
 
-        postService.deletePost(postId, user);
+        postService.deletePost(postId, userId);
         return ResponseEntity.noContent().build();
     }
 
@@ -76,8 +77,8 @@ public class PostController {
             @RequestBody @Validated UpdatePostRequestDto dto,
             HttpServletRequest request
             ) {
-        User user = (User) request.getAttribute("user");
-        postService.updatePost(postId, dto,user);
+        Long userId = (Long) request.getAttribute("userId");
+        postService.updatePost(postId, dto,userId);
         return ResponseEntity.noContent().build();
     }
 }
