@@ -10,6 +10,11 @@ import org.springframework.context.annotation.Configuration;
 public class WebConfig {
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new PasswordEncoder();
+    }
+
+    @Bean
     public FilterRegistrationBean customFilter() {
         FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<>();
         // Filter 등록
