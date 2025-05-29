@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.comment.dto.CommentResponseDto;
 import org.example.newsfeed.comment.dto.CreateCommentRequestDto;
 import org.example.newsfeed.comment.service.CommentService;
+import org.example.newsfeed.global.common.dto.PagedResponse;
 import org.example.newsfeed.global.util.JwtProvider;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ public class CommentController {
 
     // 조회 R
     @GetMapping("/api/posts/{postId}/comments")
-    public ResponseEntity<Page<CommentResponseDto>> getCommentList(
+    public ResponseEntity<PagedResponse<CommentResponseDto>> getCommentList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @PathVariable Long postId
