@@ -3,6 +3,7 @@ package org.example.newsfeed.post.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.newsfeed.global.util.JwtProvider;
 import org.example.newsfeed.post.dto.CreatePostRequestDto;
 import org.example.newsfeed.post.dto.PostListResponseDto;
 import org.example.newsfeed.post.dto.PostResponseDto;
@@ -23,6 +24,7 @@ import java.net.URI;
 public class PostController {
 
     private final PostService postService;
+    private final JwtProvider jwtProvider;
 
     @PostMapping
     public ResponseEntity<Long> createPost(
@@ -30,8 +32,8 @@ public class PostController {
             HttpServletRequest request
     ) {
 
-        // 필터에서 JWT 검증하고 userId를 직접 request에서 꺼내서 사용한다.
-        Long userId = (Long) request.getAttribute("userId");
+        String token = request.getHeader("Authorization").substring(7);
+        Long userId = jwtProvider.getUserId(token);
 
         Long postId = postService.createPost(dto, userId);
 
@@ -54,7 +56,8 @@ public class PostController {
             @PathVariable Long postId,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getAttribute("userId");
+        String token = request.getHeader("Authorization").substring(7);
+        Long userId = jwtProvider.getUserId(token);
 
         postService.deletePost(postId, userId);
         return ResponseEntity.noContent().build();
@@ -77,7 +80,9 @@ public class PostController {
             @RequestBody @Validated UpdatePostRequestDto dto,
             HttpServletRequest request
             ) {
-        Long userId = (Long) request.getAttribute("userId");
+        String token = request.getHeader("Authorization").substring(7);
+        Long userId = jwtProvider.getUserId(token);
+
         postService.updatePost(postId, dto,userId);
         return ResponseEntity.noContent().build();
     }
