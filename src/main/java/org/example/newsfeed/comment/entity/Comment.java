@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.newsfeed.global.common.entity.BaseEntity;
+import org.example.newsfeed.post.entitiy.Post;
 import org.example.newsfeed.user.entity.User;
 
 @Entity
@@ -24,13 +25,14 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     // 게시글
-    @Column(nullable = false)
-    private Long postId;
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
-    public Comment(String content, User user, Long postId) {
+    public Comment(String content, User user, Post post) {
         this.content = content;
         this.user = user;
-        this.postId = postId;
+        this.post = post;
     }
 
     public void updateContent(String content) {
