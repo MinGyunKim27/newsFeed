@@ -11,6 +11,7 @@ import org.example.newsfeed.global.util.JwtProvider;
 import org.example.newsfeed.user.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(
-            @RequestBody SignupRequestDto requestDto
+            @Validated @RequestBody SignupRequestDto requestDto
             ){
         authService.signup(requestDto);
 
@@ -32,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @RequestBody LoginRequestDto requestDto
+            @Validated @RequestBody LoginRequestDto requestDto
     ){
         User user = authService.login(requestDto);
         String token = jwtProvider.generateToken(user.getId());
@@ -41,7 +42,7 @@ public class AuthController {
 
     @DeleteMapping("/withdraw")
     public ResponseEntity<Void> withdraw(
-            @RequestBody WithdrawRequestDto withdrawRequestDto,
+            @Validated @RequestBody WithdrawRequestDto withdrawRequestDto,
             HttpServletRequest request
     ){
         String authHeader = request.getHeader("Authorization");
