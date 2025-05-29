@@ -196,8 +196,11 @@
                 "Authorization": `Bearer ${token}`
             }
         })
+
             .then(res => res.json())
             .then(data => {
+
+
                 const feed = document.getElementById("post-list");
                 feed.innerHTML = "";
 
@@ -232,6 +235,8 @@
         </div>
 
                     `;
+                    // ✅ 댓글 수 불러오기
+                    loadCommentCount(post.id);
                     feed.appendChild(postElement);
                 });
             })
@@ -239,6 +244,7 @@
                 console.error("❌ 뉴스피드를 불러오지 못했습니다:", err);
                 alert("뉴스피드를 불러오지 못했습니다: " + err.message);
             });
+
 
     }
 
@@ -298,6 +304,24 @@
             });
     }
 
+    function loadCommentCount(postId) {
+        fetch(`${baseUrl}/api/posts/${postId}/comments`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                const count = data.content.length;
+                const countEl = document.getElementById(`comment-count-${postId}`);
+                if (countEl) {
+                    countEl.textContent = count;
+                }
+            })
+            .catch(err => {
+                console.error(`❌ 댓글 개수 로딩 실패 (postId: ${postId}):`, err);
+            });
+    }
 
     function submitComment(postId) {
         const content = document.getElementById(`comment-input-${postId}`).value.trim();
