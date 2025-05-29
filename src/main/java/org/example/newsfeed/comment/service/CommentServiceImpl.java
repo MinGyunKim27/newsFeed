@@ -55,7 +55,7 @@ public class CommentServiceImpl implements CommentService{
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
 
-        if (comment.getUser().getId().equals(user.getId())) {
+        if (!comment.getUser().getId().equals(user.getId())) {
             throw new NoPermissionException();
         }
 
@@ -72,7 +72,7 @@ public class CommentServiceImpl implements CommentService{
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
 
-        if (comment.getUser().getId().equals(user.getId())) {
+        if (!comment.getUser().getId().equals(user.getId())) {
             throw new NoPermissionException();
         }
 
