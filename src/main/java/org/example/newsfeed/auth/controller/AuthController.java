@@ -7,6 +7,8 @@ import org.example.newsfeed.auth.dto.SignupRequestDto;
 import org.example.newsfeed.auth.dto.TokenResponse;
 import org.example.newsfeed.auth.dto.WithdrawRequestDto;
 import org.example.newsfeed.auth.service.AuthService;
+import org.example.newsfeed.follow.service.FollowService;
+import org.example.newsfeed.global.config.AuthUtil;
 import org.example.newsfeed.global.util.JwtProvider;
 import org.example.newsfeed.user.entity.User;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,8 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtProvider jwtProvider;
+    private final AuthUtil authUtil;
+    private final FollowService followService;
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(
@@ -47,7 +51,8 @@ public class AuthController {
     ){
         String authHeader = request.getHeader("Authorization");
         String token = authHeader.substring(7);
-        Long userId = jwtProvider.getUserId(token);
+        Long userId = authUtil.getCurrentUserId();
+        followService.deleteAllFollowByUserId(userId);
         authService.withdraw(withdrawRequestDto, userId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
