@@ -2,6 +2,9 @@ package org.example.newsfeed.like.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.global.exception.BaseException;
+import org.example.newsfeed.global.exception.LikeNotFoundException;
+import org.example.newsfeed.global.exception.PostNotFoundException;
+import org.example.newsfeed.global.exception.UserNotFoundException;
 import org.example.newsfeed.like.dto.LikeResponseDto;
 import org.example.newsfeed.like.entity.Like;
 import org.example.newsfeed.like.repository.LikeRepository;
@@ -26,9 +29,10 @@ public class LikeServiceImpl implements LikeService {
     public LikeResponseDto createLike(Long postId, Long userId) {
 
         // 유저데이터 조회
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
         // 게시글 조회
-        Post post = postRepository.findById(postId).orElseThrow();
+        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 
         Like like = new Like(user, post);
         likeRepository.save(like);
@@ -47,9 +51,9 @@ public class LikeServiceImpl implements LikeService {
     @Override
     public void deleteLike(Long likeId, Long userId) {
         // 유저데이터 조회
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Like like = likeRepository.findById(likeId).orElseThrow();
+        Like like = likeRepository.findById(likeId).orElseThrow(LikeNotFoundException::new);
 
         if (!user.getId().equals(like.getUser().getId())) {
             throw new BaseException(HttpStatus.FORBIDDEN, "권한이 없습니다");
