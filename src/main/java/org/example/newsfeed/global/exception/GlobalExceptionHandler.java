@@ -26,4 +26,16 @@ public class GlobalExceptionHandler {
         ErrorResponseDto response = new ErrorResponseDto(e.getStatus(), e.getMessage());
         return new ResponseEntity<>(response, e.getStatus());
     }
+
+    /**
+     * IllegalArgumentException 예외 처리
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException e) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
 }
