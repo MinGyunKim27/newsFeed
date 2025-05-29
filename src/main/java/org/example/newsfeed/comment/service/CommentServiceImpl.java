@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.comment.dto.CommentResponseDto;
 import org.example.newsfeed.comment.entity.Comment;
 import org.example.newsfeed.comment.repository.CommentRepository;
+import org.example.newsfeed.global.common.dto.PagedResponse;
 import org.example.newsfeed.global.exception.CommentNotFoundException;
 import org.example.newsfeed.global.exception.NoPermissionException;
 import org.example.newsfeed.global.exception.PostNotFoundException;
@@ -41,9 +42,10 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public Page<CommentResponseDto> getCommentList(PageRequest pageRequest, Long postId) {
+    public PagedResponse<CommentResponseDto> getCommentList(PageRequest pageRequest, Long postId) {
         Page<Comment> commentPage = commentRepository.findAllByPostIdOrderByCreatedAtDesc(postId, pageRequest);
-        return commentPage.map(CommentResponseDto::new);
+        Page<CommentResponseDto> dtoPage = commentPage.map(CommentResponseDto::new);
+        return PagedResponse.from(dtoPage);
     }
 
     @Transactional
