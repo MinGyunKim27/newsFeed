@@ -2,11 +2,13 @@ package org.example.newsfeed.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.newsfeed.global.common.entity.BaseEntity;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class User {
+@Table(name = "users")
+public class User extends BaseEntity {
 
     @Id // primary 지정
     @GeneratedValue(strategy = GenerationType.IDENTITY)

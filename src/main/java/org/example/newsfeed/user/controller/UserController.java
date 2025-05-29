@@ -1,8 +1,10 @@
 package org.example.newsfeed.user.controller;
 
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.newsfeed.global.util.JwtProvider;
 import org.example.newsfeed.user.dto.PasswordUpdateRequestDto;
 import org.example.newsfeed.user.dto.ProfileUpdateRequestDto;
 import org.example.newsfeed.user.dto.UserResponseDto;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final JwtProvider jwtProvider;
 
     // api/users/{userId}
     @GetMapping("/{userId}")
@@ -25,13 +28,26 @@ public class UserController {
 
     // api/users/profile
     @PutMapping("/profile")
-    public ResponseEntity<UserResponseDto> updateProfile(@RequestBody ProfileUpdateRequestDto requestDto, HttpSession session) {
-        return ResponseEntity.ok(userService.updateProfile(session, requestDto));
+    public ResponseEntity<UserResponseDto> updateProfile(
+            @RequestBody ProfileUpdateRequestDto requestDto,
+            HttpServletRequest request) {
+
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        Long userId = jwtProvider.getUserId(token);
+
+        return ResponseEntity.ok(userService.updateProfile(userId, requestDto));
     }
 
     // api/users/password
     @PutMapping("/password")
-    public ResponseEntity<UserResponseDto> updatePassword(@RequestBody PasswordUpdateRequestDto requestDto, HttpSession session) {
-        return ResponseEntity.ok(userService.updatePassword(session, requestDto));
+    public ResponseEntity<UserResponseDto> updatePassword(
+            @RequestBody PasswordUpdateRequestDto requestDto,
+            HttpServletRequest request
+    ) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        Long userId = jwtProvider.getUserId(token);
+        return ResponseEntity.ok(userService.updatePassword(userId, requestDto));
     }
 }

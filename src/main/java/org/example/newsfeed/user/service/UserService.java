@@ -3,6 +3,9 @@ package org.example.newsfeed.user.service;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.newsfeed.global.config.PasswordEncoder;
+import org.example.newsfeed.global.exception.PasswordNotMatchException;
+import org.example.newsfeed.global.exception.UserNotFoundException;
 import org.example.newsfeed.user.dto.*;
 import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;
@@ -14,32 +17,38 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 프로필 조회
     public UserResponseDto getUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return new UserResponseDto(user);
     }
 
     // 프로필 수정
-    public UserResponseDto updateProfile(HttpSession session, ProfileUpdateRequestDto requestDto) {
-        Long userId = (Long) session.getAttribute("userId");
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+    public UserResponseDto updateProfile(Long id, ProfileUpdateRequestDto requestDto) {
+        User byId = userRepository.findById(id).
+                orElseThrow(UserNotFoundException::new);
 
-        user.updateProfile(requestDto.getUsername(), requestDto.getProfileImage(), requestDto.getBio());
-        return new UserResponseDto(user);
+        byId.updateProfile(requestDto.getUsername(), requestDto.getProfileImage(), requestDto.getBio());
+
+        userRepository.save(byId);
+
+        return new UserResponseDto(byId);
     }
 
     // 비밀번호 변경
-    public UserResponseDto updatePassword(HttpSession session, PasswordUpdateRequestDto requestDto) {
-        Long userId = (Long) session.getAttribute("userId");
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+    public UserResponseDto updatePassword(Long id, PasswordUpdateRequestDto requestDto) {
 
-        if(!user.getPassword().equals(requestDto.getCurrentPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+
+        if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())){
+            throw new PasswordNotMatchException();
         }
 
         user.updatePassword(requestDto.getNewPassword());
+
+        userRepository.save(user);
         return new UserResponseDto(user);
 
     }
