@@ -85,11 +85,10 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
         if (!post.getUser().getId().equals(user.getId())) {
-            throw new BaseException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+            throw new BaseException(HttpStatus.FORBIDDEN, "작성자만 수정할 수 있습니다.");
         }
 
-
-        // 업데이트
+        // 변경사항이 있다면 자동 반영
         post.update(dto.getTitle(), dto.getContent(), dto.getImageUrl());
     }
 

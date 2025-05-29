@@ -1,6 +1,7 @@
 package org.example.newsfeed.post.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.post.dto.CreatePostRequestDto;
 import org.example.newsfeed.post.dto.PostListResponseDto;
@@ -10,6 +11,7 @@ import org.example.newsfeed.post.service.PostService;
 import org.example.newsfeed.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -23,7 +25,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<Long> createPost(
-            @RequestBody CreatePostRequestDto dto,
+            @RequestBody @Validated CreatePostRequestDto dto,
             HttpServletRequest request
     ) {
 
@@ -69,14 +71,14 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<String> updatePost(
+    public ResponseEntity<Void> updatePost(
             @PathVariable Long postId,
-            @RequestBody UpdatePostRequestDto dto,
+            @RequestBody @Validated UpdatePostRequestDto dto,
             HttpServletRequest request
             ) {
         User user = (User) request.getAttribute("user");
         postService.updatePost(postId, dto,user);
-        return ResponseEntity.ok("게시글이 수정되었습니다.");
+        return ResponseEntity.noContent().build();
     }
 }
 
