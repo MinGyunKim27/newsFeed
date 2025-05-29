@@ -1,3 +1,6 @@
+-- 개발용****************************
+-- DROP DATABASE newsfeed_db;
+-- *********************************
 CREATE DATABASE IF NOT EXISTS newsfeed_db;
 
 use newsfeed_db;
@@ -18,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `post` (
                         `user_id`	BIGINT	NOT NULL	COMMENT '유저 고유 식별자',
                         `title`	VARCHAR(200)	NOT NULL	COMMENT '제목',
                         `content`	TEXT	NOT NULL	COMMENT '내용',
-                        `image`	VARCHAR(500)	NULL	COMMENT '업로드 사진',
+                        `image_url`	VARCHAR(500)	NULL	COMMENT '업로드 사진',
                         `created_at`	TIMESTAMP	NOT NULL	COMMENT '생성일',
                         `updated_at`	TIMESTAMP	NOT NULL	COMMENT '수정일',
                         foreign key (user_id) references users(id)
@@ -46,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `comment` (
                            foreign key (post_id) references post(id)
 );
 
-CREATE TABLE IF NOT EXISTS `follow` (
+CREATE TABLE IF NOT EXISTS `follows` (
                           `id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY	COMMENT '팔로우 고유 식별자',
                           `follower_id`	BIGINT	NOT NULL	COMMENT '팔로워아이디',
                           `following_id`	BIGINT	NOT NULL	COMMENT '팔로잉아이디',
