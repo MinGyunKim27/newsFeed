@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `post` (
                         `user_id`	BIGINT	NOT NULL	COMMENT '유저 고유 식별자',
                         `title`	VARCHAR(200)	NOT NULL	COMMENT '제목',
                         `content`	TEXT	NOT NULL	COMMENT '내용',
-                        `image`	VARCHAR(500)	NULL	COMMENT '업로드 사진',
+                        `image_url`	VARCHAR(500)	NULL	COMMENT '업로드 사진',
                         `created_at`	TIMESTAMP	NOT NULL	COMMENT '생성일',
                         `updated_at`	TIMESTAMP	NOT NULL	COMMENT '수정일',
                         foreign key (user_id) references users(id)
