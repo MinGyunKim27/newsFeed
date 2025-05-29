@@ -6,11 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 public interface CommentService {
-    CommentResponseDto createComment(@NotBlank(message = "내용은 필수 입력값입니다") String content, Long postId);
+    CommentResponseDto createComment(@NotBlank(message = "내용은 필수 입력값입니다") String content, Long postId, Long userId);
 
     Page<CommentResponseDto> getCommentList(PageRequest pageRequest, Long postId);
 
-    CommentResponseDto updateComment(@NotBlank(message = "내용은 필수 입력값입니다") String content, Long commentId);
+    CommentResponseDto updateComment(@NotBlank(message = "내용은 필수 입력값입니다") String content, Long commentId, Long userId);
 
-    void deleteComment(Long commentId);
+    void deleteComment(Long commentId, Long userId);
 }

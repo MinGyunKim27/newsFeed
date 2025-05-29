@@ -4,6 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.comment.dto.CommentResponseDto;
 import org.example.newsfeed.comment.entity.Comment;
 import org.example.newsfeed.comment.repository.CommentRepository;
+import org.example.newsfeed.global.exception.CommentNotFoundException;
+import org.example.newsfeed.global.exception.NoPermissionException;
+import org.example.newsfeed.global.exception.UserNotFoundException;
+import org.example.newsfeed.user.entity.User;
+import org.example.newsfeed.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -13,17 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService{
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public CommentResponseDto createComment(String content, Long postId) {
+    public CommentResponseDto createComment(String content, Long postId, Long userId) {
 
-        // todo: 추후 로그인을 통해 id 값 설정
-        Long tempUserId = 1L;
+        // 유저데이터 조회
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        // todo: 추후 UserId키값을 통해 작성자 맵핑
-
-
-        Comment comment = new Comment(content, tempUserId, postId);
+        Comment comment = new Comment(content, user, postId);
 
         commentRepository.save(comment);
 
@@ -38,10 +41,16 @@ public class CommentServiceImpl implements CommentService{
 
     @Transactional
     @Override
-    public CommentResponseDto updateComment(String content, Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow();
+    public CommentResponseDto updateComment(String content, Long commentId, Long userId) {
 
-        // todo: 추후 유저검증 예외처리
+        // 유저데이터 조회
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
+
+        if (comment.getUser().getId().equals(user.getId())) {
+            throw new NoPermissionException();
+        }
 
         comment.updateContent(content);
 
@@ -49,10 +58,18 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public void deleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow();
+    public void deleteComment(Long commentId, Long userId) {
 
-        // todo: 추후 유저검증 예외처리
+        // 유저데이터 조회
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
+
+        if (comment.getUser().getId().equals(user.getId())) {
+            throw new NoPermissionException();
+        }
+
+
 
         commentRepository.delete(comment);
     }

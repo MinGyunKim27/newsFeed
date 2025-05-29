@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.newsfeed.global.common.entity.BaseEntity;
+import org.example.newsfeed.user.entity.User;
 
 @Entity
 @Table(name = "comment")
@@ -18,16 +19,17 @@ public class Comment extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    // todo: 임시값 추후 user랑 연결
-
-    @Column(nullable = false)
-    private Long userId;
+    // 작성자
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    // 게시글
     @Column(nullable = false)
     private Long postId;
 
-    public Comment(String content, Long userId, Long postId) {
+    public Comment(String content, User user, Long postId) {
         this.content = content;
-        this.userId = userId;
+        this.user = user;
         this.postId = postId;
     }
 
