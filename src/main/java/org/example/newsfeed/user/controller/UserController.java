@@ -5,12 +5,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.global.util.JwtProvider;
+import org.example.newsfeed.global.util.RequestToId;
 import org.example.newsfeed.user.dto.PasswordUpdateRequestDto;
 import org.example.newsfeed.user.dto.ProfileUpdateRequestDto;
 import org.example.newsfeed.user.dto.UserResponseDto;
 import org.example.newsfeed.user.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,9 +49,21 @@ public class UserController {
             @RequestBody PasswordUpdateRequestDto requestDto,
             HttpServletRequest request
     ) {
+        Long Id = RequestToId.requestToId(request,jwtProvider);
+
         String authHeader = request.getHeader("Authorization");
         String token = authHeader.substring(7);
         Long userId = jwtProvider.getUserId(token);
         return ResponseEntity.ok(userService.updatePassword(userId, requestDto));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserResponseDto>> findUsers(
+            @RequestParam (required = false) String username
+    ){
+        String keyword = (username == null) ? "" : username;
+        List<UserResponseDto> userResponseDtoList = userService.findUsers(keyword);
+
+        return new ResponseEntity<>(userResponseDtoList, HttpStatus.OK);
     }
 }

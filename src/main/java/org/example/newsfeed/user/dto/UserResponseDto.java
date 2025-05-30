@@ -19,4 +19,8 @@ public class UserResponseDto {
         this.profileImage = user.getProfileImage();
         this.bio = user.getBio();
     }
+
+    public static UserResponseDto toDto(User user) {
+        return new UserResponseDto(user);
+    }
 }
