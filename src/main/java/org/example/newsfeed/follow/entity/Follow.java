@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.newsfeed.global.common.entity.BaseEntity;
 import org.example.newsfeed.global.exception.BaseException;
+import org.example.newsfeed.global.exception.DoNotFollowMySelf;
 import org.example.newsfeed.user.entity.User;
 import org.springframework.http.HttpStatus;
 
@@ -42,7 +43,7 @@ public class Follow extends BaseEntity {
 
     private void validateFollow(User follower, User following) {
         if (follower.getId().equals(following.getId())) {
-            throw new BaseException(HttpStatus.BAD_REQUEST, "자기 자신을 팔로우할 수 없습니다.");
+            throw new DoNotFollowMySelf();
         }
     }
 
