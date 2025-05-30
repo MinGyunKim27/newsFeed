@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>사용자 프로필</title>
+    <style>
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 190px;
+            height: 100vh;
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .sidebar h1 {
+            font-size: 24px;
+            color: #007aff;
+            margin-bottom: 40px;
+            margin-left: 24px;
+        }
+
+        .sidebar .menu-item {
+            width: 120px;
+            padding: 12px 24px;
+            color: #374151;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+        }
+
+        .menu-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            align-items: center;
+        }
+
+        .sidebar .menu-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .sidebar .menu-item svg {
+            margin-right: 8px;
+            fill: #6b7280;
+        }
+
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-card {
+            background: white;
+            margin-left: 220px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .profile-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 16px;
+        }
+
+        .profile-card h2 {
+            margin: 0;
+        }
+
+        .follow-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .follow-btn:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h1>PicFlow</h1>
+    <div class="menu-wrapper">
+        <div class="menu-item" onclick="goTo('newsfeed.html')">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+                <path d="M3 9.5l9-7 9 7v11.5a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/>
+            </svg>
+            홈
+        </div>
+        <div class="menu-item" onclick="goTo('search.html')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4B5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            검색
+        </div>
+        <div class="menu-item" onclick="openModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+                <path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            만들기
+        </div>
+        <div class="menu-item" onclick="goTo('mypage.html')">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+                <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
+            </svg>
+            프로필
+        </div>
+    </div>
+</div>
+
+<div class="profile-card" id="userProfile">
+    <img id="userImage" src="" alt="프로필 이미지">
+    <h2 id="userName"></h2>
+    <p id="userBio"></p>
+    <button class="follow-btn" onclick="followUser()">팔로우</button>
+</div>
+
+<script>
+    const baseUrl = "http://localhost:8080";
+    const token = localStorage.getItem("token");
+    const userId = new URLSearchParams(window.location.search).get("userId");
+
+    fetch(`${baseUrl}/api/users/${userId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+    })
+        .then(res => res.json())
+        .then(user => {
+            document.getElementById("userImage").src = user.profileImage ? `${baseUrl}/images/${user.profileImage}` : "https://via.placeholder.com/100x100?text=No+Img";
+            document.getElementById("userName").textContent = user.username;
+            document.getElementById("userBio").textContent = user.bio || "(소개 없음)";
+        })
+        .catch(err => alert("사용자 정보를 불러올 수 없습니다: " + err.message));
+
+    function followUser() {
+        fetch(`${baseUrl}/api/follows/${userId}`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("팔로우 실패");
+                alert("팔로우 완료!");
+            })
+            .catch(err => alert("팔로우 중 오류 발생: " + err.message));
+    }
+
+    // 페이지 이동
+    function goTo(path) {
+        window.location.href = `/${path}`;
+    }
+</script>
+</body>
+</html>
