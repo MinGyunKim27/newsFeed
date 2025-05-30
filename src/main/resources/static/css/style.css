@@ -723,3 +723,15 @@ body {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+.like-action:hover {
+    color: #ef4444 !important;
+}
+
+.like-action.liked {
+    color: #ef4444 !important;
+}
+
+.like-action.liked svg {
+    fill: #ef4444;
+}

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import org.example.newsfeed.post.entitiy.Post;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @Builder
 @Getter
@@ -24,6 +26,8 @@ public class PostResponseDto {
 
     private Long authorId;
 
+    private LocalDateTime createdAt;
+
     public PostResponseDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
@@ -32,5 +36,6 @@ public class PostResponseDto {
         this.author = post.getUser().getUsername();
         this.authorImageUrl = post.getUser().getProfileImage();
         this.authorId = post.getUser().getId();
+        this.createdAt = post.getCreatedAt();
     }
 }

@@ -9,6 +9,15 @@ function goTo(path) {
     window.location.href = `/${path}`;
 }
 
+// 수정된 코드:
+function goToProfile(authorId) {
+    if (authorId == userId) {  // ✅ 매개변수명과 일치
+        window.location.href = `/mypage.html`;
+    } else {
+        window.location.href = `/user-profile.html?userId=${authorId}`;
+    }
+}
+
 // 게시글 불러오기
 async function loadPosts() {
     try {
@@ -49,65 +58,74 @@ async function loadPosts() {
             const postElement = document.createElement("div");
             postElement.className = "post";
             postElement.innerHTML = `
-                 <div class="author-info">
-                    <img class="author-img" src="${post.authorImageUrl
-                                ? `${baseUrl}/images/${post.authorImageUrl}`
-                                : 'https://via.placeholder.com/32x32?text=No+Img'}" 
-                         alt="작성자 이미지" />
-                    <div class="author-details">
-                        <strong style="font-weight: 600; color: #374151;">${post.author}</strong>
-                        <span class="post-time" style="color: #6b7280; font-size: 14px; margin-left: 8px;">${formatDate(post.createdAt)}</span>
-                    </div>
-                    ${post.authorId == userId ?
-                `<div class="post-menu">
-                        <button class="menu-btn" onclick="togglePostMenu(${post.id})" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #6b7280; padding: 8px;">
-                            ⋯
-                            </button>
-                            <div id="post-menu-${post.id}" class="menu-dropdown" style="display: none; position: absolute; right: 0; top: 35px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; min-width: 120px;">
-                                <button onclick="openEditPostModal(${post.id}, '${post.title}', '${post.content}', '${post.imageUrl || ''}'); hidePostMenu(${post.id})" 
-                                        style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; border-bottom: 1px solid #f3f4f6;" 
-                                        onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='none'">
-                                    수정
-                                </button>
-                                <button onclick="deletePost(${post.id}); hidePostMenu(${post.id})" 
-                                        style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; color: #ef4444;" 
-                                        onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
-                                    삭제
-                                </button>
+                        <div class="author-info">
+                            <img class="author-img" 
+                                 src="${post.authorImageUrl
+                                    ? `${baseUrl}/images/${post.authorImageUrl}`
+                                    : 'https://via.placeholder.com/32x32?text=No+Img'}" 
+                                 alt="작성자 이미지" 
+                                 onclick="goToProfile(${post.authorId})"
+                                 style="cursor: pointer;" />
+                            <div class="author-details">
+                                <strong onclick="goToProfile(${post.authorId})" 
+                                        style="font-weight: 600; color: #374151; cursor: pointer; transition: color 0.3s ease;"
+                                        onmouseover="this.style.color='#007aff'"
+                                        onmouseout="this.style.color='#374151'">
+                                    ${post.author}
+                                </strong>
+                                <span class="post-time" style="color: #6b7280; font-size: 14px; margin-left: 8px;">${formatDate(post.createdAt)}</span>
                             </div>
-                        </div>` :
+                            ${post.authorId == userId ?
+                                    `<div class="post-menu">
+                                    <button class="menu-btn" onclick="togglePostMenu(${post.id})" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #6b7280; padding: 8px;">
+                                        ⋯
+                                    </button>
+                                    <div id="post-menu-${post.id}" class="menu-dropdown" style="display: none; position: absolute; right: 0; top: 35px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; min-width: 120px;">
+                                        <button onclick="openEditPostModal(${post.id}, '${post.title}', '${post.content}', '${post.imageUrl || ''}'); hidePostMenu(${post.id})" 
+                                                style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; border-bottom: 1px solid #f3f4f6;" 
+                                                onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='none'">
+                                            수정
+                                        </button>
+                                        <button onclick="deletePost(${post.id}); hidePostMenu(${post.id})" 
+                                                style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; color: #ef4444;" 
+                                                onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
+                                            삭제
+                                        </button>
+                                    </div>
+                                </div>` :
                                     `<button class="follow-btn-small" data-author-id="${post.authorId}" onclick="toggleFollow(${post.authorId}, this)">
-                            팔로우
-                        </button>`
-                            }
-                </div>
-
-                <h3>${post.title}</h3>
-                <p>${post.content}</p>
-                ${post.imageUrl
-                ? `<img onclick="openImageModal('${baseUrl}/images/${post.imageUrl}')" src="${baseUrl}/images/${post.imageUrl}" alt="게시물 이미지">`
-                : ""}
-                <div class="post-actions">
-                    <span class="action">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="#4B5563" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
-                        </svg> <span>1</span>
-                    </span>
-                    <span class="action" onclick="toggleComments(${post.id})">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="#4B5563" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 1 1 17 0z"/>
-                        </svg>
-                        <span id="comment-count-${post.id}">0</span>
-                    </span>
-                </div>
-                <div id="comment-section-${post.id}" class="comment-input" style="display:none; margin-top:10px;">
-                    <div id="comment-list-${post.id}" style="margin-bottom:8px;"></div>
-                    <div class="comment-form">
-                        <textarea id="comment-input-${post.id}" class="comment-input" placeholder="댓글을 입력하세요..."></textarea>
-                        <button class="comment-submit" onclick="submitComment(${post.id})">작성</button>
-                    </div>
-                </div>
-            `;
+                                    팔로우
+                                </button>`
+                                }
+                        </div>
+                    
+                        <h3>${post.title}</h3>
+                        <p>${post.content}</p>
+                        ${post.imageUrl
+                                    ? `<img onclick="openImageModal('${baseUrl}/images/${post.imageUrl}')" src="${baseUrl}/images/${post.imageUrl}" alt="게시물 이미지">`
+                                    : ""}
+                        <div class="post-actions">
+                            <span class="action like-action" onclick="toggleLike(${post.id}, this)" style="cursor: pointer; transition: color 0.3s ease;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+                                </svg>
+                                <span id="like-count-${post.id}">0</span>
+                            </span>
+                            <span class="action" onclick="toggleComments(${post.id})">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="#4B5563" stroke-width="1.8" viewBox="0 0 24 24">
+                                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 1 1 17 0z"/>
+                                </svg>
+                                <span id="comment-count-${post.id}">0</span>
+                            </span>
+                        </div>
+                        <div id="comment-section-${post.id}" class="comment-input" style="display:none; margin-top:10px;">
+                            <div id="comment-list-${post.id}" style="margin-bottom:8px;"></div>
+                            <div class="comment-form">
+                                <textarea id="comment-input-${post.id}" class="comment-input" placeholder="댓글을 입력하세요..."></textarea>
+                                <button class="comment-submit" onclick="submitComment(${post.id})">작성</button>
+                            </div>
+                        </div>
+                    `;
             checkAuthorFollowStatus(post.authorId, postElement);
             async function checkAuthorFollowStatus(authorId, postElement) {
                 try {
@@ -134,6 +152,7 @@ async function loadPosts() {
                 }
             }
             loadCommentCount(post.id);
+            loadLikeCount(post.id);
             feed.appendChild(postElement);
         });
     } catch (err) {
@@ -501,6 +520,64 @@ async function deletePost(postId) {
         alert('게시물 삭제 실패: ' + err.message);
     }
 }
+
+// 좋아요 토글 함수 추가
+async function toggleLike(postId, likeElement) {
+    try {
+        const countSpan = likeElement.querySelector('span');
+        const currentCount = parseInt(countSpan.textContent) || 0;
+        const isLiked = likeElement.classList.contains('liked');
+
+        if (isLiked) {
+            // 좋아요 취소
+            const res = await fetch(`${baseUrl}/api/posts/${postId}/likes`, {
+                method: 'DELETE',
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                likeElement.classList.remove('liked');
+                countSpan.textContent = currentCount - 1;
+                likeElement.style.color = '#6b7280';
+            }
+        } else {
+            // 좋아요 추가
+            const res = await fetch(`${baseUrl}/api/posts/${postId}/likes`, {
+                method: 'POST',
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                likeElement.classList.add('liked');
+                countSpan.textContent = currentCount + 1;
+                likeElement.style.color = '#ef4444';
+            }
+        }
+    } catch (err) {
+        console.error('좋아요 처리 실패:', err);
+        alert('좋아요 처리 중 오류가 발생했습니다.');
+    }
+}
+
+// 좋아요 수 불러오기 함수 추가
+async function loadLikeCount(postId) {
+    try {
+        const res = await fetch(`${baseUrl}/api/posts/${postId}/likes/count`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+            const count = await res.json();
+            const countEl = document.querySelector(`#like-count-${postId}`);
+            if (countEl) {
+                countEl.textContent = count;
+            }
+        }
+    } catch (err) {
+        console.error(`좋아요 수 로딩 실패 (${postId}):`, err);
+    }
+}
+
 
 // 문서 클릭 시 메뉴 닫기
 document.addEventListener('click', function(e) {
