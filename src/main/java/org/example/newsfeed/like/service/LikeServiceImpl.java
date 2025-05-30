@@ -1,10 +1,7 @@
 package org.example.newsfeed.like.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.newsfeed.global.exception.BaseException;
-import org.example.newsfeed.global.exception.LikeNotFoundException;
-import org.example.newsfeed.global.exception.PostNotFoundException;
-import org.example.newsfeed.global.exception.UserNotFoundException;
+import org.example.newsfeed.global.exception.*;
 import org.example.newsfeed.like.dto.LikeResponseDto;
 import org.example.newsfeed.like.entity.Like;
 import org.example.newsfeed.like.repository.LikeRepository;
@@ -12,7 +9,6 @@ import org.example.newsfeed.post.entitiy.Post;
 import org.example.newsfeed.post.repository.PostRepository;
 import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,14 +46,13 @@ public class LikeServiceImpl implements LikeService {
 
     @Transactional
     @Override
-    public void deleteLike(Long likeId, Long userId) {
-        // 유저데이터 조회
+    public void deleteLike(Long postId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Like like = likeRepository.findById(likeId).orElseThrow(LikeNotFoundException::new);
+        Like like = likeRepository.findByUserIdAndPostId(userId, postId).orElseThrow(LikeNotFoundException::new);
 
         if (!user.getId().equals(like.getUser().getId())) {
-            throw new BaseException(HttpStatus.FORBIDDEN, "권한이 없습니다");
+            throw new NoPermissionException();
         }
 
         likeRepository.delete(like);

@@ -40,13 +40,13 @@ public class LikeController {
     }
 
     // 삭제 D
-    @DeleteMapping("/api/likes/{likeId}")
-    public ResponseEntity<Void> deleteLike(@PathVariable Long likeId, HttpServletRequest request) {
+    @DeleteMapping("/api/posts/{postId}/likes")
+    public ResponseEntity<Void> deleteLike(@PathVariable Long postId, HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         String token = authHeader.substring(7);
         Long userId = jwtProvider.getUserId(token);
 
-        likeService.deleteLike(likeId, userId);
+        likeService.deleteLike(postId, userId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

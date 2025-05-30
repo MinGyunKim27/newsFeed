@@ -9,7 +9,7 @@ public interface LikeService {
 
     List<LikeResponseDto> getLikeUserList(Long postId);
 
-    void deleteLike(Long likeId, Long userId);
+    void deleteLike(Long postId, Long userId);
 
     Long getLikeCount(Long postId);
 }
