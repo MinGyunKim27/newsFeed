@@ -74,6 +74,18 @@ public class PostController {
         return ResponseEntity.ok(new PostListResponseDto(list));
     }
 
+    // 쿼리 스트링을 통해 페이지 정보를 전달 받자
+    // 기본 0번 페이지부터 5개씩
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<PostListResponseDto> getPostListByUser(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<PostResponseDto> list = postService.getPostListByUser(page, size, userId);
+        return ResponseEntity.ok(new PostListResponseDto(list));
+    }
+
     @PutMapping("/{postId}")
     public ResponseEntity<Void> updatePost(
             @PathVariable Long postId,
@@ -86,6 +98,7 @@ public class PostController {
         postService.updatePost(postId, dto,userId);
         return ResponseEntity.noContent().build();
     }
+
 }
 
 

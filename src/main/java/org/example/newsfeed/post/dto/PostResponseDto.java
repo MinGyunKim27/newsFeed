@@ -22,6 +22,8 @@ public class PostResponseDto {
 
     private String authorImageUrl;
 
+    private Long authorId;
+
     public PostResponseDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
@@ -29,5 +31,6 @@ public class PostResponseDto {
         this.imageUrl = post.getImageUrl();
         this.author = post.getUser().getUsername();
         this.authorImageUrl = post.getUser().getProfileImage();
+        this.authorId = post.getUser().getId();
     }
 }

@@ -2,6 +2,7 @@ package org.example.newsfeed.post.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.global.exception.BaseException;
+import org.example.newsfeed.global.util.RequestToId;
 import org.example.newsfeed.post.dto.CreatePostRequestDto;
 import org.example.newsfeed.post.dto.PostResponseDto;
 import org.example.newsfeed.post.dto.UpdatePostRequestDto;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.example.newsfeed.global.util.RequestToId.requestToId;
 
 @Service
 @RequiredArgsConstructor
@@ -80,6 +83,17 @@ public class PostServiceImpl implements PostService {
                 // 모든 post를 dto로 변환해서 넘겨주자
                 .map(PostResponseDto::new);
     }
+
+    // 페이지 구현, 생성시각을 기준으로 내림차순 정렬
+    public Page<PostResponseDto> getPostListByUser(int page, int size,Long userId) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        // 페이지 안에 있는 모든 post 꺼내고
+        return postRepository.findAllByUser_Id(userId,pageable)
+                // 모든 post를 dto로 변환해서 넘겨주자
+                .map(PostResponseDto::new);
+    }
+
+
 
     @Override
     @Transactional
