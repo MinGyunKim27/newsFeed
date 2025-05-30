@@ -74,8 +74,8 @@ public class PostController {
         return ResponseEntity.ok(new PostListResponseDto(list));
     }
 
-    // 쿼리 스트링을 통해 페이지 정보를 전달 받자
-    // 기본 0번 페이지부터 5개씩
+    // 사람들 별로 게시물 조회
+    //김민균 작성
     @GetMapping("/user/{userId}")
     public ResponseEntity<PostListResponseDto> getPostListByUser(
             @PathVariable Long userId,
