@@ -4,6 +4,7 @@ package org.example.newsfeed.user.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.newsfeed.global.exception.UsernameSearchRequiredException;
 import org.example.newsfeed.global.util.JwtProvider;
 import org.example.newsfeed.global.util.RequestToId;
 import org.example.newsfeed.user.dto.PasswordUpdateRequestDto;
@@ -73,7 +74,7 @@ public class UserController {
 
         // 검색어 없을 시 예외처리
         if(username.trim().isEmpty()) {
-            throw new IllegalArgumentException("검색어를 입력해주십시오.");
+            throw new UsernameSearchRequiredException();
         }
 
         return ResponseEntity.ok(userService.findUsers(username, pageable));
