@@ -20,11 +20,14 @@ public class PostResponseDto {
 
     private String author;
 
+    private String authorImageUrl;
+
     public PostResponseDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
         this.imageUrl = post.getImageUrl();
         this.author = post.getUser().getUsername();
+        this.authorImageUrl = post.getUser().getProfileImage();
     }
 }

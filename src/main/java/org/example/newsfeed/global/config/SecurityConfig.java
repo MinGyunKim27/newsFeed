@@ -33,7 +33,11 @@ public class SecurityConfig {
                                 "/newsfeed.html",
                                 "/create-post.html",
                                 "/search.html",
-                                "/favicon.ico").permitAll()
+                                "/user-comments.html",
+                                "/user-profile.html",
+                                "/favicon.ico",
+                                "/css/**",
+                                "/js/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

@@ -11,6 +11,8 @@ import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor //final 필드 자동 생성
@@ -52,4 +54,10 @@ public class UserService {
         return new UserResponseDto(user);
     }
 
+    public List<UserResponseDto> findUsers(String username) {
+        return userRepository.findByUsernameContaining(username)
+                .stream()
+                .map(UserResponseDto::toDto)
+                .toList();
+    }
 }

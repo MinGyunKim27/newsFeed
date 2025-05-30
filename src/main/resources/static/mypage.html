@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>마이페이지</title>
     <style>
         * {
@@ -25,6 +25,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 500px;
+            margin-left: 220px;
         }
 
         .mypage-container h2 {
@@ -33,6 +34,7 @@
             font-size: 24px;
             text-align: center;
         }
+
 
         .profile-img {
             width: 120px;
@@ -57,11 +59,76 @@
             color: #9ca3af;
         }
 
+        .sidebar {
+            position: fixed; /* ✅ 화면 고정 */
+            top: 0; /* 화면 상단부터 시작 */
+            left: 0; /* 화면 좌측에 고정 */
+            width: 190px;
+            height: 100vh; /* 화면 전체 높이 */
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
+
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+
+        .sidebar h1 {
+            font-size: 24px;
+            color: #007aff;
+            margin-bottom: 40px;
+            margin-left: 24px;
+        }
+
+        .sidebar .menu-item {
+            width: 150px;
+            padding: 16px 24px;
+            color: #374151;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* ← 왼쪽 정렬 */
+            cursor: pointer;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+
+        }
+
+        .menu-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 수직 중앙 정렬 */
+            width: 90%;
+            align-items: center;
+            margin-top: -32px;
+        }
+
+
+        .sidebar .menu-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .sidebar .menu-item svg {
+            margin-right: 8px;
+            fill: #6b7280;
+        }
+
+        .btn-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            padding: 20px;
+            gap: 30px; /* ← 원하는 간격(px, em 등) */
+        }
+
         .logout-btn {
             margin-top: 20px;
-            width: 100%;
+            width: 60%;
             padding: 12px;
-            background-color: #ef4444;
+            background-color: #fb8888;
             color: white;
             border: none;
             border-radius: 6px;
@@ -72,38 +139,78 @@
         }
 
         .logout-btn:hover {
-            background-color: #dc2626;
+            background-color: #f8a9a9;
         }
+
+        .profile-edit-btn {
+            margin-top: 20px;
+            width: 60%;
+            padding: 12px;
+            background-color: #85adef;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .profile-edit-btn:hover {
+            background-color: #95cbf1;
+        }
+
     </style>
 </head>
 <body>
+<div class="sidebar">
+    <h1>PicFlow</h1>
+    <div class="menu-wrapper">
+        <div class="menu-item" onclick="goTo('newsfeed.html')">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+                <path d="M3 9.5l9-7 9 7v11.5a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/>
+            </svg>
+            홈
+        </div>
+        <div class="menu-item" onclick="goTo('search.html')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4B5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            검색
+        </div>
+        <div class="menu-item" onclick="goTo('mypage.html')">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+                <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
+            </svg>
+            프로필
+        </div>
+    </div>
+</div>
+
 <div class="mypage-container">
     <h2>마이페이지</h2>
-    <img id="profileImage" class="profile-img" src="" alt="프로필 이미지" />
+    <img id="profileImage" class="profile-img" src="" alt="프로필 이미지"/>
     <div class="info">
         <p><strong>이메일:</strong> <span id="email"></span></p>
         <p><strong>이름:</strong> <span id="username"></span></p>
         <p><strong>소개:</strong> <span id="bio"></span></p>
     </div>
-    <button onclick="location.href='edit-profile.html'" style="
-        margin-top: 20px;
-        width: 100%;
-        padding: 12px;
-        background-color: #2563eb;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 15px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s;">
-        ✏️ 프로필 수정하기
-    </button>
-    <button class="logout-btn" onclick="logout()">🚪 로그아웃</button>
+    <div class="btn-wrapper">
+        <button class="profile-edit-btn" onclick="location.href='edit-profile.html'">
+            프로필 수정하기
+        </button>
+        <button class="logout-btn" onclick="logout()">로그아웃</button>
+    </div>
+
 </div>
 
 <script>
     const baseUrl = "http://localhost:8080";
+
+    function goTo(path) {
+        window.location.href = `/${path}`;
+    }
 
     function loadMyPage() {
         const token = localStorage.getItem("token");
@@ -116,14 +223,14 @@
         }
 
         fetch(`${baseUrl}/api/users/${userId}`, {
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: {"Authorization": `Bearer ${token}`}
         })
             .then(async res => {
                 const text = await res.text();
                 const data = text ? JSON.parse(text) : {};
-                return { ok: res.ok, status: res.status, body: data };
+                return {ok: res.ok, status: res.status, body: data};
             })
-            .then(({ ok, status, body }) => {
+            .then(({ok, status, body}) => {
                 if (!ok) throw new Error(body.message || `요청 실패: ${status}`);
 
                 document.getElementById("email").textContent = body.email || "-";
