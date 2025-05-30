@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
+import static org.example.newsfeed.global.util.RequestToId.requestToId;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -51,7 +53,7 @@ public class UserController {
             @RequestBody PasswordUpdateRequestDto requestDto,
             HttpServletRequest request
     ) {
-        Long Id = RequestToId.requestToId(request,jwtProvider);
+        Long Id = requestToId(request, jwtProvider);
 
         String authHeader = request.getHeader("Authorization");
         String token = authHeader.substring(7);
@@ -63,7 +65,7 @@ public class UserController {
     @GetMapping("/search/username")
     public ResponseEntity<Page<UserResponseDto>> findUsers(
             @RequestParam(required = false, defaultValue = "") String username, Pageable pageable
-    )   {
+    ) {
         return ResponseEntity.ok(userService.findUsers(username, pageable));
-        }
     }
+}

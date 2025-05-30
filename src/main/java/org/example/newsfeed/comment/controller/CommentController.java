@@ -47,6 +47,12 @@ public class CommentController {
         return new ResponseEntity<>(commentService.getCommentList(pageRequest, postId), HttpStatus.OK);
     }
 
+    @GetMapping("/api/posts/{postId}/comments/count")
+    public ResponseEntity<Long> getCommentList(@PathVariable Long postId) {
+
+        return new ResponseEntity<>(commentService.getCommentTotalCount(postId), HttpStatus.OK);
+    }
+
     // 수정 U
     @PutMapping("/api/comments/{commentId}")
     public ResponseEntity<CommentResponseDto> updateComment(

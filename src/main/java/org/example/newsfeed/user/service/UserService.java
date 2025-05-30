@@ -7,6 +7,7 @@ import org.example.newsfeed.follow.repository.FollowRepository;
 import org.example.newsfeed.global.config.PasswordEncoder;
 import org.example.newsfeed.global.exception.PasswordNotMatchException;
 import org.example.newsfeed.global.exception.UserNotFoundException;
+import org.example.newsfeed.global.util.RequestToId;
 import org.example.newsfeed.user.dto.*;
 import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static org.example.newsfeed.global.util.RequestToId.requestToId;
 
 
 @Service

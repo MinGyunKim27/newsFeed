@@ -3,14 +3,18 @@ package org.example.newsfeed.follow.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.follow.dto.FollowResponseDto;
+import org.example.newsfeed.follow.dto.IsFollowResponseDto;
 import org.example.newsfeed.follow.service.FollowService;
 import org.example.newsfeed.global.util.JwtProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.example.newsfeed.global.util.RequestToId.requestToId;
 
 @RestController
 @RequestMapping("/api/users")
@@ -90,4 +94,19 @@ public class FollowController {
         List<FollowResponseDto> followers = followService.getMyFollowersList(currentUserId);
         return ResponseEntity.ok(followers);
     }
+
+
+    //메서드 작성
+    //김민균 만듬
+    @GetMapping("/follows/{userId}/isFollow")
+    public ResponseEntity<IsFollowResponseDto> validIsFollow(
+            @PathVariable Long userId,
+            HttpServletRequest request
+    ){
+        Long currentId = requestToId(request,jwtProvider);
+        boolean isFollow = followService.isFollowing(currentId,userId);
+        IsFollowResponseDto isFollowResponseDto = new IsFollowResponseDto(isFollow);
+        return new ResponseEntity<>(isFollowResponseDto, HttpStatus.OK);
+    }
+
 }
