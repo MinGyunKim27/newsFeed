@@ -109,13 +109,14 @@
 
         .sidebar .menu-item svg {
             margin-right: 8px;
-            fill: #6b7280;
-            transition: fill 0.3s ease, transform 0.2s ease;
+            stroke: #6b7280;
+            fill: none;
+            transition: stroke 0.3s ease, transform 0.2s ease;
         }
 
         .sidebar .menu-item:hover svg {
-            fill: #007aff;
-            transform: rotate(5deg) scale(1.1);
+            stroke: #007aff;
+            transform: rotate(2deg) scale(1.05);
         }
 
         .main {
@@ -460,6 +461,45 @@
             }
         }
 
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .create-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weigh
+
     </style>
 </head>
 <body>
@@ -467,17 +507,32 @@
     <h1>PicFlow</h1>
     <div class="menu-wrapper">
         <div class="menu-item" onclick="goTo('newsfeed.html')">
-            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M3 9.5l9-7 9 7v11.5a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9,22 9,12 15,12 15,22"/>
+            </svg>
             홈
         </div>
         <div class="menu-item" onclick="goTo('search.html')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4B5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>검색
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            검색
+        </div>
+        <div class="menu-item" onclick="openModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="16"/>
+                <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            만들기
         </div>
         <div class="menu-item" onclick="goTo('mypage.html')">
-            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
             프로필
         </div>
     </div>
@@ -563,6 +618,103 @@
         window.location.href = `/user-profile.html?userId=${userId}`;
     }
 
+    // openModal 함수 추가
+    function openModal() {
+        document.getElementById("overlay").style.display = "flex";
+    }
+
+    // closeModal 함수 추가
+    function closeModal() {
+        document.getElementById("overlay").style.display = "none";
+    }
+
+    // submitPost 함수 추가
+    async function submitPost() {
+        const title = document.getElementById("postTitle").value.trim();
+        const content = document.getElementById("postContent").value.trim();
+        const imageFile = document.getElementById("imageUpload").files[0];
+
+        if (!title || !content) {
+            alert("제목과 내용을 입력하세요.");
+            return;
+        }
+
+        let imageUrl = "";
+
+        if (imageFile) {
+            const formData = new FormData();
+            formData.append("file", imageFile);
+
+            try {
+                const res = await fetch(`${baseUrl}/api/image/upload`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const text = await res.text();
+                const match = text.match(/파일 업로드 성공: (.+)/);
+                if (match && match[1]) {
+                    imageUrl = match[1];
+                } else {
+                    alert("❌ 이미지 업로드 응답 해석 실패");
+                    return;
+                }
+            } catch (err) {
+                alert("❌ 이미지 업로드 실패: " + err.message);
+                return;
+            }
+        }
+
+        const payload = {
+            title,
+            content,
+            imageUrl
+        };
+
+        try {
+            const res = await fetch(`${baseUrl}/api/posts`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) throw new Error("게시물 등록 실패");
+
+            alert("✅ 게시물 작성 완료!");
+
+            // 폼 초기화
+            document.getElementById("postTitle").value = "";
+            document.getElementById("postContent").value = "";
+            document.getElementById("imageUpload").value = "";
+
+            closeModal();
+        } catch (err) {
+            console.error("❌ 게시 실패:", err);
+            alert("게시 실패: " + err.message);
+        }
+    }
+
 </script>
+
+<!-- 게시물 작성 모달 -->
+<div id="overlay" class="modal-overlay" style="display:none;">
+    <div class="create-modal-content">
+        <h3>게시물 작성</h3>
+        <input type="text" id="postTitle" placeholder="제목을 입력하세요..." class="input-field" />
+        <textarea id="postContent" placeholder="내용을 입력하세요..." class="input-field" style="height: 100px;"></textarea>
+        <input type="file" id="imageUpload" accept="image/*" style="margin-top:10px;" />
+
+        <div style="margin-top:15px; text-align:right;">
+            <button onclick="closeModal()" class="modal-button cancel">취소</button>
+            <button onclick="submitPost()" class="modal-button submit" style="margin-left: 10px;">게시</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

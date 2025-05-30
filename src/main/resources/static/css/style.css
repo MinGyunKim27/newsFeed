@@ -89,13 +89,14 @@ body {
 
 .sidebar .menu-item svg {
     margin-right: 8px;
-    fill: #6b7280;
-    transition: fill 0.3s ease, transform 0.2s ease;
+    stroke: #6b7280;
+    fill: none;
+    transition: stroke 0.3s ease, transform 0.2s ease;
 }
 
 .sidebar .menu-item:hover svg {
-    fill: #007aff;
-    transform: rotate(5deg) scale(1.1);
+    stroke: #007aff;
+    transform: rotate(2deg) scale(1.05);
 }
 
 .feed-container {
@@ -581,7 +582,7 @@ body {
 
 .follow-btn-small {
     padding: 6px 16px;
-    background: linear-gradient(135deg, #007aff, #0056b3);
+    background: linear-gradient(135deg, #3391f8, #1561b3);
     color: white;
     border: none;
     border-radius: 20px;
@@ -609,7 +610,7 @@ body {
 }
 
 .follow-btn-small:hover {
-    background: linear-gradient(135deg, #0056b3, #004494);
+    background: linear-gradient(135deg, #2269b6, #134e93);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
@@ -658,4 +659,67 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #007aff;
+}
+
+.edit-btn-small {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: auto;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.edit-btn-small:hover {
+    background: linear-gradient(135deg, #dc8a2c, #b66426);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+.edit-btn-small:active {
+    transform: scale(0.95);
+}
+
+.edit-btn-small::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.5s ease;
+}
+
+.edit-btn-small:hover::before {
+    width: 100px;
+    height: 100px;
+}
+
+.post-menu {
+    position: relative;
+    margin-left: auto;
+}
+
+.menu-btn:hover {
+    background: #f3f4f6 !important;
+    border-radius: 50%;
+}
+
+.menu-dropdown {
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

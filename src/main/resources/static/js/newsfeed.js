@@ -22,21 +22,64 @@ async function loadPosts() {
         const feed = document.getElementById("post-list");
         feed.innerHTML = "";
 
+        // formatDate 함수를 파일 어디든 추가
+        function formatDate(dateString) {
+            if (!dateString) return '';
+
+            try {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+
+                if (diffMins < 1) return '방금 전';
+                if (diffMins < 60) return `${diffMins}분 전`;
+                if (diffHours < 24) return `${diffHours}시간 전`;
+                if (diffDays < 7) return `${diffDays}일 전`;
+
+                return date.toLocaleDateString('ko-KR');
+            } catch (err) {
+                return '';
+            }
+        }
+
         data.posts.forEach(post => {
             const postElement = document.createElement("div");
             postElement.className = "post";
             postElement.innerHTML = `
-                <div class="author-info">
+                 <div class="author-info">
                     <img class="author-img" src="${post.authorImageUrl
                                 ? `${baseUrl}/images/${post.authorImageUrl}`
                                 : 'https://via.placeholder.com/32x32?text=No+Img'}" 
                          alt="작성자 이미지" />
                     <div class="author-details">
                         <strong style="font-weight: 600; color: #374151;">${post.author}</strong>
-                    </div>                  
-                    <button class="follow-btn-small" data-author-id="${post.authorId}" onclick="toggleFollow(${post.authorId}, this)">
-                        팔로우
-                    </button>
+                        <span class="post-time" style="color: #6b7280; font-size: 14px; margin-left: 8px;">${formatDate(post.createdAt)}</span>
+                    </div>
+                    ${post.authorId == userId ?
+                `<div class="post-menu">
+                        <button class="menu-btn" onclick="togglePostMenu(${post.id})" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #6b7280; padding: 8px;">
+                            ⋯
+                            </button>
+                            <div id="post-menu-${post.id}" class="menu-dropdown" style="display: none; position: absolute; right: 0; top: 35px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; min-width: 120px;">
+                                <button onclick="openEditPostModal(${post.id}, '${post.title}', '${post.content}', '${post.imageUrl || ''}'); hidePostMenu(${post.id})" 
+                                        style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; border-bottom: 1px solid #f3f4f6;" 
+                                        onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='none'">
+                                    수정
+                                </button>
+                                <button onclick="deletePost(${post.id}); hidePostMenu(${post.id})" 
+                                        style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; color: #ef4444;" 
+                                        onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
+                                    삭제
+                                </button>
+                            </div>
+                        </div>` :
+                                    `<button class="follow-btn-small" data-author-id="${post.authorId}" onclick="toggleFollow(${post.authorId}, this)">
+                            팔로우
+                        </button>`
+                            }
                 </div>
 
                 <h3>${post.title}</h3>
@@ -345,3 +388,123 @@ async function toggleFollow(authorId, buttonElement) {
         alert('팔로우 처리 중 오류가 발생했습니다.');
     }
 }
+
+let editingPostId = null;
+
+function openEditPostModal(postId, title, content, imageUrl) {
+    editingPostId = postId;
+    document.getElementById('editPostTitle').value = title;
+    document.getElementById('editPostContent').value = content;
+    document.getElementById('editImageUpload').value = '';
+    document.getElementById('editPostModal').style.display = 'flex';
+}
+
+function closeEditPostModal() {
+    document.getElementById('editPostModal').style.display = 'none';
+    editingPostId = null;
+}
+
+async function updatePost() {
+    const title = document.getElementById('editPostTitle').value.trim();
+    const content = document.getElementById('editPostContent').value.trim();
+    const imageFile = document.getElementById('editImageUpload').files[0];
+
+    if (!title || !content) {
+        alert('제목과 내용을 입력하세요.');
+        return;
+    }
+
+    let imageUrl = "";
+
+    // 새 이미지가 선택된 경우 업로드
+    if (imageFile) {
+        const formData = new FormData();
+        formData.append("file", imageFile);
+
+        try {
+            const res = await fetch(`${baseUrl}/api/image/upload`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${token}` },
+                body: formData
+            });
+
+            const text = await res.text();
+            const match = text.match(/파일 업로드 성공: (.+)/);
+            if (match && match[1]) {
+                imageUrl = match[1];
+            }
+        } catch (err) {
+            alert("이미지 업로드 실패: " + err.message);
+            return;
+        }
+    }
+
+    const payload = { title, content };
+    if (imageUrl) payload.imageUrl = imageUrl;
+
+    try {
+        const res = await fetch(`${baseUrl}/api/posts/${editingPostId}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert('게시물이 수정되었습니다.');
+            closeEditPostModal();
+            await loadPosts();
+        } else {
+            throw new Error('수정 실패');
+        }
+    } catch (err) {
+        alert('게시물 수정 실패: ' + err.message);
+    }
+}
+
+function togglePostMenu(postId) {
+    const menu = document.getElementById(`post-menu-${postId}`);
+    const isVisible = menu.style.display === 'block';
+
+    // 다른 모든 메뉴 닫기
+    document.querySelectorAll('.menu-dropdown').forEach(m => m.style.display = 'none');
+
+    // 현재 메뉴 토글
+    menu.style.display = isVisible ? 'none' : 'block';
+}
+
+function hidePostMenu(postId) {
+    document.getElementById(`post-menu-${postId}`).style.display = 'none';
+}
+
+async function deletePost(postId) {
+    if (!confirm('정말로 이 게시물을 삭제하시겠습니까?')) return;
+
+    try {
+        const res = await fetch(`${baseUrl}/api/posts/${postId}`, {
+            method: 'DELETE',
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (res.ok) {
+            alert('게시물이 삭제되었습니다.');
+            await loadPosts();
+        } else {
+            throw new Error('삭제 실패');
+        }
+    } catch (err) {
+        alert('게시물 삭제 실패: ' + err.message);
+    }
+}
+
+// 문서 클릭 시 메뉴 닫기
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.post-menu')) {
+        document.querySelectorAll('.menu-dropdown').forEach(m => m.style.display = 'none');
+    }
+});
