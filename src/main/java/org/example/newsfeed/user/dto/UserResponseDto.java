@@ -11,16 +11,18 @@ public class UserResponseDto {
     private String email;
     private String profileImage;
     private String bio;
+    private long followersCount;
 
-    public UserResponseDto(User user) {
+    public UserResponseDto(User user, long followersCount) {
         this.userId = user.getId();
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.profileImage = user.getProfileImage();
         this.bio = user.getBio();
+        this.followersCount = followersCount;
     }
 
     public static UserResponseDto toDto(User user) {
-        return new UserResponseDto(user);
+        return new UserResponseDto(user, 0);
     }
 }

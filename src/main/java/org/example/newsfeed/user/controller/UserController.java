@@ -4,15 +4,18 @@ package org.example.newsfeed.user.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.newsfeed.global.exception.UsernameSearchRequiredException;
 import org.example.newsfeed.global.util.JwtProvider;
 import org.example.newsfeed.global.util.RequestToId;
 import org.example.newsfeed.user.dto.PasswordUpdateRequestDto;
 import org.example.newsfeed.user.dto.ProfileUpdateRequestDto;
 import org.example.newsfeed.user.dto.UserResponseDto;
 import org.example.newsfeed.user.service.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -51,7 +54,7 @@ public class UserController {
             @RequestBody PasswordUpdateRequestDto requestDto,
             HttpServletRequest request
     ) {
-        Long Id = requestToId(request,jwtProvider);
+        Long Id = requestToId(request, jwtProvider);
 
         String authHeader = request.getHeader("Authorization");
         String token = authHeader.substring(7);
@@ -59,15 +62,21 @@ public class UserController {
         return ResponseEntity.ok(userService.updatePassword(userId, requestDto));
     }
 
-    @GetMapping
-    public ResponseEntity<List<UserResponseDto>> findUsers(
-            @RequestParam (required = false) String username,
+    // api/users/search/username
+    @GetMapping("/search/username")
+    public ResponseEntity<Page<UserResponseDto>> findUsers(
+            @RequestParam(required = false, defaultValue = "") String username, Pageable pageable,
             HttpServletRequest request
-    ){
-        Long userId = requestToId(request,jwtProvider);
-        String keyword = (username == null) ? "" : username;
-        List<UserResponseDto> userResponseDtoList = userService.findUsers(keyword,userId);
+    ) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        Long userId = jwtProvider.getUserId(token);
 
-        return new ResponseEntity<>(userResponseDtoList, HttpStatus.OK);
+        // 검색어 없을 시 예외처리
+        if(username.trim().isEmpty()) {
+            throw new UsernameSearchRequiredException();
+        }
+
+        return ResponseEntity.ok(userService.findUsers(username, pageable));
     }
 }
