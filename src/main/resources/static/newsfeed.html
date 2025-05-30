@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="sidebar">
-    <h1>PicFlow</h1>
+    <h1 onclick="goTo('newsfeed.html')">PicFlow</h1>
     <div class="menu-wrapper">
         <div class="menu-item" onclick="goTo('newsfeed.html')">
             <svg width="20" height="20" viewBox="0 0 24 24">
@@ -37,8 +37,6 @@
     </div>
 </div>
 
-
-
 <div class="feed-container">
     <div class="post-trigger" onclick="openModal()">
         <img id="profile-img" src="https://via.placeholder.com/40" alt="프로필" />
@@ -49,10 +47,12 @@
     <div id="post-list"></div>
 </div>
 
-<div id="imageModal" class="modal" onclick="closeModal()">
-    <img id="modalImage" src="" alt="확대 이미지">
+<!-- 이미지 확대 모달 (수정된 부분) -->
+<div id="imageModal" class="modal" onclick="closeImageModal()">
+    <img id="modalImage" alt="확대 이미지" src="" onclick="event.stopPropagation();">
 </div>
 
+<!-- 게시물 작성 모달 -->
 <div id="overlay" class="modal-overlay" style="display:none;">
     <div class="modal-content">
         <h3>게시물 작성</h3>
@@ -64,11 +64,9 @@
             <button onclick="closeModal()" class="modal-button cancel">취소</button>
             <button onclick="submitPost()" class="modal-button submit" style="margin-left: 10px;">게시</button>
         </div>
-
     </div>
 </div>
 
 <script src="/js/newsfeed.js"></script>
-
 </body>
 </html>

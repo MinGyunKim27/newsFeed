@@ -15,6 +15,8 @@ async function loadPosts() {
         const res = await fetch(`${baseUrl}/api/posts?page=0&size=10`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
+        await checkFollowStatus();
+        const postElement = document.createElement("div");
 
         const data = await res.json();
         const feed = document.getElementById("post-list");
@@ -26,17 +28,22 @@ async function loadPosts() {
             postElement.innerHTML = `
                 <div class="author-info">
                     <img class="author-img" src="${post.authorImageUrl
-                ? `${baseUrl}/images/${post.authorImageUrl}`
-                : 'https://via.placeholder.com/32x32?text=No+Img'}" 
-                        alt="작성자 이미지" />
-                    <strong style="font-weight: 600; color: #374151;">${post.author}</strong>
+                                ? `${baseUrl}/images/${post.authorImageUrl}`
+                                : 'https://via.placeholder.com/32x32?text=No+Img'}" 
+                         alt="작성자 이미지" />
+                    <div class="author-details">
+                        <strong style="font-weight: 600; color: #374151;">${post.author}</strong>
+                    </div>                  
+                    <button class="follow-btn-small" data-author-id="${post.authorId}" onclick="toggleFollow(${post.authorId}, this)">
+                        팔로우
+                    </button>
                 </div>
 
                 <h3>${post.title}</h3>
                 <p>${post.content}</p>
                 ${post.imageUrl
-                        ? `<img src="${baseUrl}/images/${post.imageUrl}" alt="게시물 이미지">`
-                        : ""}
+                ? `<img onclick="openImageModal('${baseUrl}/images/${post.imageUrl}')" src="${baseUrl}/images/${post.imageUrl}" alt="게시물 이미지">`
+                : ""}
                 <div class="post-actions">
                     <span class="action">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="#4B5563" stroke-width="1.8" viewBox="0 0 24 24">
@@ -58,6 +65,31 @@ async function loadPosts() {
                     </div>
                 </div>
             `;
+            checkAuthorFollowStatus(post.authorId, postElement);
+            async function checkAuthorFollowStatus(authorId, postElement) {
+                try {
+                    const res = await fetch(`${baseUrl}/api/users/follows/${authorId}/isFollow`, {
+                        headers: { "Authorization": `Bearer ${token}` }
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+
+                        // 해당 authorId를 가진 모든 버튼 업데이트 (초기 로딩 시)
+                        const allFollowButtons = document.querySelectorAll(`[data-author-id="${authorId}"]`);
+
+                        allFollowButtons.forEach(button => {
+                            if (data.follow) {
+                                button.textContent = '팔로잉';
+                                button.classList.add('following');
+                                button.style.background = "linear-gradient(135deg, #10b981, #059669)";
+                            }
+                        });
+                    }
+                } catch (err) {
+                    console.error('팔로우 상태 확인 실패:', err);
+                }
+            }
             loadCommentCount(post.id);
             feed.appendChild(postElement);
         });
@@ -215,20 +247,30 @@ async function submitPost() {
 
         alert("✅ 게시물 작성 완료!");
         closeModal();
-        loadPosts();
+        await loadPosts();
     } catch (err) {
         console.error("❌ 게시 실패:", err);
         alert("게시 실패: " + err.message);
     }
 }
 
+// 이미지 모달 열기 (수정된 부분)
+function openImageModal(imageSrc) {
+    const modalImage = document.getElementById("modalImage");
+    modalImage.src = imageSrc;
+    document.getElementById("imageModal").style.display = "flex";
+}
 
-
+// 이미지 모달 닫기
+function closeImageModal() {
+    document.getElementById("imageModal").style.display = "none";
+}
 
 // 팝업 열고 닫기
 function openModal() {
     document.getElementById("overlay").style.display = "flex";
 }
+
 function closeModal() {
     document.getElementById("overlay").style.display = "none";
 }
@@ -238,3 +280,68 @@ document.addEventListener("DOMContentLoaded", () => {
     loadUserInfo();
     loadPosts();
 });
+
+// 팔로우 여부 확인
+async function checkFollowStatus() {
+    try {
+        const res = await fetch(`${baseUrl}/api/users/follows/${authorId}/isFollow`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            isFollow = data.follow || false;
+            updateFollowButton();
+        }
+    } catch (err) {
+        console.error("팔로우 여부 확인 실패:", err);
+    }
+}
+
+// 버튼 상태 업데이트
+function updateFollowButton() {
+    const btn = document.querySelector(".follow-btn-small");
+    if (btn) {
+        btn.textContent = isFollow ? "팔로잉" : "팔로우";
+        btn.style.background = isFollow
+            ? "linear-gradient(135deg, #3181fa, #dc2626)"
+            : "linear-gradient(135deg, #3b82f6, #2777fa)";
+    }
+}
+
+// 수정해야 할 부분:
+async function toggleFollow(authorId, buttonElement) {
+    const btn = buttonElement || event.target;
+    const isFollowing = btn.textContent.trim() === '팔로잉';
+
+    try {
+        const method = isFollowing ? 'DELETE' : 'POST';
+        const res = await fetch(`${baseUrl}/api/users/follows/${authorId}`, {
+            method: method,
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (res.ok) {
+            // 해당 authorId를 가진 모든 팔로우 버튼 찾아서 일괄 업데이트
+            const allFollowButtons = document.querySelectorAll(`[data-author-id="${authorId}"]`);
+
+            allFollowButtons.forEach(button => {
+                button.textContent = isFollowing ? '팔로우' : '팔로잉';
+
+                if (isFollowing) {
+                    button.classList.remove('following');
+                    button.style.background = "linear-gradient(135deg, #007aff, #0056b3)";
+                } else {
+                    button.classList.add('following');
+                    button.style.background = "linear-gradient(135deg, #10b981, #059669)";
+                }
+            });
+        }
+    } catch (err) {
+        console.error('팔로우 처리 실패:', err);
+        alert('팔로우 처리 중 오류가 발생했습니다.');
+    }
+}

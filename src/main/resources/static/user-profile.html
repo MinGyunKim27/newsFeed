@@ -5,6 +5,16 @@
     <title>사용자 프로필</title>
     <style>
 
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9fafb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
         .sidebar {
             position: fixed;
             top: 0;
@@ -16,6 +26,12 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            transition: box-shadow 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar:hover {
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
         }
 
         .sidebar h1 {
@@ -23,20 +39,14 @@
             color: #007aff;
             margin-bottom: 40px;
             margin-left: 24px;
+            margin-top: 24px;
+            transition: color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
         }
 
-        .sidebar .menu-item {
-            width: 120px;
-            padding: 12px 24px;
-            color: #374151;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            cursor: pointer;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: background 0.2s;
+        .sidebar h1:hover {
+            color: #0056b3;
+            transform: scale(1.05);
         }
 
         .menu-wrapper {
@@ -46,64 +56,338 @@
             justify-content: center;
             width: 100%;
             align-items: center;
+            margin-top: -32px;
+        }
+
+        .sidebar .menu-item {
+            width: 120px;
+            padding: 16px 24px;
+            color: #374151;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .sidebar .menu-item:hover {
             background-color: #f3f4f6;
+            transform: translateX(8px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar .menu-item:hover::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background-color: #007aff;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { height: 0; }
+            to { height: 100%; }
         }
 
         .sidebar .menu-item svg {
             margin-right: 8px;
             fill: #6b7280;
+            transition: fill 0.3s ease, transform 0.2s ease;
         }
 
-
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f9fafb;
-            margin: 0;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .sidebar .menu-item:hover svg {
+            fill: #007aff;
+            transform: rotate(5deg) scale(1.1);
         }
 
         .profile-card {
             background: white;
             margin-left: 220px;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            max-width: 480px;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            max-width: 650px;
             width: 100%;
-            text-align: center;
+            text-align: left;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #007aff, transparent);
+            transition: left 0.6s ease;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            background-color: #fefefe;
+        }
+
+        .profile-card:hover::before {
+            left: 100%;
+        }
+
+        .profile-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .name-wrapper {
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            flex: 1;
         }
 
         .profile-card img {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            margin-bottom: 16px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
         }
 
-        .profile-card h2 {
+        .profile-card img:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 8px 30px rgba(0, 122, 255, 0.3);
+            border: 3px solid #007aff;
+        }
+
+        .userName {
             margin: 0;
+            margin-bottom: 8px;
+            font-size: 28px;
+            font-weight: 600;
+            color: #1f2937;
+            transition: color 0.3s ease;
+        }
+
+        .profile-card:hover .userName {
+            color: #007aff;
+        }
+
+        .user-handle {
+            color: #6b7280;
+            font-size: 16px;
+            margin-bottom: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .profile-card:hover .user-handle {
+            color: #374151;
+        }
+
+        .user-bio {
+            color: #374151;
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .profile-card:hover .user-bio {
+            color: #1f2937;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 24px;
         }
 
         .follow-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #3b82f6;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            width: 48%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .follow-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease;
         }
 
         .follow-btn:hover {
-            background-color: #2563eb;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .follow-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .message-btn {
+            padding: 12px 24px;
+            background: white;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 48%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .message-btn:hover {
+            background: #f8fafc;
+            border-color: #007aff;
+            color: #007aff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.2);
+        }
+
+        .text-title-container {
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .stat-item:hover {
+            background-color: #f3f4f6;
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+            transition: color 0.3s ease;
+        }
+
+        .stat-item:hover .stat-number {
+            color: #007aff;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .stat-item:hover .stat-label {
+            color: #374151;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            text-decoration: none;
+            color: #007aff;
+        }
+
+        /* 스크롤바 스타일링 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #007aff;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .profile-card {
+                margin-left: 0;
+                margin: 20px;
+                padding: 24px;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .profile-wrapper {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .button-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .follow-btn, .message-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -141,47 +425,424 @@
 </div>
 
 <div class="profile-card" id="userProfile">
-    <img id="userImage" src="" alt="프로필 이미지">
-    <h2 id="userName"></h2>
-    <p id="userBio"></p>
-    <button class="follow-btn" onclick="followUser()">팔로우</button>
+    <div class="profile-wrapper">
+        <div class="name-wrapper">
+            <h2 class="userName" id="userName"></h2>
+            <p id="user-info"></p>
+        </div>
+        <img id="userImage" src="" alt="프로필 이미지">
+    </div>
+    <p href="#" id="userBio"></p>
+    <a id = "follower-count"> 팔로워 = 0 </a>
+    <div class="button-container">
+        <button class="follow-btn" onclick="followUser()">팔로우</button>
+        <button class="follow-btn" onclick="">언급</button>
+    </div>
+
+    <div class="text-title-container">
+        <h2>게시물</h2>
+    </div>
+    <hr style="border: none; border-top: 1px solid #b8b6b6; margin-top: 12px" />
+
+    <div id="post-list"></div>
 </div>
+
+
+
 
 <script>
     const baseUrl = "http://localhost:8080";
     const token = localStorage.getItem("token");
     const userId = new URLSearchParams(window.location.search).get("userId");
 
-    fetch(`${baseUrl}/api/users/${userId}`, {
-        headers: { "Authorization": `Bearer ${token}` }
-    })
-        .then(res => res.json())
-        .then(user => {
-            document.getElementById("userImage").src = user.profileImage ? `${baseUrl}/images/${user.profileImage}` : "https://via.placeholder.com/100x100?text=No+Img";
-            document.getElementById("userName").textContent = user.username;
-            document.getElementById("userBio").textContent = user.bio || "(소개 없음)";
-        })
-        .catch(err => alert("사용자 정보를 불러올 수 없습니다: " + err.message));
+    let isFollow = false; // 전역 상태
+    let currentUser = null; // 현재 로그인한 사용자 정보
 
-    function followUser() {
-        fetch(`${baseUrl}/api/follows/${userId}`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
+    // 현재 사용자 정보 가져오기
+    async function getCurrentUser() {
+        try {
+            const res = await fetch(`${baseUrl}/api/users/me`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (res.ok) {
+                currentUser = await res.json();
             }
-        })
-            .then(res => {
-                if (!res.ok) throw new Error("팔로우 실패");
-                alert("팔로우 완료!");
-            })
-            .catch(err => alert("팔로우 중 오류 발생: " + err.message));
+        } catch (err) {
+            console.error("현재 사용자 정보 로딩 실패:", err);
+        }
+    }
+
+    // 사용자 정보 불러오기
+    async function loadUserProfile() {
+        try {
+            const res = await fetch(`${baseUrl}/api/users/${userId}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+
+            const user = await res.json();
+
+            // 프로필 이미지 설정
+            const userImage = document.getElementById("userImage");
+            userImage.src = user.profileImage
+                ? `${baseUrl}/images/${user.profileImage}`
+                : "https://via.placeholder.com/100x100?text=No+Img";
+            userImage.onerror = () => {
+                userImage.src = "https://via.placeholder.com/100x100?text=Error";
+            };
+
+            // 사용자 정보 설정
+            document.getElementById("userName").textContent = user.username || "사용자명 없음";
+            document.getElementById("user-info").textContent = user.email || "이메일 없음";
+            document.getElementById("userBio").textContent = user.bio || "(소개 없음)";
+
+            // 팔로워 수 설정
+            const followerCount = user.followerCount || 0;
+            document.getElementById("follower-count").textContent = `팔로워 ${followerCount}명`;
+
+        } catch (err) {
+            console.error("사용자 정보 로딩 실패:", err);
+            alert("사용자 정보를 불러올 수 없습니다: " + err.message);
+        }
+    }
+
+    // 팔로우 여부 확인
+    async function checkFollowStatus() {
+        try {
+            const res = await fetch(`${baseUrl}/api/users/follows/${userId}/isFollow`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                isFollow = data.follow || false;
+                updateFollowButton();
+            }
+        } catch (err) {
+            console.error("팔로우 여부 확인 실패:", err);
+        }
+    }
+
+    // 팔로우/언팔로우 버튼 동작
+    async function followUser() {
+        try {
+            const method = isFollow ? "DELETE" : "POST";
+            const res = await fetch(`${baseUrl}/api/users/follows/${userId}`, {
+                method: method,
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error(isFollow ? "언팔로우 실패" : "팔로우 실패");
+            }
+
+            isFollow = !isFollow;
+            updateFollowButton();
+
+            // 팔로워 수 업데이트
+            await loadUserProfile();
+
+            alert(isFollow ? "팔로우 완료!" : "언팔로우 완료!");
+
+        } catch (err) {
+            console.error("팔로우 처리 실패:", err);
+            alert("팔로우 처리 중 오류 발생: " + err.message);
+        }
+    }
+
+    // 버튼 상태 업데이트
+    function updateFollowButton() {
+        const btn = document.querySelector(".follow-btn");
+        if (btn) {
+            btn.textContent = isFollow ? "팔로잉" : "팔로우";
+            btn.style.background = isFollow
+                ? "linear-gradient(135deg, #3181fa, #dc2626)"
+                : "linear-gradient(135deg, #3b82f6, #2777fa)";
+        }
     }
 
     // 페이지 이동
     function goTo(path) {
         window.location.href = `/${path}`;
     }
+
+    // 사용자별 게시물 로드
+    async function loadUserPosts() {
+        try {
+            const res = await fetch(`${baseUrl}/api/posts/user/${userId}?page=0&size=10`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+
+            const data = await res.json();
+            const feed = document.getElementById("post-list");
+            feed.innerHTML = "";
+
+            if (!data.posts || data.posts.length === 0) {
+                feed.innerHTML = "<p style='text-align: center; color: #6b7280; padding: 20px;'>아직 게시물이 없습니다.</p>";
+                return;
+            }
+
+            data.posts.forEach(post => {
+                const postElement = createPostElement(post);
+                feed.appendChild(postElement);
+            });
+
+        } catch (err) {
+            console.error("사용자 게시물 로딩 실패:", err);
+            const feed = document.getElementById("post-list");
+            feed.innerHTML = "<p style='text-align: center; color: #ef4444; padding: 20px;'>게시물을 불러오지 못했습니다.</p>";
+        }
+    }
+
+    // 게시물 요소 생성
+    function createPostElement(post) {
+        const postElement = document.createElement("div");
+        postElement.className = "post";
+        postElement.style.cssText = `
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        background: white;
+        transition: all 0.3s ease;
+    `;
+
+        postElement.innerHTML = `
+        <div class="author-info" style="display: flex; align-items: center; margin-bottom: 12px;">
+            <img class="author-img"
+                 src="${post.authorImageUrl ? `${baseUrl}/images/${post.authorImageUrl}` : 'https://via.placeholder.com/32x32?text=No+Img'}"
+                 alt="작성자 이미지"
+                 style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; object-fit: cover;"
+                 onerror="this.src='https://via.placeholder.com/32x32?text=Error'" />
+            <strong style="font-weight: 600; color: #374151;">${post.author || '알 수 없는 사용자'}</strong>
+            <span style="color: #6b7280; font-size: 14px; margin-left: 8px;">${formatDate(post.createdAt)}</span>
+        </div>
+
+        <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #1f2937;">${post.title || '제목 없음'}</h3>
+        <p style="margin: 0 0 12px 0; line-height: 1.5; color: #374151;">${post.content || ''}</p>
+        ${post.imageUrl ? `
+            <img src="${baseUrl}/images/${post.imageUrl}"
+                 alt="게시물 이미지"
+                 style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 12px;"
+                 onerror="this.style.display='none'" />
+        ` : ""}
+
+        <div class="post-actions" style="display: flex; gap: 16px; align-items: center; padding-top: 12px; border-top: 1px solid #f3f4f6;">
+            <span class="action" style="display: flex; align-items: center; gap: 4px; cursor: pointer; color: #6b7280; transition: color 0.3s ease;"
+                  onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#6b7280'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+                </svg>
+                <span>${post.likeCount || 0}</span>
+            </span>
+            <span class="action" style="display: flex; align-items: center; gap: 4px; cursor: pointer; color: #6b7280; transition: color 0.3s ease;"
+                  onclick="toggleComments(${post.id})"
+                  onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='#6b7280'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 1 1 17 0z"/>
+                </svg>
+                <span id="comment-count-${post.id}">0</span>
+            </span>
+        </div>
+
+        <div id="comment-section-${post.id}" class="comment-section" style="display:none; margin-top:16px; padding-top:16px; border-top: 1px solid #f3f4f6;">
+            <div id="comment-list-${post.id}" style="margin-bottom:12px;"></div>
+            <div class="comment-form" style="display: flex; gap: 8px;">
+                <textarea id="comment-input-${post.id}"
+                         placeholder="댓글을 입력하세요..."
+                         style="flex: 1; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; resize: vertical; min-height: 36px; font-family: inherit;"></textarea>
+                <button onclick="submitComment(${post.id})"
+                        style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: background 0.3s ease;"
+                        onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">작성</button>
+            </div>
+        </div>
+    `;
+
+        // 댓글 수 로드
+        loadCommentCount(post.id);
+
+        return postElement;
+    }
+
+    // 날짜 포맷팅
+    function formatDate(dateString) {
+        if (!dateString) return '';
+
+        try {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return '방금 전';
+            if (diffMins < 60) return `${diffMins}분 전`;
+            if (diffHours < 24) return `${diffHours}시간 전`;
+            if (diffDays < 7) return `${diffDays}일 전`;
+
+            return date.toLocaleDateString('ko-KR');
+        } catch (err) {
+            return '';
+        }
+    }
+
+    // 댓글 토글
+    function toggleComments(postId) {
+        const section = document.getElementById(`comment-section-${postId}`);
+        if (section.style.display === 'none') {
+            section.style.display = 'block';
+            loadComments(postId);
+        } else {
+            section.style.display = 'none';
+        }
+    }
+
+    // 댓글 불러오기
+    async function loadComments(postId) {
+        try {
+            const res = await fetch(`${baseUrl}/api/posts/${postId}/comments`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}`);
+            }
+
+            const data = await res.json();
+            const commentList = document.getElementById(`comment-list-${postId}`);
+
+            if (!data.content || data.content.length === 0) {
+                commentList.innerHTML = "<p style='color: #6b7280; font-size: 14px; text-align: center; padding: 12px;'>댓글이 없습니다.</p>";
+            } else {
+                const commentsHtml = data.content.map(comment => `
+                <div class="comment-item" style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; last-child: border-bottom: none;">
+                    <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                        <strong style="font-size: 14px; color: #374151;">${comment.name || '익명'}</strong>
+                        <span style="font-size: 12px; color: #9ca3af; margin-left: 8px;">${formatDate(comment.createdAt)}</span>
+                    </div>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.4; color: #4b5563;">${comment.content || ''}</p>
+                </div>
+            `).join("");
+                commentList.innerHTML = commentsHtml;
+            }
+
+            // 댓글 수 업데이트
+            const countEl = document.getElementById(`comment-count-${postId}`);
+            if (countEl) {
+                countEl.textContent = data.content.length;
+            }
+
+        } catch (err) {
+            console.error("댓글 로딩 실패:", err);
+            const commentList = document.getElementById(`comment-list-${postId}`);
+            commentList.innerHTML = "<p style='color: #ef4444; font-size: 14px; text-align: center; padding: 12px;'>댓글을 불러올 수 없습니다.</p>";
+        }
+    }
+
+    // 댓글 수 불러오기
+    async function loadCommentCount(postId) {
+        try {
+            const res = await fetch(`${baseUrl}/api/posts/${postId}/comments`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const countEl = document.getElementById(`comment-count-${postId}`);
+                if (countEl) {
+                    countEl.textContent = data.content ? data.content.length : 0;
+                }
+            }
+        } catch (err) {
+            console.error(`댓글 수 로딩 실패 (${postId}):`, err);
+        }
+    }
+
+    // 댓글 작성
+    async function submitComment(postId) {
+        const input = document.getElementById(`comment-input-${postId}`);
+        const content = input.value.trim();
+
+        if (!content) {
+            alert("댓글 내용을 입력해주세요.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${baseUrl}/api/posts/${postId}/comments`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ content: content })
+            });
+
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}`);
+            }
+
+            input.value = "";
+            loadComments(postId);
+            alert("댓글이 작성되었습니다.");
+
+        } catch (err) {
+            console.error("댓글 작성 실패:", err);
+            alert("댓글 작성 중 오류가 발생했습니다: " + err.message);
+        }
+    }
+
+    // 모달 열기 (게시물 작성)
+    function openModal() {
+        // 게시물 작성 모달 구현
+        alert("게시물 작성 기능은 아직 구현되지 않았습니다.");
+    }
+
+    // 페이지 초기화
+    async function initializePage() {
+        // 토큰 확인
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            window.location.href = "/login.html";
+            return;
+        }
+
+        // userId 확인
+        if (!userId) {
+            alert("사용자 ID가 필요합니다.");
+            window.location.href = "/";
+            return;
+        }
+
+        try {
+            // 순차적으로 데이터 로드
+            await getCurrentUser();
+            await loadUserProfile();
+            await checkFollowStatus();
+            await loadUserPosts();
+
+            console.log("페이지 초기화 완료");
+
+        } catch (err) {
+            console.error("페이지 초기화 실패:", err);
+            alert("페이지를 불러오는 중 오류가 발생했습니다.");
+        }
+    }
+
+    // DOM 로드 완료 시 초기화
+    document.addEventListener("DOMContentLoaded", initializePage);
 </script>
+
 </body>
 </html>
