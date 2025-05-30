@@ -7,6 +7,7 @@ import org.example.newsfeed.follow.repository.FollowRepository;
 import org.example.newsfeed.global.config.PasswordEncoder;
 import org.example.newsfeed.global.exception.PasswordNotMatchException;
 import org.example.newsfeed.global.exception.UserNotFoundException;
+import org.example.newsfeed.global.exception.UsernameRequiredException;
 import org.example.newsfeed.global.util.RequestToId;
 import org.example.newsfeed.user.dto.*;
 import org.example.newsfeed.user.entity.User;
@@ -30,7 +31,8 @@ public class UserService {
 
     // 프로필 조회
     public UserResponseDto getUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId).
+                orElseThrow(UserNotFoundException::new);
 
         // followersCount 포함해서 Dto 반환
         long followersCount = followRepository.countByFollowingId(userId);
@@ -40,6 +42,12 @@ public class UserService {
 
     // 프로필 수정
     public UserResponseDto updateProfile(Long id, ProfileUpdateRequestDto requestDto) {
+
+        // username이 비었을 경우 예외처리
+        if (requestDto.getUsername() == null || requestDto.getUsername().trim().isEmpty()) {
+            throw new UsernameRequiredException();
+        }
+
         User byId = userRepository.findById(id).
                 orElseThrow(UserNotFoundException::new);
 
@@ -55,8 +63,10 @@ public class UserService {
     // 비밀번호 변경
     public UserResponseDto updatePassword(Long id, PasswordUpdateRequestDto requestDto) {
 
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(id).
+                orElseThrow(UserNotFoundException::new);
 
+        // password가 일치하지 않았을 경우 예외처리
         if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())){
             throw new PasswordNotMatchException();
         }
