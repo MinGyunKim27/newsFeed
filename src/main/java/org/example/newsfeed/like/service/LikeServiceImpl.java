@@ -14,6 +14,7 @@ import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +26,9 @@ public class LikeServiceImpl implements LikeService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
+    @Transactional
     @Override
-    public LikeResponseDto createLike(Long postId, Long userId) {
+    public void createLike(Long postId, Long userId) {
 
         // 유저데이터 조회
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
@@ -36,8 +38,6 @@ public class LikeServiceImpl implements LikeService {
 
         Like like = new Like(user, post);
         likeRepository.save(like);
-
-        return new LikeResponseDto(like);
     }
 
     @Override
@@ -48,6 +48,7 @@ public class LikeServiceImpl implements LikeService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public void deleteLike(Long likeId, Long userId) {
         // 유저데이터 조회

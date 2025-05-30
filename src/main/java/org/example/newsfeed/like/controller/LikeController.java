@@ -20,12 +20,12 @@ public class LikeController {
 
     // 생성 C
     @PostMapping("/api/posts/{postId}/likes")
-    public ResponseEntity<LikeResponseDto> createLike(@PathVariable Long postId, HttpServletRequest request) {
+    public ResponseEntity<Void> createLike(@PathVariable Long postId, HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         String token = authHeader.substring(7);
         Long userId = jwtProvider.getUserId(token);
-
-        return new ResponseEntity<>(likeService.createLike(postId, userId), HttpStatus.CREATED);
+        likeService.createLike(postId, userId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     // 조회 R
