@@ -59,7 +59,8 @@ public class UserController {
         return ResponseEntity.ok(userService.updatePassword(userId, requestDto));
     }
 
-    @GetMapping
+    // api/users/search/username
+    @GetMapping("/search/username")
     public ResponseEntity<Page<UserResponseDto>> findUsers(
             @RequestParam(required = false, defaultValue = "") String username, Pageable pageable
     )   {
