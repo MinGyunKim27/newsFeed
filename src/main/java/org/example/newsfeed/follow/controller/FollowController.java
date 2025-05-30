@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/follows")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class FollowController {
 
@@ -27,7 +27,7 @@ public class FollowController {
      * @param request HTTP 요청 (Authorization 헤더 포함)
      * @return 성공 메시지
      */
-    @PostMapping("/{userId}")
+    @PostMapping("/follows/{userId}")
     public ResponseEntity<Void> followUser(
             @PathVariable Long userId,
             HttpServletRequest request) {
@@ -45,7 +45,7 @@ public class FollowController {
      * @param request HTTP 요청 (Authorization 헤더 포함)
      * @return 성공 메시지
      */
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/follows/{userId}")
     public ResponseEntity<Void> unfollowUser(
             @PathVariable Long userId,
             HttpServletRequest request) {
@@ -63,7 +63,7 @@ public class FollowController {
      * @param request HTTP 요청 (Authorization 헤더 포함)
      * @return 팔로잉 목록
      */
-    @GetMapping("/following")
+    @GetMapping("/{userId}/follows/following")
     public ResponseEntity<List<FollowResponseDto>> getMyFollowings(
             HttpServletRequest request) {
 
@@ -80,7 +80,7 @@ public class FollowController {
      * @param request HTTP 요청 (Authorization 헤더 포함)
      * @return 팔로워 목록
      */
-    @GetMapping("/followers")
+    @GetMapping("/{userId}/follows/followers")
     public ResponseEntity<List<FollowResponseDto>> getMyFollowers(
             HttpServletRequest request) {
 

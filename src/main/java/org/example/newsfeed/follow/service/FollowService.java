@@ -75,7 +75,11 @@ public class FollowService {
         List<Follow> followingList = followRepository.findFollowingByFollowerId(userId);
 
         return followingList.stream()
-                .map(follow -> new FollowResponseDto(follow.getFollowing()))
+                .map(follow -> {
+                    User followingUser = follow.getFollowing();
+                    long followerCount = followRepository.countByFollowingId(followingUser.getId());
+                    return new FollowResponseDto(followingUser, followerCount);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +97,11 @@ public class FollowService {
         List<Follow> followersList = followRepository.findFollowersByFollowingId(userId);
 
         return followersList.stream()
-                .map(follow -> new FollowResponseDto(follow.getFollower()))
+                .map(follow -> {
+                    User followerUser = follow.getFollowing();
+                    long followingUser = followRepository.countByFollowingId(followerUser.getId());
+                    return new FollowResponseDto(followerUser, followingUser);
+                })
                 .collect(Collectors.toList());
     }
 
