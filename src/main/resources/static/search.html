@@ -11,15 +11,24 @@
             display: flex;
         }
 
+        .display-flex{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .display-flex strong{
+            margin-right: 20px;
+        }
+
         .sidebar {
-            position: fixed;          /* ✅ 화면 고정 */
-            top: 0;                   /* 화면 상단부터 시작 */
-            left: 0;                  /* 화면 좌측에 고정 */
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 190px;
-            height: 100vh;            /* 화면 전체 높이 */
+            height: 100vh;
             background-color: #ffffff;
             border-right: 1px solid #e5e7eb;
-
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -34,26 +43,26 @@
 
         .sidebar .menu-item {
             width: 120px;
-            padding: 12px 24px; /* ← 왼쪽 여백 추가 */
+            padding: 16px 24px;
             color: #374151;
             font-size: 15px;
             display: flex;
             align-items: center;
-            justify-content: flex-start; /* ← 왼쪽 정렬 */
+            justify-content: flex-start;
             cursor: pointer;
             border-radius: 8px;
             margin-bottom: 10px;
             transition: background 0.2s;
-
         }
 
         .menu-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* 수직 중앙 정렬 */
+            justify-content: center;
             width: 100%;
             align-items: center;
+            margin-top: -32px;
         }
 
         .sidebar .menu-item:hover {
@@ -65,18 +74,14 @@
             fill: #6b7280;
         }
 
-
         .main {
-            margin-left: 260px;
+            margin-left: 220px;
             padding: 40px 20px;
             flex: 1;
-        }
 
-        .search-box {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            max-width: 600px;
+            flex-direction: column;
+            align-items: center; /* ✅ 가운데 정렬 */
         }
 
         input[type="text"] {
@@ -102,26 +107,85 @@
         }
 
         .results {
-            max-width: 600px;
+            width: 690px;       /* ✅ 더 넓게 */
         }
 
         .result-item {
+            /* ✅ results의 가로폭 따라감 */
             background-color: white;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.05);
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        .result-item strong {
+
+        .result-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .result-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-info strong {
             font-size: 18px;
             color: #111827;
         }
 
-        .result-item p {
+        .result-info p {
             color: #374151;
             margin-top: 8px;
         }
+
+        .search-box {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 690px; /* ✅ 더 넓은 영역 확보 */
+        }
+
+        #searchInput {
+            flex: 1;
+            padding: 14px 16px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #ffffff;
+            outline: none;
+            transition: border 0.2s ease;
+        }
+
+        #searchInput:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+        }
+
+        .search-box button {
+            padding: 14px 24px;
+            background-color: #3b82f6;
+            border: none;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .search-box button:hover {
+            background-color: #2563eb;
+        }
+
     </style>
 </head>
 <body>
@@ -137,10 +201,6 @@
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>검색
-        </div>
-        <div class="menu-item" onclick="goTo('create-post.html')">
-            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            만들기
         </div>
         <div class="menu-item" onclick="goTo('mypage.html')">
             <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>
@@ -166,21 +226,28 @@
         window.location.href = `/${path}`;
     }
 
+    window.onload = performSearch; // ✅ 페이지 로드시 전체 검색
+
     function performSearch() {
         const query = document.getElementById("searchInput").value.trim();
-        if (!query) return alert("검색어를 입력해주세요.");
 
-        fetch(`${baseUrl}/api/search?query=${encodeURIComponent(query)}`, {
+        fetch(`${baseUrl}/api/users?username=${encodeURIComponent(query || "")}`, {
             headers: {
                 "Authorization": `Bearer ${token}`
             }
         })
-            .then(res => res.json())
+            .then(async res => {
+                if (!res.ok) throw new Error("서버 오류: " + res.status);
+                const text = await res.text();
+                if (!text) return [];
+
+                return JSON.parse(text);
+            })
             .then(data => {
                 const resultsEl = document.getElementById("results");
                 resultsEl.innerHTML = "";
 
-                if (data.length === 0) {
+                if (!data || data.length === 0) {
                     resultsEl.innerHTML = "<p>검색 결과가 없습니다.</p>";
                     return;
                 }
@@ -188,9 +255,26 @@
                 data.forEach(item => {
                     const div = document.createElement("div");
                     div.className = "result-item";
+                    div.onclick = () => goToUserProfile(item.userId); // ✅ 클릭 이벤트 부여
+
+                    const isUser = !!item.username;
+                    const name = isUser ? item.username : item.title;
+                    const bio = isUser ? item.bio : item.content;
+                    const img = isUser
+                        ? item.profileImage
+                            ? `${baseUrl}/images/${item.profileImage}`
+                            : "https://via.placeholder.com/32x32?text=No+Img"
+                        : item.imageUrl
+                            ? `${baseUrl}/images/${item.imageUrl}`
+                            : "";
+
                     div.innerHTML = `
-              <strong>${item.username || item.title}</strong>
-              <p>${item.bio || item.content || ""}</p>
+                ${img ? `<img src="${img}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">` : ""}
+                    <div class = "display-flex">
+                        <strong>${name}</strong>
+                        <p>${bio || ""}</p>
+                    </div>
+
             `;
                     resultsEl.appendChild(div);
                 });
@@ -200,6 +284,11 @@
                 alert("검색에 실패했습니다: " + err.message);
             });
     }
+
+    function goToUserProfile(userId) {
+        window.location.href = `/user-profile.html?userId=${userId}`;
+    }
+
 </script>
 </body>
 </html>
