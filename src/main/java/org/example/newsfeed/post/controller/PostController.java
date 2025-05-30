@@ -74,6 +74,18 @@ public class PostController {
         return ResponseEntity.ok(new PostListResponseDto(list));
     }
 
+    // 사람들 별로 게시물 조회
+    //김민균 작성
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<PostListResponseDto> getPostListByUser(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<PostResponseDto> list = postService.getPostListByUser(page, size, userId);
+        return ResponseEntity.ok(new PostListResponseDto(list));
+    }
+
     @PutMapping("/{postId}")
     public ResponseEntity<Void> updatePost(
             @PathVariable Long postId,
@@ -86,6 +98,7 @@ public class PostController {
         postService.updatePost(postId, dto,userId);
         return ResponseEntity.noContent().build();
     }
+
 }
 
 
