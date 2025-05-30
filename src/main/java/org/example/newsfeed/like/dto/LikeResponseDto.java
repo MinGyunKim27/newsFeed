@@ -7,10 +7,15 @@ import org.example.newsfeed.like.entity.Like;
 @Getter
 @NoArgsConstructor
 public class LikeResponseDto {
-    private String name;
+    private Long likeId;
+    private Long userId;
+    private String userName;
+    private String profileImage;
 
     public LikeResponseDto(Like like) {
-        // todo: 추후 유저 맵핑을 통해 이름 할당 임시값 생성일
-        this.name = like.getCreatedAt().toString();
+        this.likeId = like.getId();
+        this.userId = like.getUser().getId();
+        this.userName = like.getUser().getUsername();
+        this.profileImage = like.getUser().getProfileImage();
     }
 }

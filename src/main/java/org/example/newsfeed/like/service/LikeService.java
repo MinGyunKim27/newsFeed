@@ -7,7 +7,9 @@ import java.util.List;
 public interface LikeService {
     LikeResponseDto createLike(Long postId, Long userId);
 
-    List<LikeResponseDto> getLikeList(Long postId);
+    List<LikeResponseDto> getLikeUserList(Long postId);
 
     void deleteLike(Long likeId, Long userId);
+
+    Long getLikeCount(Long postId);
 }

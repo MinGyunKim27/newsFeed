@@ -30,8 +30,13 @@ public class LikeController {
 
     // 조회 R
     @GetMapping("/api/posts/{postId}/likes")
-    public ResponseEntity<List<LikeResponseDto>> getLikeList(@PathVariable Long postId) {
-        return new ResponseEntity<>(likeService.getLikeList(postId), HttpStatus.OK);
+    public ResponseEntity<List<LikeResponseDto>> getLikeUserList(@PathVariable Long postId) {
+        return new ResponseEntity<>(likeService.getLikeUserList(postId), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/posts/{postId}/likes/count")
+    public ResponseEntity<Long> getLikeCount(@PathVariable Long postId) {
+        return new ResponseEntity<>(likeService.getLikeCount(postId), HttpStatus.OK);
     }
 
     // 삭제 D

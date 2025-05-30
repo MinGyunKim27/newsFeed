@@ -41,7 +41,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public List<LikeResponseDto> getLikeList(Long postId) {
+    public List<LikeResponseDto> getLikeUserList(Long postId) {
         return likeRepository.findAllByPostIdOrderByCreatedAtDesc(postId)
                 .stream()
                 .map(LikeResponseDto::new)
@@ -60,5 +60,10 @@ public class LikeServiceImpl implements LikeService {
         }
 
         likeRepository.delete(like);
+    }
+
+    @Override
+    public Long getLikeCount(Long postId) {
+        return likeRepository.countByPostId(postId);
     }
 }
