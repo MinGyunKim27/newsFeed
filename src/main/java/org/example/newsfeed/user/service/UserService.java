@@ -3,12 +3,15 @@ package org.example.newsfeed.user.service;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.newsfeed.follow.repository.FollowRepository;
 import org.example.newsfeed.global.config.PasswordEncoder;
 import org.example.newsfeed.global.exception.PasswordNotMatchException;
 import org.example.newsfeed.global.exception.UserNotFoundException;
 import org.example.newsfeed.user.dto.*;
 import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,11 +23,16 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FollowRepository followRepository;
 
     // 프로필 조회
     public UserResponseDto getUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        return new UserResponseDto(user);
+
+        // followersCount 포함해서 Dto 반환
+        long followersCount = followRepository.countByFollowingId(userId);
+        return new UserResponseDto(user, followersCount);
+
     }
 
     // 프로필 수정
@@ -36,7 +44,9 @@ public class UserService {
 
         userRepository.save(byId);
 
-        return new UserResponseDto(byId);
+        // followersCount 포함해서 응답
+        long followersCount = followRepository.countByFollowerId(id);
+        return new UserResponseDto(byId, followersCount);
     }
 
     // 비밀번호 변경
@@ -51,13 +61,18 @@ public class UserService {
         user.updatePassword(requestDto.getNewPassword());
 
         userRepository.save(user);
-        return new UserResponseDto(user);
+
+        // followersCount 포함해서 응답
+        long followersCount = followRepository.countByFollowerId(id);
+        return new UserResponseDto(user, followersCount);
     }
 
-    public List<UserResponseDto> findUsers(String username) {
-        return userRepository.findByUsernameContaining(username)
-                .stream()
-                .map(UserResponseDto::toDto)
-                .toList();
+
+    public Page<UserResponseDto> findUsers(String username, Pageable pageable) {
+        Page<User> usersPage = userRepository.findByUsernameContaining(username, pageable);
+
+        return usersPage.map(user -> {long followersCount = followRepository.countByFollowingId(user.getId());
+            return new UserResponseDto(user, followersCount);
+        });
     }
 }

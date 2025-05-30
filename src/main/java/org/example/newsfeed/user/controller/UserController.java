@@ -10,9 +10,11 @@ import org.example.newsfeed.user.dto.PasswordUpdateRequestDto;
 import org.example.newsfeed.user.dto.ProfileUpdateRequestDto;
 import org.example.newsfeed.user.dto.UserResponseDto;
 import org.example.newsfeed.user.service.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -58,12 +60,9 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDto>> findUsers(
-            @RequestParam (required = false) String username
-    ){
-        String keyword = (username == null) ? "" : username;
-        List<UserResponseDto> userResponseDtoList = userService.findUsers(keyword);
-
-        return new ResponseEntity<>(userResponseDtoList, HttpStatus.OK);
+    public ResponseEntity<Page<UserResponseDto>> findUsers(
+            @RequestParam(required = false, defaultValue = "") String username, Pageable pageable
+    )   {
+        return ResponseEntity.ok(userService.findUsers(username, pageable));
+        }
     }
-}
