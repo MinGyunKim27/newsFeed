@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.example.newsfeed.global.util.RequestToId.requestToId;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -49,7 +51,7 @@ public class UserController {
             @RequestBody PasswordUpdateRequestDto requestDto,
             HttpServletRequest request
     ) {
-        Long Id = RequestToId.requestToId(request,jwtProvider);
+        Long Id = requestToId(request,jwtProvider);
 
         String authHeader = request.getHeader("Authorization");
         String token = authHeader.substring(7);
@@ -59,10 +61,12 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserResponseDto>> findUsers(
-            @RequestParam (required = false) String username
+            @RequestParam (required = false) String username,
+            HttpServletRequest request
     ){
+        Long userId = requestToId(request,jwtProvider);
         String keyword = (username == null) ? "" : username;
-        List<UserResponseDto> userResponseDtoList = userService.findUsers(keyword);
+        List<UserResponseDto> userResponseDtoList = userService.findUsers(keyword,userId);
 
         return new ResponseEntity<>(userResponseDtoList, HttpStatus.OK);
     }

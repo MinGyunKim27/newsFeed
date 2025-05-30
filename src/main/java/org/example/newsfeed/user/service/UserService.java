@@ -6,12 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.global.config.PasswordEncoder;
 import org.example.newsfeed.global.exception.PasswordNotMatchException;
 import org.example.newsfeed.global.exception.UserNotFoundException;
+import org.example.newsfeed.global.util.RequestToId;
 import org.example.newsfeed.user.dto.*;
 import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static org.example.newsfeed.global.util.RequestToId.requestToId;
 
 
 @Service
@@ -54,8 +57,8 @@ public class UserService {
         return new UserResponseDto(user);
     }
 
-    public List<UserResponseDto> findUsers(String username) {
-        return userRepository.findByUsernameContaining(username)
+    public List<UserResponseDto> findUsers(String username,Long id) {
+        return userRepository.findByUsernameContainingAndIdIsNot(username,id)
                 .stream()
                 .map(UserResponseDto::toDto)
                 .toList();
