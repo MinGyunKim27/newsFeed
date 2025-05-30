@@ -25,6 +25,7 @@ public class CommentServiceImpl implements CommentService{
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
+    // 생성
     @Override
     public CommentResponseDto createComment(String content, Long postId, Long userId) {
 
@@ -41,6 +42,7 @@ public class CommentServiceImpl implements CommentService{
         return new CommentResponseDto(comment);
     }
 
+    // 조회
     @Override
     public PagedResponse<CommentResponseDto> getCommentList(PageRequest pageRequest, Long postId) {
         Page<Comment> commentPage = commentRepository.findAllByPostIdOrderByCreatedAtDesc(postId, pageRequest);
@@ -48,6 +50,12 @@ public class CommentServiceImpl implements CommentService{
         return PagedResponse.from(dtoPage);
     }
 
+    @Override
+    public Long getCommentTotalCount(Long postId) {
+        return commentRepository.countByPostId(postId);
+    }
+
+    //수정
     @Transactional
     @Override
     public CommentResponseDto updateComment(String content, Long commentId, Long userId) {
@@ -66,6 +74,7 @@ public class CommentServiceImpl implements CommentService{
         return new CommentResponseDto(comment);
     }
 
+    // 삭제
     @Override
     public void deleteComment(Long commentId, Long userId) {
 
