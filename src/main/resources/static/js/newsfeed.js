@@ -6,6 +6,7 @@ let isLoading = false;
 let hasMore = true;
 const token = localStorage.getItem("token");
 const userId = localStorage.getItem("userId"); // ✅ 로그인 시 저장된 사용자 ID 필요
+let existingImages = []; // 기존 이미지 관리용
 
 // 페이지 이동
 function goTo(path) {
@@ -425,6 +426,7 @@ function closeModal() {
 document.addEventListener("DOMContentLoaded", () => {
     loadUserInfo();
     loadPosts();
+    initializeDropZones();
 
     // 스크롤 이벤트 추가
     window.addEventListener('scroll', () => {
@@ -510,10 +512,26 @@ function openEditPostModal(postId, title, content, images) {
     document.getElementById('editPostContent').value = content;
     document.getElementById('editImageUpload').value = '';
 
-    // 기존 이미지 정보 표시 (선택사항)
+    // 기존 이미지 표시
+    const existingImagesDiv = document.getElementById('existingImages');
     if (images && images.length > 0) {
-        console.log("기존 이미지들:", images);
-        // 필요하다면 기존 이미지 미리보기 추가
+        existingImagesDiv.innerHTML = `
+            <label style="font-weight: 500; margin-bottom: 8px; display: block;">기존 이미지:</label>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                ${images.map((img, index) => `
+                    <div style="position: relative; display: inline-block;">
+                        <img src="${baseUrl}/images/${img.imageUrl}" 
+                             style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
+                        <button type="button" onclick="removeExistingImage(${index})" 
+                                style="position: absolute; top: -5px; right: -5px; width: 20px; height: 20px; 
+                                       background: #ef4444; color: white; border: none; border-radius: 50%; 
+                                       cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;">×</button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } else {
+        existingImagesDiv.innerHTML = '';
     }
 
     document.getElementById('editPostModal').style.display = 'flex';
@@ -592,11 +610,11 @@ async function updatePost() {
         }
     }
 
-    // payload 변경:
     const payload = {
         title,
         content,
-        imageIds: imageIds
+        imageIds: imageIds,
+        keepImageIds: existingImages.map(img => img.imageId) // 유지할 기존 이미지 ID들
     };
 
     try {
@@ -910,4 +928,86 @@ function setFilter(filterType) {
 function toggleFilterDropdown() {
     const options = document.getElementById('filter-options');
     options.style.display = options.style.display === 'block' ? 'none' : 'block';
+}
+
+function removeExistingImage(index) {
+    existingImages.splice(index, 1);
+    // 현재 수정 중인 게시물 정보로 모달 다시 렌더링
+    const title = document.getElementById('editPostTitle').value;
+    const content = document.getElementById('editPostContent').value;
+    openEditPostModal(editingPostId, title, content, existingImages);
+}
+
+// 드롭존 초기화 함수
+function initializeDropZones() {
+    setupDropZone('dropZone', 'imageUpload');
+    setupDropZone('editDropZone', 'editImageUpload');
+    setupDropZone('quickDropZone', 'quick-image');
+}
+
+// 개별 드롭존 설정
+function setupDropZone(dropZoneId, inputId) {
+    const dropZone = document.getElementById(dropZoneId);
+    const input = document.getElementById(inputId);
+
+    if (!dropZone || !input) return;
+
+    // 클릭 시 파일 선택
+    dropZone.onclick = () => input.click();
+
+    // 드래그 이벤트들
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+    });
+
+    dropZone.addEventListener('drop', (e) => handleDrop(e, input), false);
+}
+
+// 기본 이벤트 방지
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+// 드롭 처리
+function handleDrop(e, input) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    input.files = files;
+}
+
+// 붙여넣기 이벤트 (전역)
+document.addEventListener('paste', handlePaste);
+
+function handlePaste(e) {
+    const items = e.clipboardData.items;
+    for (let item of items) {
+        if (item.type.indexOf('image') !== -1) {
+            const file = item.getAsFile();
+            // 현재 열린 모달에 따라 처리
+            if (document.getElementById('overlay').style.display === 'flex') {
+                addFileToInput(file, 'imageUpload');
+            } else if (document.getElementById('editPostModal').style.display === 'flex') {
+                addFileToInput(file, 'editImageUpload');
+            } else if (document.getElementById('write-panel').style.display === 'flex') {
+                addFileToInput(file, 'quick-image');
+            }
+        }
+    }
+}
+
+// 파일을 input에 추가
+function addFileToInput(file, inputId) {
+    const input = document.getElementById(inputId);
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    input.files = dt.files;
 }
