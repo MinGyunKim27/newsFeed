@@ -498,7 +498,120 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-weigh
+            font-weight: bold;
+        }
+
+        /* 왼쪽 하단 햄버거 메뉴 버튼 */
+        .hamburger-menu {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+
+        .hamburger-menu:hover {
+            background: #f9fafb;
+        }
+
+        /* 메뉴 옵션 패널 */
+        .menu-options {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            padding: 8px;
+            min-width: 180px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .menu-item-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.3s ease;
+        }
+
+        .menu-item-option:hover {
+            background: #f3f4f6;
+        }
+
+        .menu-item-option.has-submenu::after {
+            content: '›';
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        /* 서브메뉴 */
+        .submenu {
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 8px;
+            min-width: 120px;
+            display: none;
+            margin-left: 8px;
+        }
+
+        .submenu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+            font-size: 14px;
+        }
+
+        .submenu-item:hover {
+            background: #f3f4f6;
+        }
+
+        .logout-item {
+            color: #ef4444;
+            border-top: 1px solid #f3f4f6;
+            margin-top: 4px;
+            padding-top: 12px;
+        }
+
+        /* 플로팅 작성 버튼 */
+        .floating-write-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-write-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+        }
 
     </style>
 </head>
@@ -700,6 +813,53 @@
         }
     }
 
+    // 메인 메뉴 토글
+    function toggleMainMenu() {
+        const menu = document.getElementById('main-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // 서브메뉴 표시
+    function showSubmenu(submenuId) {
+        document.getElementById(submenuId).style.display = 'block';
+    }
+
+    // 서브메뉴 숨기기
+    function hideSubmenu(submenuId) {
+        document.getElementById(submenuId).style.display = 'none';
+    }
+
+    // 테마 설정
+    function setTheme(theme) {
+        if (theme === 'dark') {
+            document.body.style.background = '#1f2937';
+            document.body.style.color = 'white';
+        } else {
+            document.body.style.background = '#f9fafb';
+            document.body.style.color = 'black';
+        }
+        toggleMainMenu();
+        alert(`${theme} 테마로 변경되었습니다.`);
+    }
+
+    // 로그아웃
+    function logout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            localStorage.clear();
+            window.location.replace('/login.html');
+        }
+    }
+
+    // 문서 클릭 시 메뉴 닫기
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.hamburger-menu') && !e.target.closest('.menu-options')) {
+            const mainMenu = document.getElementById('main-menu');
+            if (mainMenu) mainMenu.style.display = 'none';
+        }
+    });
+
 </script>
 
 <!-- 게시물 작성 모달 -->
@@ -716,5 +876,32 @@
         </div>
     </div>
 </div>
+
+<!-- 왼쪽 하단 햄버거 메뉴 -->
+<div class="hamburger-menu" onclick="toggleMainMenu()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+</div>
+
+<!-- 메뉴 옵션 패널 -->
+<div id="main-menu" class="menu-options">
+    <div class="menu-item-option has-submenu" onmouseenter="showSubmenu('design-submenu')" onmouseleave="hideSubmenu('design-submenu')">
+        <span>디자인</span>
+        <div id="design-submenu" class="submenu">
+            <div class="submenu-item" onclick="setTheme('light')">라이트</div>
+            <div class="submenu-item" onclick="setTheme('dark')">다크</div>
+        </div>
+    </div>
+
+    <div class="menu-item-option logout-item" onclick="logout()">
+        <span>로그아웃</span>
+    </div>
+</div>
+
+<!-- 오른쪽 하단 플로팅 작성 버튼 -->
+<button class="floating-write-btn" onclick="openModal()">+</button>
 </body>
 </html>

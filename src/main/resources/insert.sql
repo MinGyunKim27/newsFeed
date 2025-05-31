@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS `post` (
                         `title`	VARCHAR(200)	NOT NULL	COMMENT '제목',
                         `content`	TEXT	NOT NULL	COMMENT '내용',
                         `image_url`	VARCHAR(500)	NULL	COMMENT '업로드 사진',
+                        `like_count` BIGINT NULL COMMENT '좋아요 수',
                         `created_at`	TIMESTAMP	NOT NULL	COMMENT '생성일',
                         `updated_at`	TIMESTAMP	NOT NULL	COMMENT '수정일',
                         foreign key (user_id) references users(id)
@@ -59,3 +60,9 @@ CREATE TABLE IF NOT EXISTS `follows` (
                           foreign key (follower_id) references users(id),
                           foreign key (following_id) references users(id)
 );
+
+CREATE TABLE IF NOT EXISTS `image`  (
+                            `id`	BIGINT	NOT NULL AUTO_INCREMENT PRIMARY KEY	COMMENT '이미지 고유 식별자',
+                            `image_url` VARCHAR(500) NULL COMMENT '이미지 주소값',
+                            `post_id`	BIGINT	NOT NULL	COMMENT '게시글 고유 식별자'
+)

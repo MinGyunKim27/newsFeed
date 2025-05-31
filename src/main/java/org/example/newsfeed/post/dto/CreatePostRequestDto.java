@@ -3,6 +3,9 @@ package org.example.newsfeed.post.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import org.example.newsfeed.image.entity.Image;
+
+import java.util.List;
 
 @Getter
 public class CreatePostRequestDto {
@@ -18,6 +21,6 @@ public class CreatePostRequestDto {
     private String content;
 
     // 이미지Url (빈 값이 될 수 있다.) (이미지는 로컬 경로 사용)
-    private String imageUrl; // 파일 존재 여부를 서버에서 처리
+    private List<Long> imageIds; // 파일 존재 여부를 서버에서 처리
 
 }
