@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>PicFlow 검색</title>
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         body {
             margin: 0;
@@ -46,16 +47,25 @@
 
         .sidebar h1 {
             font-size: 24px;
-            color: #007aff;
             margin-bottom: 40px;
             margin-left: 24px;
             margin-top: 24px;
             transition: color 0.3s ease, transform 0.2s ease;
             cursor: pointer;
+            background: linear-gradient(135deg, #3253e8, #cea2f8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
         }
 
         .sidebar h1:hover {
-            color: #0056b3;
+            color: #4538f8;
             transform: scale(1.05);
         }
 
@@ -98,7 +108,7 @@
             top: 0;
             width: 3px;
             height: 100%;
-            background-color: #007aff;
+            background-color: #4538f8;
             animation: slideIn 0.3s ease;
         }
 
@@ -115,7 +125,7 @@
         }
 
         .sidebar .menu-item:hover svg {
-            stroke: #007aff;
+            stroke: #4538f8;
             transform: rotate(2deg) scale(1.05);
         }
 
@@ -153,7 +163,7 @@
         }
 
         #searchInput:focus {
-            border-color: #007aff;
+            border-color: #4538f8;
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1), 0 4px 12px rgba(0, 0, 0, 0.1);
             transform: translateY(-1px);
         }
@@ -165,7 +175,7 @@
 
         .search-box button {
             padding: 16px 28px;
-            background: linear-gradient(135deg, #007aff, #0056b3);
+            background: linear-gradient(135deg, #007aff, #4538f8);
             border: none;
             color: white;
             font-size: 16px;
@@ -192,7 +202,7 @@
         }
 
         .search-box button:hover {
-            background: linear-gradient(135deg, #0056b3, #004494);
+            background: linear-gradient(135deg, #5d52fb, #4538f8);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
         }
@@ -240,7 +250,7 @@
             left: -100%;
             width: 100%;
             height: 3px;
-            background: linear-gradient(90deg, transparent, #007aff, transparent);
+            background: linear-gradient(90deg, transparent, #4538f8, transparent);
             transition: left 0.6s ease;
         }
 
@@ -269,7 +279,7 @@
         }
 
         .result-item:hover img {
-            border-color: #007aff;
+            border-color: #4538f8;
             transform: scale(1.05);
             box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
         }
@@ -289,7 +299,7 @@
         }
 
         .result-item:hover .result-info strong {
-            color: #007aff;
+            color: #4538f8;
         }
 
         .result-info p {
@@ -357,7 +367,7 @@
             width: 32px;
             height: 32px;
             border: 3px solid #f3f4f6;
-            border-top: 3px solid #007aff;
+            border-top: 3px solid #4538f8;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -385,7 +395,7 @@
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #007aff;
+            background: #4538f8;
         }
 
         /* 반응형 디자인 */
@@ -453,7 +463,7 @@
 
             .result-info strong {
                 font-size: 16px;
-                color: #2777fa;
+                color: #4538f8;
             }
 
             .result-info p {
@@ -597,7 +607,7 @@
             right: 20px;
             width: 56px;
             height: 56px;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            background: linear-gradient(135deg, #6f65fb, #4538f8);
             border-radius: 50%;
             border: none;
             color: white;
@@ -617,7 +627,7 @@
 
     </style>
 </head>
-<body>
+<body class="dark-theme">
 <div class="sidebar">
     <h1>PicFlow</h1>
     <div class="menu-wrapper">
@@ -729,6 +739,57 @@
             });
     }
 
+    // 테마 초기화 함수
+    function initializeTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.className = savedTheme === 'dark' ? 'dark-theme' : 'light-theme';
+    }
+
+
+    // 테마 알림 함수
+    function showThemeNotification(message) {
+        const existingNotification = document.querySelector('.theme-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        const notification = document.createElement('div');
+        notification.className = 'theme-notification';
+        notification.textContent = message;
+        notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--notification-bg, #10b981);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        font-weight: 500;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // 페이지 로드 시 테마 적용
+    document.addEventListener("DOMContentLoaded", initializeTheme);
+
     function goToUserProfile(userId) {
         window.location.href = `/user-profile.html?userId=${userId}`;
     }
@@ -837,17 +898,12 @@
         document.getElementById(submenuId).style.display = 'none';
     }
 
-    // 테마 설정
+    // 테마 설정 (수정된 버전)
     function setTheme(theme) {
-        if (theme === 'dark') {
-            document.body.style.background = '#1f2937';
-            document.body.style.color = 'white';
-        } else {
-            document.body.style.background = '#f9fafb';
-            document.body.style.color = 'black';
-        }
+        document.body.className = theme === 'dark' ? 'dark-theme' : 'light-theme';
+        localStorage.setItem('theme', theme);
         toggleMainMenu();
-        alert(`${theme} 테마로 변경되었습니다.`);
+        showThemeNotification(`${theme === 'dark' ? '다크' : '라이트'} 테마로 변경되었습니다.`);
     }
 
     // 로그아웃

@@ -3,6 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>내 페이지</title>
+    <link rel="stylesheet" href="/css/theme.css">
+    <script>
+        // 페이지 로드 전에 즉시 실행
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'dark') {
+                // documentElement 대신 body가 로드되면 바로 적용
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.body.classList.add('dark-theme');
+                });
+
+                // 또는 더 빠른 적용을 위해 style로 직접 적용
+                const style = document.createElement('style');
+                style.textContent = `
+                    body {
+                        background: linear-gradient(-45deg, #1a1625, #2d1b3d, #1f1f2e, #0f0f23) !important;
+                        background-size: 400% 400% !important;
+                        animation: flowingBackground 15s ease infinite !important;
+                        color: #e5e7eb !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        })();
+    </script>
+    <!-- 나머지 head 내용들... -->
     <style>
 
         body {
@@ -36,16 +62,25 @@
 
         .sidebar h1 {
             font-size: 24px;
-            color: #007aff;
             margin-bottom: 40px;
             margin-left: 24px;
             margin-top: 24px;
             transition: color 0.3s ease, transform 0.2s ease;
             cursor: pointer;
+            background: linear-gradient(135deg, #3253e8, #cea2f8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
         }
 
         .sidebar h1:hover {
-            color: #0056b3;
+            color: #3253e8;
             transform: scale(1.05);
         }
 
@@ -88,7 +123,7 @@
             top: 0;
             width: 3px;
             height: 100%;
-            background-color: #007aff;
+            background-color: #5360f4;
             animation: slideIn 0.3s ease;
         }
 
@@ -105,7 +140,7 @@
         }
 
         .sidebar .menu-item:hover svg {
-            stroke: #007aff;
+            stroke: #5360f4;
             transform: rotate(2deg) scale(1.05);
         }
 
@@ -130,7 +165,7 @@
             left: -100%;
             width: 100%;
             height: 3px;
-            background: linear-gradient(90deg, transparent, #007aff, transparent);
+            background: linear-gradient(90deg, transparent, #5360f4, transparent);
             transition: left 0.6s ease;
         }
 
@@ -180,7 +215,7 @@
         }
 
         .profile-card:hover .userName {
-            color: #007aff;
+            color: #5360f4;
         }
 
         .user-handle {
@@ -271,8 +306,8 @@
 
         .message-btn:hover {
             background: #f8fafc;
-            border-color: #007aff;
-            color: #007aff;
+            border-color: #5360f4;
+            color: #5360f4;
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 122, 255, 0.2);
         }
@@ -313,7 +348,7 @@
         }
 
         .stat-item:hover .stat-number {
-            color: #007aff;
+            color: #5360f4;
         }
 
         .stat-label {
@@ -336,7 +371,7 @@
 
         a:hover {
             text-decoration: none;
-            color: #007aff;
+            color: #5360f4;
         }
 
         /* 스크롤바 스타일링 */
@@ -355,7 +390,7 @@
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #007aff;
+            background: #5360f4;
         }
 
         /* 반응형 디자인 */
@@ -832,7 +867,7 @@
         /* 댓글/좋아요 액션 호버 효과 통일 */
         .post-actions .action:hover {
             background-color: #f3f4f6;
-            color: #007aff;
+            color: #5360f4;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
         }
@@ -883,9 +918,331 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
 
+        /* 다크 테마 스타일 */
+        .dark-theme {
+            background-color: #1a1a1a;
+            color: #e5e7eb;
+        }
+
+        .dark-theme .sidebar {
+            background-color: #2d2d2d;
+            border-right: 1px solid #3f3f3f;
+        }
+
+        .dark-theme .sidebar h1 {
+            background: linear-gradient(135deg, #2557f6, #c089f4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: logoGlowDark 2s ease-in-out infinite alternate;
+        }
+
+        .dark-theme .sidebar h1:hover {
+            color: #9c3df8;
+        }
+
+        .dark-theme .sidebar .menu-item {
+            color: #d1d5db;
+        }
+
+        .dark-theme .sidebar .menu-item:hover {
+            background-color: #374151;
+            color: #f3f4f6;
+        }
+
+        .dark-theme .sidebar .menu-item svg {
+            stroke: #9ca3af;
+        }
+
+        .dark-theme .sidebar .menu-item:hover svg {
+            stroke: #60a5fa;
+        }
+
+        .dark-theme .profile-card {
+            background-color: #2d2d2d;
+            border: 1px solid #3f3f3f;
+        }
+
+        .dark-theme .profile-card:hover {
+            background-color: #323232;
+        }
+
+        .dark-theme .userName {
+            color: #f3f4f6;
+        }
+
+        .dark-theme .profile-card:hover .userName {
+            color: #60a5fa;
+        }
+
+        .dark-theme .user-handle {
+            color: #9ca3af;
+        }
+
+        .dark-theme .profile-card:hover .user-handle {
+            color: #d1d5db;
+        }
+
+        .dark-theme .user-bio {
+            color: #d1d5db;
+        }
+
+        .dark-theme .profile-card:hover .user-bio {
+            color: #f3f4f6;
+        }
+
+        .dark-theme .edit-profile-btn {
+            background: linear-gradient(135deg, #1e7e34, #155724);
+        }
+
+        .dark-theme .edit-profile-btn:hover {
+            background: linear-gradient(135deg, #155724, #0f4c1e);
+        }
+
+        .dark-theme .post {
+            background-color: #2d2d2d !important;
+            border: 1px solid #3f3f3f !important;
+        }
+
+        .dark-theme .post h3 {
+            color: #f3f4f6 !important;
+        }
+
+        .dark-theme .post p {
+            color: #d1d5db !important;
+        }
+
+        .dark-theme .author-info strong {
+            color: #f3f4f6 !important;
+        }
+
+        .dark-theme .author-info span {
+            color: #9ca3af !important;
+        }
+
+        .dark-theme .post-actions .action {
+            color: #9ca3af !important;
+        }
+
+        .dark-theme .post-actions .action:hover {
+            background-color: #374151 !important;
+            color: #60a5fa !important;
+        }
+
+        .dark-theme .comment-section {
+            border-top: 1px solid #3f3f3f !important;
+        }
+
+        .dark-theme .comment-item {
+            border-bottom: 1px solid #3f3f3f !important;
+        }
+
+        .dark-theme .comment-item strong {
+            color: #f3f4f6 !important;
+        }
+
+        .dark-theme .comment-item p {
+            color: #d1d5db !important;
+        }
+
+        .dark-theme .comment-form textarea {
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            color: #f3f4f6;
+        }
+
+        .dark-theme .comment-form button {
+            background: #3b82f6;
+        }
+
+        .dark-theme .modal-content,
+        .dark-theme .create-modal-content {
+            background-color: #2d2d2d;
+            color: #e5e7eb;
+        }
+
+        .dark-theme .modal-header {
+            border-bottom: 1px solid #3f3f3f;
+        }
+
+        .dark-theme .modal-footer {
+            border-top: 1px solid #3f3f3f;
+        }
+
+        .dark-theme .form-group label {
+            color: #f3f4f6;
+        }
+
+        .dark-theme .form-group input,
+        .dark-theme .form-group textarea,
+        .dark-theme .input-field {
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            color: #f3f4f6;
+        }
+
+        .dark-theme .close {
+            color: #9ca3af;
+        }
+
+        .dark-theme .menu-options {
+            background-color: #2d2d2d;
+            border: 1px solid #3f3f3f;
+        }
+
+        .dark-theme .menu-item-option:hover {
+            background-color: #374151;
+        }
+
+        .dark-theme .submenu {
+            background-color: #2d2d2d;
+            border: 1px solid #3f3f3f;
+        }
+
+        .dark-theme .submenu-item:hover {
+            background-color: #374151;
+        }
+
+        .dark-theme .write-panel {
+            background-color: #2d2d2d;
+            border: 1px solid #3f3f3f;
+        }
+
+        .dark-theme .write-header {
+            border-bottom: 1px solid #3f3f3f;
+            color: #f3f4f6;
+        }
+
+        .dark-theme .write-footer {
+            border-top: 1px solid #3f3f3f;
+        }
+
+        .dark-theme .write-input {
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            color: #f3f4f6;
+        }
+
+        .dark-theme .menu-dropdown {
+            background-color: #2d2d2d;
+            border: 1px solid #3f3f3f;
+        }
+
+        .dark-theme .menu-dropdown button:hover {
+            background-color: #374151 !important;
+        }
+
+        .dark-theme .hamburger-menu {
+            background-color: #2d2d2d;
+            border: 1px solid #3f3f3f;
+            color: #e5e7eb;
+        }
+
+        .dark-theme .hamburger-menu:hover {
+            background-color: #374151;
+        }
+
+        .dark-theme .stat-item:hover {
+            background-color: #374151;
+        }
+
+        .dark-theme .stat-number {
+            color: #f3f4f6;
+        }
+
+        .dark-theme .stat-item:hover .stat-number {
+            color: #60a5fa;
+        }
+
+        .dark-theme .stat-label {
+            color: #9ca3af;
+        }
+
+        .dark-theme .stat-item:hover .stat-label {
+            color: #d1d5db;
+        }
+
+        .dark-theme .text-title-container h2 {
+            color: #f3f4f6;
+        }
+
+        .dark-theme #follower-count {
+            color: #d1d5db;
+        }
+
+        /* 다크 테마 - 게시물 내부 구분선을 회색으로 */
+        .dark-theme .post hr {
+            border-color: #4b5563 !important;
+            border-top: 1px solid #4b5563 !important;
+        }
+
+        .dark-theme .post-actions {
+            border-top: 1px solid #4b5563 !important;
+        }
+
+        .dark-theme .comment-section {
+            border-top: 1px solid #4b5563 !important;
+        }
+
+        .dark-theme .comment-item {
+            border-bottom: 1px solid #4b5563 !important;
+        }
+
+        /* 게시물 내부의 다른 구분선들도 회색으로 */
+        .dark-theme .author-info {
+            border-bottom: 1px solid #4b5563 !important;
+        }
+
+        /* 프로필 카드 내부 구분선 */
+        .dark-theme .profile-card .text-title-container {
+            border-top: 1px solid #4b5563 !important;
+        }
+
+        /* 모달 구분선들 */
+        .dark-theme .modal-header {
+            border-bottom: 1px solid #4b5563 !important;
+        }
+
+        .dark-theme .modal-footer {
+            border-top: 1px solid #4b5563 !important;
+        }
+
+        /* 작성 패널 구분선 */
+        .dark-theme .write-header {
+            border-bottom: 1px solid #4b5563 !important;
+        }
+
+        .dark-theme .write-footer {
+            border-top: 1px solid #4b5563 !important;
+        }
+
+        /* 사이드바 구분선 */
+        .dark-theme .sidebar {
+            border-right: 1px solid #4b5563 !important;
+        }
+
+        /* 메뉴 옵션 구분선 */
+        .dark-theme .logout-item {
+            border-top: 1px solid #4b5563 !important;
+        }
+
+        /* 일반적인 hr 태그도 회색으로 */
+        .dark-theme hr {
+            border-color: #4b5563 !important;
+            border-top: 1px solid #4b5563 !important;
+        }
+
+        /* 게시물 내부의 이미지와 텍스트 사이 구분선 (인라인 스타일로 추가된 hr) */
+        .dark-theme .post hr[style] {
+            border-color: #4b5563 !important;
+            border-top: 1px solid #4b5563 !important;
+        }
+
+
+
     </style>
 </head>
-<body>
+<body class="dark-theme">
 
 <div class="sidebar">
     <h1>PicFlow</h1>
@@ -1209,6 +1566,22 @@
             section.style.display = 'none';
         }
     }
+
+    // 스타일 적용 함수
+    function applyThemeStyles() {
+        // 기존 테마 스타일이 있으면 제거
+        const existingStyle = document.getElementById('theme-styles');
+        if (existingStyle) {
+            existingStyle.remove();
+        }
+
+        // 새 스타일 추가
+        const styleElement = document.createElement('style');
+        styleElement.id = 'theme-styles';
+        styleElement.innerHTML = themeStyles.replace('<style>', '').replace('</style>', '');
+        document.head.appendChild(styleElement);
+    }
+
 
     async function submitPost() {
         const title = document.getElementById('postTitle').value.trim();
@@ -1907,19 +2280,72 @@
         document.getElementById(submenuId).style.display = 'none';
     }
 
-    // 테마 설정
+    // 테마 설정 개선 (기존 setTheme 함수 교체)
     function setTheme(theme) {
-        if (theme === 'dark') {
-            document.body.style.background = '#1f2937';
-            document.body.style.color = 'white';
-            // 다크 테마 적용 로직
-        } else {
-            document.body.style.background = '#f9fafb';
-            document.body.style.color = 'black';
-            // 라이트 테마 적용 로직
-        }
+        // 현재 테마를 body에 클래스로 적용
+        document.body.className = theme === 'dark' ? 'dark-theme' : 'light-theme';
+
+        // localStorage에 테마 저장
+        localStorage.setItem('theme', theme);
+
         toggleMainMenu(); // 메뉴 닫기
-        alert(`${theme} 테마로 변경되었습니다.`);
+
+        // 테마 변경 완료 알림
+        const themeText = theme === 'dark' ? '다크' : '라이트';
+
+        // 임시 알림 표시 (alert 대신 더 부드러운 알림)
+        showThemeNotification(`${themeText} 테마로 변경되었습니다.`);
+    }
+
+    // 테마 알림 표시 함수
+    function showThemeNotification(message) {
+        // 기존 알림이 있으면 제거
+        const existingNotification = document.querySelector('.theme-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        // 새 알림 생성
+        const notification = document.createElement('div');
+        notification.className = 'theme-notification';
+        notification.textContent = message;
+        notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--notification-bg, #10b981);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        font-weight: 500;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+
+        document.body.appendChild(notification);
+
+        // 애니메이션으로 표시
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+
+        // 3초 후 자동 제거
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // 페이지 로드 시 저장된 테마 적용
+    function initializeTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.className = savedTheme === 'dark' ? 'dark-theme' : 'light-theme';
     }
 
     // 피드 타입 설정
@@ -2140,7 +2566,11 @@
     });
 
     // DOM 로드 완료 시 초기화
-    document.addEventListener("DOMContentLoaded", initializePage);
+    // 페이지 로드 시 테마 초기화 - 이 부분 추가
+    document.addEventListener("DOMContentLoaded", function() {
+        initializeTheme(); // 테마 먼저 적용
+        initializePage();  // 그 다음 페이지 초기화
+    });
 </script>
 
 <div id="editProfileModal" class="modal" style="display: none;">

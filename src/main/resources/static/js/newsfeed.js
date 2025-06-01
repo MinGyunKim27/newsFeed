@@ -424,8 +424,8 @@ function closeModal() {
     document.getElementById("overlay").style.display = "none";
 }
 
-// 초기 로딩
 document.addEventListener("DOMContentLoaded", () => {
+    initializeTheme(); // 테마 먼저 적용
     loadUserInfo();
     loadPosts();
     initializeDropZones();
@@ -823,19 +823,59 @@ function hideSubmenu(submenuId) {
     document.getElementById(submenuId).style.display = 'none';
 }
 
-// 테마 설정
+// 테마 초기화 함수
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.className = savedTheme === 'dark' ? 'dark-theme' : 'light-theme';
+}
+
+// 테마 설정 (수정된 버전)
 function setTheme(theme) {
-    if (theme === 'dark') {
-        document.body.style.background = '#1f2937';
-        document.body.style.color = 'white';
-        // 다크 테마 적용 로직
-    } else {
-        document.body.style.background = '#f9fafb';
-        document.body.style.color = 'black';
-        // 라이트 테마 적용 로직
+    document.body.className = theme === 'dark' ? 'dark-theme' : 'light-theme';
+    localStorage.setItem('theme', theme);
+    toggleMainMenu();
+    showThemeNotification(`${theme === 'dark' ? '다크' : '라이트'} 테마로 변경되었습니다.`);
+}
+
+// 테마 알림 함수
+function showThemeNotification(message) {
+    const existingNotification = document.querySelector('.theme-notification');
+    if (existingNotification) {
+        existingNotification.remove();
     }
-    toggleMainMenu(); // 메뉴 닫기
-    alert(`${theme} 테마로 변경되었습니다.`);
+
+    const notification = document.createElement('div');
+    notification.className = 'theme-notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--notification-bg, #10b981);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        font-weight: 500;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 }
 
 // 피드 타입 설정

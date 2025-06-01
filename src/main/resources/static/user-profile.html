@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>사용자 프로필</title>
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
 
         body {
@@ -13,6 +14,19 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
 
         .sidebar {
@@ -36,16 +50,25 @@
 
         .sidebar h1 {
             font-size: 24px;
-            color: #007aff;
             margin-bottom: 40px;
             margin-left: 24px;
             margin-top: 24px;
             transition: color 0.3s ease, transform 0.2s ease;
             cursor: pointer;
+            background: linear-gradient(135deg, #3253e8, #cea2f8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
         }
 
         .sidebar h1:hover {
-            color: #0056b3;
+            color: #3253e8;
             transform: scale(1.05);
         }
 
@@ -88,7 +111,7 @@
             top: 0;
             width: 3px;
             height: 100%;
-            background-color: #007aff;
+            background-color: #5360f4;
             animation: slideIn 0.3s ease;
         }
 
@@ -105,7 +128,7 @@
         }
 
         .sidebar .menu-item:hover svg {
-            stroke: #007aff;
+            stroke: #5360f4;
             transform: rotate(2deg) scale(1.05);
         }
 
@@ -130,7 +153,7 @@
             left: -100%;
             width: 100%;
             height: 3px;
-            background: linear-gradient(90deg, transparent, #007aff, transparent);
+            background: linear-gradient(90deg, transparent, #5360f4, transparent);
             transition: left 0.6s ease;
         }
 
@@ -173,7 +196,7 @@
         .profile-card img:hover {
             transform: scale(1.15) rotate(5deg);
             box-shadow: 0 8px 30px rgba(0, 122, 255, 0.3);
-            border: 3px solid #007aff;
+            border: 3px solid #5360f4;
         }
 
         .userName {
@@ -186,7 +209,7 @@
         }
 
         .profile-card:hover .userName {
-            color: #007aff;
+            color: #5360f4;
         }
 
         .user-handle {
@@ -277,8 +300,8 @@
 
         .message-btn:hover {
             background: #f8fafc;
-            border-color: #007aff;
-            color: #007aff;
+            border-color: #5360f4;
+            color: #5360f4;
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 122, 255, 0.2);
         }
@@ -319,7 +342,7 @@
         }
 
         .stat-item:hover .stat-number {
-            color: #007aff;
+            color: #5360f4;
         }
 
         .stat-label {
@@ -342,7 +365,7 @@
 
         a:hover {
             text-decoration: none;
-            color: #007aff;
+            color: #5360f4;
         }
 
         /* 스크롤바 스타일링 */
@@ -361,7 +384,7 @@
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #007aff;
+            background: #5360f4;
         }
 
         /* 반응형 디자인 */
@@ -468,7 +491,7 @@
         /* 댓글/좋아요 액션 호버 효과 */
         .post-actions .action:hover {
             background-color: #f3f4f6;
-            color: #007aff;
+            color: #5360f4;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
         }
@@ -561,6 +584,19 @@
             margin-top: 4px;
             padding-top: 12px;
         }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
         /* 메뉴 옵션 패널 - 현재 없음 */
         .menu-options {
             position: fixed;
@@ -575,9 +611,54 @@
             z-index: 1001;
         }
 
+        /* 새로운 클래스 추가 */
+        .create-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            margin: auto;
+            position: relative;
+        }
+
+        /* 모달 관련 스타일 추가 */
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .modal-button.cancel {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .modal-button.submit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .modal-button:hover {
+            opacity: 0.9;
+        }
+
     </style>
 </head>
-<body>
+<body class="dark-theme">
 
 <div class="sidebar">
     <h1>PicFlow</h1>
@@ -1023,6 +1104,11 @@
         alert("게시물 작성 기능은 아직 구현되지 않았습니다.");
     }
 
+    // openModal 함수 수정
+    function openModal() {
+        document.getElementById("overlay").style.display = "flex";
+    }
+
     // 페이지 초기화
     async function initializePage() {
         // 토큰 확인
@@ -1138,19 +1224,59 @@
         }
     }
 
-    // 테마 설정
+    // 테마 설정 (수정된 버전)
     function setTheme(theme) {
-        if (theme === 'dark') {
-            document.body.style.background = '#1f2937';
-            document.body.style.color = 'white';
-            // 다크 테마 적용 로직
-        } else {
-            document.body.style.background = '#f9fafb';
-            document.body.style.color = 'black';
-            // 라이트 테마 적용 로직
+        document.body.className = theme === 'dark' ? 'dark-theme' : 'light-theme';
+        localStorage.setItem('theme', theme);
+        toggleMainMenu();
+        showThemeNotification(`${theme === 'dark' ? '다크' : '라이트'} 테마로 변경되었습니다.`);
+    }
+
+    // 테마 초기화 함수
+    function initializeTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.className = savedTheme === 'dark' ? 'dark-theme' : 'light-theme';
+    }
+
+    // 테마 알림 함수
+    function showThemeNotification(message) {
+        const existingNotification = document.querySelector('.theme-notification');
+        if (existingNotification) {
+            existingNotification.remove();
         }
-        toggleMainMenu(); // 메뉴 닫기
-        alert(`${theme} 테마로 변경되었습니다.`);
+
+        const notification = document.createElement('div');
+        notification.className = 'theme-notification';
+        notification.textContent = message;
+        notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--notification-bg, #10b981);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        font-weight: 500;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
     }
 
     // 피드 타입 설정
@@ -1210,9 +1336,99 @@
         }
     }
 
+    // closeModal 함수 추가
+    function closeModal() {
+        document.getElementById("overlay").style.display = "none";
+    }
 
-    // DOM 로드 완료 시 초기화
-    document.addEventListener("DOMContentLoaded", initializePage);
+    // submitPost 함수 추가
+    async function submitPost() {
+        const title = document.getElementById('postTitle').value.trim();
+        const content = document.getElementById('postContent').value.trim();
+        const imageFiles = Array.from(document.getElementById('imageUpload').files);
+
+        if (!title || !content) {
+            alert('제목과 내용을 입력하세요.');
+            return;
+        }
+
+        try {
+            let imageIds = [];
+
+            if (imageFiles.length > 0) {
+                for (const file of imageFiles) {
+                    const imageId = await uploadImage(file);
+                    if (imageId && !isNaN(imageId)) {
+                        imageIds.push(parseInt(imageId));
+                    }
+                }
+            }
+
+            const payload = {
+                title,
+                content,
+                imageIds: imageIds
+            };
+
+            const res = await fetch(`${baseUrl}/api/posts`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert("게시물이 작성되었습니다!");
+                closeModal();
+                document.getElementById('postTitle').value = '';
+                document.getElementById('postContent').value = '';
+                document.getElementById('imageUpload').value = '';
+                await loadUserPosts();
+            } else {
+                throw new Error(`게시물 작성 실패: ${res.status}`);
+            }
+        } catch (err) {
+            console.error("게시물 작성 실패:", err);
+            alert("게시물 작성 실패: " + err.message);
+        }
+    }
+
+    // uploadImage 함수 추가
+    async function uploadImage(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await fetch(`${baseUrl}/api/image/upload`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${token}` },
+            body: formData
+        });
+
+        if (!res.ok) {
+            throw new Error(`이미지 업로드 실패: ${res.status}`);
+        }
+
+        try {
+            const data = await res.json();
+            return data.imageId || data.id;
+        } catch {
+            const text = await res.text();
+            const idMatch = text.match(/imageId[":=\s]+(\d+)/i) || text.match(/id[":=\s]+(\d+)/i);
+            if (idMatch) {
+                return parseInt(idMatch[1]);
+            }
+            throw new Error("이미지 ID를 찾을 수 없습니다");
+        }
+    }
+
+
+    // 페이지 로드 시 테마 초기화
+    document.addEventListener("DOMContentLoaded", function() {
+        initializeTheme(); // 테마 먼저 적용
+        initializePage();  // 그 다음 페이지 초기화
+    });
 </script>
 
 <!-- 왼쪽 하단 햄버거 메뉴 -->
@@ -1244,6 +1460,21 @@
 
     <div class="menu-item-option logout-item" onclick="logout()">
         <span>로그아웃</span>
+    </div>
+</div>
+
+<!-- 게시물 작성 모달 -->
+<div id="overlay" class="modal-overlay" style="display:none;">
+    <div class="create-modal-content">
+        <h3>게시물 작성</h3>
+        <input type="text" id="postTitle" placeholder="제목을 입력하세요..." class="input-field" />
+        <textarea id="postContent" placeholder="내용을 입력하세요..." class="input-field" style="height: 100px;"></textarea>
+        <input type="file" id="imageUpload" accept="image/*" style="margin-top:10px;" multiple/>
+
+        <div style="margin-top:15px; text-align:right;">
+            <button onclick="closeModal()" class="modal-button cancel">취소</button>
+            <button onclick="submitPost()" class="modal-button submit" style="margin-left: 10px;">게시</button>
+        </div>
     </div>
 </div>
 
