@@ -613,6 +613,8 @@
             box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
         }
 
+
+
     </style>
 </head>
 <body>
@@ -705,7 +707,7 @@
                     const img = isUser
                         ? item.profileImage
                             ? `${baseUrl}/images/${item.profileImage}`
-                            : "https://via.placeholder.com/32x32?text=No+Img"
+                            : "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8IS0tIOq3uOudvOuUlOyWuO2KuCDsoJXsnZggLS0+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnR3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3NjRiYTI7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJwZXJzb25HcmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmZmZmY7c3RvcC1vcGFjaXR5OjAuOSIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eTowLjciIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8IS0tIOybkO2YhSDrsLDqsr0gKOq3uOudvOuUlOyWuO2KuCkgLS0+CiAgPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9InVybCgjYmdHcmFkaWVudCkiLz4KICA8IS0tIOyCrOumhCDsi6TroKjsmIvsnIQgKOuNlCDshLjroKjrkJzsmYQg65SU7J6Q7J2EKSAtLT4KICA8IS0tIOuquOumrCAtLT4KICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjE0IiByPSI3IiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgogIDwhLS0g66qJ7YG1ICjrjZQg7J6Q7Jew7Iqk7Yuw7JuQIOqzoOyEoCkgLS0+CiAgPHBhdGggZD0iTTYgMzYgQzYgMjcsIDEyIDIzLCAyMCAyMyBDMjggMjMsIDM0IDI3LCAzNCAzNiBDMzQgMzgsIDM0IDQwLCAzNCA0MCBMOSA0MCBDOCA0MCwgNiAzOCwgNiAzNiBaIiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgo8L3N2Zz4K"
                         : item.imageUrl
                             ? `${baseUrl}/images/${item.imageUrl}`
                             : "";
@@ -729,6 +731,12 @@
 
     function goToUserProfile(userId) {
         window.location.href = `/user-profile.html?userId=${userId}`;
+    }
+
+    // 서브메뉴
+    function toggleSubmenu(submenuId) {
+        const display = document.getElementById(submenuId);
+        display.style.display = display.style.display === 'block' ? 'none' : 'block';
     }
 
     // openModal 함수 추가
@@ -888,7 +896,7 @@
 
 <!-- 메뉴 옵션 패널 -->
 <div id="main-menu" class="menu-options">
-    <div class="menu-item-option has-submenu" onmouseenter="showSubmenu('design-submenu')" onmouseleave="hideSubmenu('design-submenu')">
+    <div class="menu-item-option has-submenu" onclick="toggleSubmenu('design-submenu')">
         <span>디자인</span>
         <div id="design-submenu" class="submenu">
             <div class="submenu-item" onclick="setTheme('light')">라이트</div>

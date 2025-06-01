@@ -98,7 +98,7 @@
 
 <!-- 메뉴 옵션 패널 -->
 <div id="main-menu" class="menu-options">
-    <div class="menu-item-option has-submenu" onmouseenter="showSubmenu('design-submenu')" onmouseleave="hideSubmenu('design-submenu')">
+    <div class="menu-item-option has-submenu" onclick="toggleSubmenu('design-submenu')">
         <span>디자인</span>
         <div id="design-submenu" class="submenu">
             <div class="submenu-item" onclick="setTheme('light')">라이트</div>
@@ -106,7 +106,7 @@
         </div>
     </div>
 
-    <div class="menu-item-option has-submenu" onmouseenter="showSubmenu('feed-submenu')" onmouseleave="hideSubmenu('feed-submenu')">
+    <div class="menu-item-option has-submenu" onclick="toggleSubmenu('feed-submenu')">
         <span>피드</span>
         <div id="feed-submenu" class="submenu">
             <div class="submenu-item" onclick="setFeedType('추천')">추천</div>

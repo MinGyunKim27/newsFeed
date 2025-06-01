@@ -6,7 +6,9 @@ let isLoading = false;
 let hasMore = true;
 const token = localStorage.getItem("token");
 const userId = localStorage.getItem("userId"); // ✅ 로그인 시 저장된 사용자 ID 필요
+// 전역 변수 수정
 let existingImages = []; // 기존 이미지 관리용
+let imagesToDelete = []; // 삭제할 이미지 ID들
 
 // 페이지 이동
 function goTo(path) {
@@ -106,7 +108,7 @@ async function loadPosts(page = 0, append = false) {
                          alt="작성자 이미지" 
                          onclick="goToProfile(${post.authorId})"
                          style="width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; cursor: pointer; object-fit: cover;"
-                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRTVFN0VCIi8+CjxwYXRoIGQ9Ik0yMCAyMEM5IDIwIDkgMTAgMjAgMTBTMzEgMTAgMzEgMjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'" />
+                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8IS0tIOq3uOudvOuUlOyWuO2KuCDsoJXsnZggLS0+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnR3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3NjRiYTI7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJwZXJzb25HcmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmZmZmY7c3RvcC1vcGFjaXR5OjAuOSIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eTowLjciIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8IS0tIOybkO2YhSDrsLDqsr0gKOq3uOudvOuUlOyWuO2KuCkgLS0+CiAgPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9InVybCgjYmdHcmFkaWVudCkiLz4KICA8IS0tIOyCrOumhCDsi6TroKjsmIvsnIQgKOuNlCDshLjroKjrkJzsmYQg65SU7J6Q7J2EKSAtLT4KICA8IS0tIOuquOumrCAtLT4KICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjE0IiByPSI3IiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgogIDwhLS0g66qJ7YG1ICjrjZQg7J6Q7Jew7Iqk7Yuw7JuQIOqzoOyEoCkgLS0+CiAgPHBhdGggZD0iTTYgMzYgQzYgMjcsIDEyIDIzLCAyMCAyMyBDMjggMjMsIDM0IDI3LCAzNCAzNiBDMzQgMzgsIDM0IDQwLCAzNCA0MCBMOSA0MCBDOCA0MCwgNiAzOCwgNiAzNiBaIiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgo8L3N2Zz4K'" />
                     <div class="author-details">
                         <strong onclick="goToProfile(${post.authorId})" 
                                 style="font-weight: 600; color: #374151; cursor: pointer; transition: color 0.3s ease;"
@@ -127,7 +129,7 @@ async function loadPosts(page = 0, append = false) {
                                         onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='none'">
                                     수정
                                 </button>
-                                <button onclick="openEditPostModal(${post.id}, \`${post.title}\`, \`${post.content}\`, []); hidePostMenu(${post.id})"
+                                <button onclick="deletePost(${post.id}); hidePostMenu(${post.id})"
                                         style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; color: #ef4444;" 
                                         onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
                                     삭제
@@ -326,13 +328,13 @@ async function loadUserInfo() {
             img.src = userProfileImageUrl;
             console.log("👤 최종 프로필 이미지 URL:", userProfileImageUrl);
         } else {
-            img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRTVFN0VCIi8+CjxwYXRoIGQ9Ik0yMCAyMEM5IDIwIDkgMTAgMjAgMTBTMzEgMTAgMzEgMjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+";
+            img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8IS0tIOq3uOudvOuUlOyWuO2KuCDsoJXsnZggLS0+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnR3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3NjRiYTI7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJwZXJzb25HcmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmZmZmY7c3RvcC1vcGFjaXR5OjAuOSIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eTowLjciIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8IS0tIOybkO2YhSDrsLDqsr0gKOq3uOudvOuUlOyWuO2KuCkgLS0+CiAgPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9InVybCgjYmdHcmFkaWVudCkiLz4KICA8IS0tIOyCrOumhCDsi6TroKjsmIvsnIQgKOuNlCDshLjroKjrkJzsmYQg65SU7J6Q7J2EKSAtLT4KICA8IS0tIOuquOumrCAtLT4KICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjE0IiByPSI3IiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgogIDwhLS0g66qJ7YG1ICjrjZQg7J6Q7Jew7Iqk7Yuw7JuQIOqzoOyEoCkgLS0+CiAgPHBhdGggZD0iTTYgMzYgQzYgMjcsIDEyIDIzLCAyMCAyMyBDMjggMjMsIDM0IDI3LCAzNCAzNiBDMzQgMzgsIDM0IDQwLCAzNCA0MCBMOSA0MCBDOCA0MCwgNiAzOCwgNiAzNiBaIiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgo8L3N2Zz4K";
         }
 
         // 에러 핸들링 추가
         img.onerror = () => {
             console.error("❌ 프로필 이미지 로딩 실패:", img.src);
-            img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRTVFN0VCIi8+CjxwYXRoIGQ9Ik0yMCAyMEM5IDIwIDkgMTAgMjAgMTBTMzEgMTAgMzEgMjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+";
+            img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8IS0tIOq3uOudvOuUlOyWuO2KuCDsoJXsnZggLS0+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnR3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3NjRiYTI7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJwZXJzb25HcmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmZmZmY7c3RvcC1vcGFjaXR5OjAuOSIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eTowLjciIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8IS0tIOybkO2YhSDrsLDqsr0gKOq3uOudvOuUlOyWuO2KuCkgLS0+CiAgPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9InVybCgjYmdHcmFkaWVudCkiLz4KICA8IS0tIOyCrOumhCDsi6TroKjsmIvsnIQgKOuNlCDshLjroKjrkJzsmYQg65SU7J6Q7J2EKSAtLT4KICA8IS0tIOuquOumrCAtLT4KICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjE0IiByPSI3IiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgogIDwhLS0g66qJ7YG1ICjrjZQg7J6Q7Jew7Iqk7Yuw7JuQIOqzoOyEoCkgLS0+CiAgPHBhdGggZD0iTTYgMzYgQzYgMjcsIDEyIDIzLCAyMCAyMyBDMjggMjMsIDM0IDI3LCAzNCAzNiBDMzQgMzgsIDM0IDQwLCAzNCA0MCBMOSA0MCBDOCA0MCwgNiAzOCwgNiAzNiBaIiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgo8L3N2Zz4K";
         };
 
     } catch (err) {
@@ -489,10 +491,10 @@ async function toggleFollow(authorId, buttonElement) {
 
                 if (isFollowing) {
                     button.classList.remove('following');
-                    button.style.background = "linear-gradient(135deg, #007aff, #0056b3)";
+                    button.style.background = "linear-gradient(135deg, #3b82f6, #2777fa)";
                 } else {
                     button.classList.add('following');
-                    button.style.background = "linear-gradient(135deg, #10b981, #059669)";
+                    button.style.background = "linear-gradient(135deg, #3181fa, #dc2626)";
                 }
             });
         }
@@ -504,21 +506,31 @@ async function toggleFollow(authorId, buttonElement) {
 
 let editingPostId = null;
 
+// 수정된 openEditPostModal 함수
 function openEditPostModal(postId, title, content, images) {
     console.log("🔧 수정 모달 열림:", postId, title, content, images);
 
     editingPostId = postId;
+    existingImages = [...(images || [])]; // 기존 이미지 복사
+    imagesToDelete = []; // 삭제할 이미지 목록 초기화
+
     document.getElementById('editPostTitle').value = title;
     document.getElementById('editPostContent').value = content;
     document.getElementById('editImageUpload').value = '';
 
-    // 기존 이미지 표시
+    renderExistingImages();
+    document.getElementById('editPostModal').style.display = 'flex';
+}
+
+// 기존 이미지 렌더링 함수
+function renderExistingImages() {
     const existingImagesDiv = document.getElementById('existingImages');
-    if (images && images.length > 0) {
+
+    if (existingImages && existingImages.length > 0) {
         existingImagesDiv.innerHTML = `
             <label style="font-weight: 500; margin-bottom: 8px; display: block;">기존 이미지:</label>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                ${images.map((img, index) => `
+                ${existingImages.map((img, index) => `
                     <div style="position: relative; display: inline-block;">
                         <img src="${baseUrl}/images/${img.imageUrl}" 
                              style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
@@ -529,13 +541,17 @@ function openEditPostModal(postId, title, content, images) {
                     </div>
                 `).join('')}
             </div>
+            ${imagesToDelete.length > 0 ? `
+                <div style="margin-top: 8px; padding: 8px; background: #fef2f2; border-radius: 6px; font-size: 12px; color: #dc2626;">
+                    삭제 예정: ${imagesToDelete.length}개 이미지
+                </div>
+            ` : ''}
         `;
     } else {
         existingImagesDiv.innerHTML = '';
     }
-
-    document.getElementById('editPostModal').style.display = 'flex';
 }
+
 
 // 누락된 함수 추가
 async function checkAuthorFollowStatus(authorId) {
@@ -559,11 +575,11 @@ async function checkAuthorFollowStatus(authorId) {
                 if (data.follow) {
                     button.textContent = '팔로잉';
                     button.classList.add('following');
-                    button.style.background = "linear-gradient(135deg, #10b981, #059669)";
+                    button.style.background = "linear-gradient(135deg, #3181fa, #dc2626)";
                 } else {
                     button.textContent = '팔로우';
                     button.classList.remove('following');
-                    button.style.background = "linear-gradient(135deg, #007aff, #0056b3)";
+                    button.style.background = "linear-gradient(135deg, #3b82f6, #2777fa)";
                 }
             });
         }
@@ -572,15 +588,18 @@ async function checkAuthorFollowStatus(authorId) {
     }
 }
 
+// 수정된 closeEditPostModal 함수
 function closeEditPostModal() {
     document.getElementById('editPostModal').style.display = 'none';
     editingPostId = null;
+    existingImages = [];
+    imagesToDelete = [];
 }
 
+// 수정된 updatePost 함수
 async function updatePost() {
     const title = document.getElementById('editPostTitle').value.trim();
     const content = document.getElementById('editPostContent').value.trim();
-    // 동일하게 수정
     const imageFiles = Array.from(document.getElementById("editImageUpload").files);
 
     if (!title || !content) {
@@ -588,13 +607,14 @@ async function updatePost() {
         return;
     }
 
-    let imageIds = [];
-    if (imageFiles.length > 0) {
-        for (const file of imageFiles) {
-            const formData = new FormData();
-            formData.append("file", file);
+    try {
+        // 1. 새 이미지 업로드
+        let newImageIds = [];
+        if (imageFiles.length > 0) {
+            for (const file of imageFiles) {
+                const formData = new FormData();
+                formData.append("file", file);
 
-            try {
                 const res = await fetch(`${baseUrl}/api/image/upload`, {
                     method: "POST",
                     headers: { "Authorization": `Bearer ${token}` },
@@ -602,22 +622,37 @@ async function updatePost() {
                 });
 
                 const data = await res.json();
-                imageIds.push(data.imageId);
-            } catch (err) {
-                alert("이미지 업로드 실패: " + err.message);
-                return;
+                newImageIds.push(data.imageId);
             }
         }
-    }
 
-    const payload = {
-        title,
-        content,
-        imageIds: imageIds,
-        keepImageIds: existingImages.map(img => img.imageId) // 유지할 기존 이미지 ID들
-    };
+        // 2. 삭제할 이미지가 있으면 먼저 삭제
+        if (imagesToDelete.length > 0) {
+            for (const imageId of imagesToDelete) {
+                try {
+                    await fetch(`${baseUrl}/api/images/${imageId}`, {
+                        method: 'DELETE',
+                        headers: { "Authorization": `Bearer ${token}` }
+                    });
+                    console.log(`🗑️ 이미지 ${imageId} 삭제 완료`);
+                } catch (err) {
+                    console.error(`❌ 이미지 ${imageId} 삭제 실패:`, err);
+                }
+            }
+        }
 
-    try {
+        // 3. 게시물 업데이트
+        const payload = {
+            title,
+            content,
+            imageIds: [
+                ...existingImages.map(img => img.imageId), // 유지할 기존 이미지
+                ...newImageIds // 새로 추가할 이미지
+            ]
+        };
+
+        console.log("📤 업데이트 payload:", payload);
+
         const res = await fetch(`${baseUrl}/api/posts/${editingPostId}`, {
             method: "PUT",
             headers: {
@@ -630,14 +665,18 @@ async function updatePost() {
         if (res.ok) {
             alert('게시물이 수정되었습니다.');
             closeEditPostModal();
-            await loadPosts();
+            await loadPosts(0, false); // 게시물 목록 새로고침
         } else {
-            throw new Error('수정 실패');
+            const errorText = await res.text();
+            throw new Error(`수정 실패: ${res.status} - ${errorText}`);
         }
+
     } catch (err) {
+        console.error('❌ 게시물 수정 실패:', err);
         alert('게시물 수정 실패: ' + err.message);
     }
 }
+
 
 function togglePostMenu(postId) {
     const menu = document.getElementById(`post-menu-${postId}`);
@@ -766,6 +805,12 @@ async function loadUserLikeStatus(postId) {
 function toggleMainMenu() {
     const menu = document.getElementById('main-menu');
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+// 서브메뉴
+function toggleSubmenu(submenuId) {
+    const display = document.getElementById(submenuId);
+    display.style.display = display.style.display === 'block' ? 'none' : 'block';
 }
 
 // 서브메뉴 표시
@@ -930,12 +975,25 @@ function toggleFilterDropdown() {
     options.style.display = options.style.display === 'block' ? 'none' : 'block';
 }
 
+// 수정된 removeExistingImage 함수
 function removeExistingImage(index) {
-    existingImages.splice(index, 1);
-    // 현재 수정 중인 게시물 정보로 모달 다시 렌더링
-    const title = document.getElementById('editPostTitle').value;
-    const content = document.getElementById('editPostContent').value;
-    openEditPostModal(editingPostId, title, content, existingImages);
+    if (confirm('이 이미지를 삭제하시겠습니까?')) {
+        const removedImage = existingImages[index];
+
+        // 삭제할 이미지 목록에 추가
+        if (removedImage.imageId) {
+            imagesToDelete.push(removedImage.imageId);
+        }
+
+        // 기존 이미지 목록에서 제거
+        existingImages.splice(index, 1);
+
+        // 화면 다시 렌더링
+        renderExistingImages();
+
+        console.log("🗑️ 삭제 예정 이미지:", imagesToDelete);
+        console.log("🖼️ 남은 기존 이미지:", existingImages);
+    }
 }
 
 // 드롭존 초기화 함수

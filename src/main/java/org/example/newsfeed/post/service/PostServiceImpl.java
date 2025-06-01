@@ -1,10 +1,13 @@
 package org.example.newsfeed.post.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.newsfeed.comment.entity.Comment;
+import org.example.newsfeed.comment.repository.CommentRepository;
 import org.example.newsfeed.global.exception.BaseException;
 import org.example.newsfeed.image.dto.ImageUploadResponseDto;
 import org.example.newsfeed.image.entity.Image;
 import org.example.newsfeed.image.repository.ImageRepository;
+import org.example.newsfeed.like.repository.LikeRepository;
 import org.example.newsfeed.post.dto.CreatePostRequestDto;
 import org.example.newsfeed.post.dto.PostResponseDto;
 import org.example.newsfeed.post.dto.UpdatePostRequestDto;
@@ -30,6 +33,8 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -78,10 +83,15 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
+
+
         // 본인 글만 지울 수 있게 확인
         if(!post.getUser().getId().equals(userId)) {
             throw new BaseException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
         }
+
+        commentRepository.deleteAllByPost_Id(postId);
+        likeRepository.deleteAllByPost_Id(postId);
 
         postRepository.delete(post);
 

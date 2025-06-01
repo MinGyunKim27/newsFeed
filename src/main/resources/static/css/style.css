@@ -612,7 +612,7 @@ body {
 }
 
 .follow-btn-small.following {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, #3181fa, #dc2626);
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
 }
 

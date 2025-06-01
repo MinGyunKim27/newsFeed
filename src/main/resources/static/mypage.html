@@ -860,6 +860,29 @@
             transform: scale(1.2);
         }
 
+        #imageModal {
+            z-index: 2000; /* 다른 모달보다 위에 */
+        }
+
+        #imageModal img {
+            transition: transform 0.3s ease;
+        }
+
+        #imageModal button:hover {
+            background: rgba(255,255,255,0.4) !important;
+        }
+
+        /* 게시물 이미지에 호버 효과 추가 */
+        .post-image {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .post-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
     </style>
 </head>
 <body>
@@ -917,20 +940,6 @@
     </div>
     <hr style="border: none; border-top: 1px solid #b8b6b6; margin-top: 12px" />
 
-    <div class="feed-filter">
-        <div class="filter-dropdown" onclick="toggleFilterDropdown()">
-            <span id="current-filter">추천</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="6,9 12,15 18,9"></polyline>
-            </svg>
-            <div class="filter-options" id="filter-options">
-                <div class="filter-option" onclick="setFilter('추천')">추천</div>
-                <div class="filter-option" onclick="setFilter('팔로잉')">팔로잉</div>
-                <div class="filter-option" onclick="setFilter('최신')">최신</div>
-            </div>
-        </div>
-    </div>
-
     <div id="post-list"></div>
 </div>
 
@@ -938,9 +947,16 @@
 
 
 <script>
+
+    // 전역 변수 추가
+    let existingImages = []; // 기존 이미지 관리용
+    let imagesToDelete = []; // 삭제할 이미지 ID들
     const baseUrl = "http://localhost:8080";
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
+
+    let currentImages = [];
+    let currentImageIndex = 0;
 
     let currentUser = null; // 현재 로그인한 사용자 정보
 
@@ -977,7 +993,7 @@
                 ? `${baseUrl}/images/${user.profileImage}`
                 : "https://via.placeholder.com/100x100?text=No+Img";
             userImage.onerror = () => {
-                userImage.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRTVFN0VCIi8+CjxwYXRoIGQ9Ik0yMCAyMEM5IDIwIDkgMTAgMjAgMTBTMzEgMTAgMzEgMjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+";
+                userImage.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8IS0tIOq3uOudvOuUlOyWuO2KuCDsoJXsnZggLS0+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnR3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3NjRiYTI7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJwZXJzb25HcmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmZmZmY7c3RvcC1vcGFjaXR5OjAuOSIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eTowLjciIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8IS0tIOybkO2YhSDrsLDqsr0gKOq3uOudvOuUlOyWuO2KuCkgLS0+CiAgPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9InVybCgjYmdHcmFkaWVudCkiLz4KICA8IS0tIOyCrOumhCDsi6TroKjsmIvsnIQgKOuNlCDshLjroKjrkJzsmYQg65SU7J6Q7J2EKSAtLT4KICA8IS0tIOuquOumrCAtLT4KICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjE0IiByPSI3IiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgogIDwhLS0g66qJ7YG1ICjrjZQg7J6Q7Jew7Iqk7Yuw7JuQIOqzoOyEoCkgLS0+CiAgPHBhdGggZD0iTTYgMzYgQzYgMjcsIDEyIDIzLCAyMCAyMyBDMjggMjMsIDM0IDI3LCAzNCAzNiBDMzQgMzgsIDM0IDQwLCAzNCA0MCBMOSA0MCBDOCA0MCwgNiAzOCwgNiAzNiBaIiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgo8L3N2Zz4K";
             };
 
             // 사용자 정보 설정
@@ -1041,7 +1057,18 @@
         }
     }
 
+    // 서브메뉴
+    function toggleSubmenu(submenuId) {
+        const element = document.getElementById(submenuId);
+        if (element) {  // null 체크 추가
+            element.style.display = element.style.display === 'block' ? 'none' : 'block';
+        } else {
+            console.warn(`Element with id '${submenuId}' not found`);
+        }
+    }
+
     // 게시물 요소 생성
+    // 수정된 createPostElement 함수
     function createPostElement(post) {
         const postElement = document.createElement("div");
         postElement.className = "post";
@@ -1054,41 +1081,62 @@
         transition: all 0.3s ease;
     `;
 
-        postElement.innerHTML = `
-                <div class="author-info" style="display: flex; align-items: center; margin-bottom: 12px; position: relative;">
-                    <img class="author-img"
-                         src="${post.authorImageUrl ? `${baseUrl}/images/${post.authorImageUrl}` : 'https://via.placeholder.com/32x32?text=No+Img'}"
-                         alt="작성자 이미지"
-                         style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; object-fit: cover;"
-                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRTVFN0VCIi8+CjxwYXRoIGQ9Ik0yMCAyMEM5IDIwIDkgMTAgMjAgMTBTMzEgMTAgMzEgMjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'" />
-                    <strong style="font-weight: 600; color: #374151;">${post.author || '알 수 없는 사용자'}</strong>
-                    <span style="color: #6b7280; font-size: 14px; margin-left: 8px;">${formatDate(post.createdAt)}</span>
+        // 이미지 배열 준비 (모달에서 사용)
+        const imageUrls = post.images ? post.images.map(img => `${baseUrl}/images/${img.imageUrl}`) : [];
 
-                    <div class="post-menu" style="margin-left: auto; position: relative;">
-                        <button class="menu-btn" onclick="togglePostMenu(${post.id})" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #6b7280; padding: 8px; border-radius: 50%;">
-                            ⋯
-                        </button>
-                        <div id="post-menu-${post.id}" class="menu-dropdown" style="display: none; position: absolute; right: 0; top: 35px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; min-width: 120px;">
-                            <button onclick="openEditPostModal(${post.id}, '${post.title}', '${post.content}', ${JSON.stringify(post.images || [])}); hidePostMenu(${post.id})"
-                                    style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; border-bottom: 1px solid #f3f4f6;"
-                                    onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='none'">
-                                수정
-                            </button>
-                            <button onclick="deletePost(${post.id}); hidePostMenu(${post.id})"
-                                    style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; color: #ef4444;"
-                                    onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
-                                삭제
-                            </button>
-                        </div>
-                    </div>
+        // JSON.stringify 대신 데이터 속성 사용
+        const imagesData = JSON.stringify(post.images || []).replace(/"/g, '&quot;');
+
+        postElement.innerHTML = `
+        <div class="author-info" style="display: flex; align-items: center; margin-bottom: 12px; position: relative;">
+            <img class="author-img"
+                 src="${post.authorImageUrl ? `${baseUrl}/images/${post.authorImageUrl}` : 'https://via.placeholder.com/32x32?text=No+Img'}"
+                 alt="작성자 이미지"
+                 style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; object-fit: cover;"
+                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8IS0tIOq3uOudvOuUlOyWuO2KuCDsoJXsnZggLS0+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnR3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3NjRiYTI7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJwZXJzb25HcmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmZmZmY7c3RvcC1vcGFjaXR5OjAuOSIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eTowLjciIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8IS0tIOybkO2YhSDrsLDqsr0gKOq3uOudvOuUlOyWuO2KuCkgLS0+CiAgPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9InVybCgjYmdHcmFkaWVudCkiLz4KICA8IS0tIOyCrOumhCDsi6TroKjsmIvsnIQgKOuNlCDshLjroKjrkJzsmYQg65SU7J6Q7J2EKSAtLT4KICA8IS0tIOuquOumrCAtLT4KICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjE0IiByPSI3IiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgogIDwhLS0g66qJ7YG1ICjrjZQg7J6Q7Jew7Iqk7Yuw7JuQIOqzoOyEoCkgLS0+CiAgPHBhdGggZD0iTTYgMzYgQzYgMjcsIDEyIDIzLCAyMCAyMyBDMjggMjMsIDM0IDI3LCAzNCAzNiBDMzQgMzgsIDM0IDQwLCAzNCA0MCBMOSA0MCBDOCA0MCwgNiAzOCwgNiAzNiBaIiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgo8L3N2Zz4K'" />
+            <strong style="font-weight: 600; color: #374151;">${post.author || '알 수 없는 사용자'}</strong>
+            <span style="color: #6b7280; font-size: 14px; margin-left: 8px;">${formatDate(post.createdAt)}</span>
+
+            <div class="post-menu" style="margin-left: auto; position: relative;">
+                <button class="menu-btn" onclick="togglePostMenu(${post.id})" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #6b7280; padding: 8px; border-radius: 50%;">
+                    ⋯
+                </button>
+                <div id="post-menu-${post.id}" class="menu-dropdown" style="display: none; position: absolute; right: 0; top: 35px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; min-width: 120px;">
+                    <button onclick="openEditPostModalSafe(${post.id}); hidePostMenu(${post.id})"
+                            data-title="${(post.title || '').replace(/"/g, '&quot;')}"
+                            data-content="${(post.content || '').replace(/"/g, '&quot;')}"
+                            data-images="${imagesData}"
+                            style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; border-bottom: 1px solid #f3f4f6;"
+                            onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='none'">
+                        수정
+                    </button>
+                    <button onclick="deletePost(${post.id}); hidePostMenu(${post.id})"
+                            style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; color: #ef4444;"
+                            onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
+                        삭제
+                    </button>
                 </div>
+            </div>
+        </div>
 
         <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #1f2937;">${post.title || '제목 없음'}</h3>
         <p style="margin: 0 0 12px 0; line-height: 1.5; color: #374151;">${post.content || ''}</p>
-        ${post.images && post.images.length > 0 ?
-            post.images.map(imageObj =>
-                `<img src="${baseUrl}/images/${imageObj.imageUrl}" alt="게시물 이미지" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin: 5px 0;" onerror="this.style.display='none'" />`
-            ).join('') : ""}
+
+        ${post.images && post.images.length > 0 ? `
+            <div class="post-images" style="margin: 12px 0;">
+                ${post.images.map((imageObj, index) => {
+            const imageUrl = `${baseUrl}/images/${imageObj.imageUrl}`;
+            return `<img class="post-image"
+                                 src="${imageUrl}"
+                                 alt="게시물 이미지"
+                                 style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin: 5px 0; cursor: pointer; transition: transform 0.3s ease;"
+                                 onclick="openImageModal('${imageUrl}', ${JSON.stringify(imageUrls).replace(/"/g, '&quot;')}, ${index})"
+                                 onmouseover="this.style.transform='scale(1.02)'"
+                                 onmouseout="this.style.transform='scale(1)'"
+                                 onerror="this.style.display='none'" />`;
+        }).join('')}
+            </div>
+        ` : ""}
 
         <div class="post-actions" style="display: flex; gap: 16px; align-items: center; padding-top: 12px; border-top: 1px solid #f3f4f6;">
             <span class="action like-action" onclick="toggleLike(${post.id}, this)" style="display: flex; align-items: center; gap: 4px; cursor: pointer; color: #6b7280; transition: color 0.3s ease;">
@@ -1122,8 +1170,8 @@
 
         // 댓글 수와 좋아요 수 로드
         loadCommentCount(post.id);
-        loadLikeCount(post.id);        // 좋아요 수 먼저 로드
-        loadUserLikeStatus(post.id);   // 그다음 좋아요 상태 확인 // 이 줄 추가
+        loadLikeCount(post.id);
+        loadUserLikeStatus(post.id);
 
         return postElement;
     }
@@ -1161,6 +1209,68 @@
             section.style.display = 'none';
         }
     }
+
+    async function submitPost() {
+        const title = document.getElementById('postTitle').value.trim();
+        const content = document.getElementById('postContent').value.trim();
+        const imageFiles = Array.from(document.getElementById('imageUpload').files);
+
+        if (!title || !content) {
+            alert('제목과 내용을 입력하세요.');
+            return;
+        }
+
+        try {
+            let imageIds = []; // Long 배열
+
+            if (imageFiles.length > 0) {
+                for (const file of imageFiles) {
+                    const imageId = await uploadImage(file);
+                    console.log("📤 받은 imageId:", imageId, typeof imageId);
+
+                    if (imageId && !isNaN(imageId)) {
+                        imageIds.push(parseInt(imageId));
+                    }
+                }
+            }
+
+            const payload = {
+                title,
+                content,
+                imageIds: imageIds // Long[] 타입
+            };
+
+            console.log("📤 전송할 payload:", payload);
+
+            const res = await fetch(`${baseUrl}/api/posts`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert("게시물이 작성되었습니다!");
+                closeModal();
+                // 입력 필드 초기화
+                document.getElementById('postTitle').value = '';
+                document.getElementById('postContent').value = '';
+                document.getElementById('imageUpload').value = '';
+                await loadUserPosts();
+            } else {
+                const errorText = await res.text();
+                console.error("서버 응답 에러:", errorText);
+                throw new Error(`게시물 작성 실패: ${res.status} - ${errorText}`);
+            }
+        } catch (err) {
+            console.error("게시물 작성 실패:", err);
+            alert("게시물 작성 실패: " + err.message);
+        }
+    }
+
+
 
     // 댓글 불러오기
     async function loadComments(postId) {
@@ -1439,23 +1549,65 @@
     }
     let editingPostId = null;
 
-    function openEditPostModal(postId, title, content, imageUrl) {
+    // 수정된 openEditPostModalSafe 함수
+    function openEditPostModalSafe(postId) {
+        const button = event.currentTarget;
+        const title = button.getAttribute('data-title').replace(/&quot;/g, '"');
+        const content = button.getAttribute('data-content').replace(/&quot;/g, '"');
+        const images = JSON.parse(button.getAttribute('data-images').replace(/&quot;/g, '"'));
+
+        openEditPostModal(postId, title, content, images);
+    }
+
+    // 수정된 openEditPostModal 함수
+    function openEditPostModal(postId, title, content, images) {
+        console.log("🔧 수정 모달 열림:", postId, title, content, images);
+
         editingPostId = postId;
-        document.getElementById('editPostTitle').value = title;
-        document.getElementById('editPostContent').value = content;
-        document.getElementById('editPostImage').value = '';
+        existingImages = [...(images || [])]; // 기존 이미지 복사
+        imagesToDelete = []; // 삭제할 이미지 목록 초기화
+
+        // 안전하게 요소 찾기
+        const titleInput = document.getElementById('editPostTitle');
+        const contentInput = document.getElementById('editPostContent');
+        const imageInput = document.getElementById('editPostImage');
+
+        if (!titleInput || !contentInput || !imageInput) {
+            console.error("모달 요소를 찾을 수 없습니다.");
+            alert("수정 기능에 문제가 있습니다. 페이지를 새로고침해주세요.");
+            return;
+        }
+
+        titleInput.value = title || '';
+        contentInput.value = content || '';
+        imageInput.value = '';
+
+        renderExistingImages();
         document.getElementById('editPostModal').style.display = 'flex';
     }
 
+    // 수정된 closeEditPostModal 함수
     function closeEditPostModal() {
         document.getElementById('editPostModal').style.display = 'none';
         editingPostId = null;
+        existingImages = [];
+        imagesToDelete = [];
     }
 
+    // 수정된 updatePost 함수
     async function updatePost() {
-        const title = document.getElementById('editPostTitle').value.trim();
-        const content = document.getElementById('editPostContent').value.trim();
-        const imageFiles = Array.from(document.getElementById('editPostImage').files);
+        const titleInput = document.getElementById('editPostTitle');
+        const contentInput = document.getElementById('editPostContent');
+        const imageInput = document.getElementById('editPostImage');
+
+        if (!titleInput || !contentInput || !imageInput) {
+            alert('모달 요소를 찾을 수 없습니다. 페이지를 새로고침해주세요.');
+            return;
+        }
+
+        const title = titleInput.value.trim();
+        const content = contentInput.value.trim();
+        const imageFiles = Array.from(imageInput.files);
 
         if (!title || !content) {
             alert('제목과 내용을 입력하세요.');
@@ -1463,15 +1615,18 @@
         }
 
         try {
-            let imageIds = [];
-
-            // 새 이미지가 선택된 경우에만 업로드
+            // 1. 새 이미지 업로드
+            let newImageIds = [];
             if (imageFiles.length > 0) {
                 for (const file of imageFiles) {
                     try {
                         const imageId = await uploadImage(file);
-                        if (imageId) {
-                            imageIds.push(imageId);
+                        console.log("📤 받은 imageId:", imageId, typeof imageId);
+
+                        if (imageId && !isNaN(imageId)) {
+                            newImageIds.push(parseInt(imageId));
+                        } else {
+                            console.warn("유효하지 않은 imageId:", imageId);
                         }
                     } catch (err) {
                         console.error("이미지 업로드 실패:", err);
@@ -1481,11 +1636,32 @@
                 }
             }
 
+            // 2. 삭제할 이미지가 있으면 먼저 삭제
+            if (imagesToDelete.length > 0) {
+                for (const imageId of imagesToDelete) {
+                    try {
+                        await fetch(`${baseUrl}/api/images/${imageId}`, {
+                            method: 'DELETE',
+                            headers: { "Authorization": `Bearer ${token}` }
+                        });
+                        console.log(`🗑️ 이미지 ${imageId} 삭제 완료`);
+                    } catch (err) {
+                        console.error(`❌ 이미지 ${imageId} 삭제 실패:`, err);
+                    }
+                }
+            }
+
+            // 3. 게시물 업데이트
             const payload = {
                 title,
                 content,
-                imageIds: imageIds
+                imageIds: [
+                    ...existingImages.map(img => img.imageId), // 유지할 기존 이미지
+                    ...newImageIds // 새로 추가할 이미지
+                ]
             };
+
+            console.log("📤 업데이트 payload:", payload);
 
             const res = await fetch(`${baseUrl}/api/posts/${editingPostId}`, {
                 method: "PUT",
@@ -1499,14 +1675,15 @@
             if (res.ok) {
                 alert('게시물이 수정되었습니다.');
                 closeEditPostModal();
-                await loadUserPosts();
+                await loadUserPosts(); // 게시물 목록 새로고침
             } else {
                 const errorText = await res.text();
+                console.error("서버 응답 에러:", errorText);
                 throw new Error(`수정 실패: ${res.status} - ${errorText}`);
             }
 
         } catch (err) {
-            console.error('게시물 수정 실패:', err);
+            console.error('❌ 게시물 수정 실패:', err);
             alert('게시물 수정 실패: ' + err.message);
         }
     }
@@ -1533,14 +1710,16 @@
         }
 
         try {
-            let imageIds = [];
+            let imageIds = []; // Long 배열
 
             if (imageFiles.length > 0) {
                 for (const file of imageFiles) {
                     try {
                         const imageId = await uploadImage(file);
-                        if (imageId) {
-                            imageIds.push(imageId);
+                        console.log("📤 받은 imageId:", imageId, typeof imageId);
+
+                        if (imageId && !isNaN(imageId)) {
+                            imageIds.push(parseInt(imageId));
                         }
                     } catch (err) {
                         console.error("이미지 업로드 실패:", err);
@@ -1553,8 +1732,10 @@
             const payload = {
                 title,
                 content,
-                imageIds: imageIds
+                imageIds: imageIds // Long[] 타입
             };
+
+            console.log("📤 전송할 payload:", payload);
 
             const res = await fetch(`${baseUrl}/api/posts`, {
                 method: "POST",
@@ -1567,6 +1748,7 @@
 
             if (!res.ok) {
                 const errorText = await res.text();
+                console.error("서버 응답 에러:", errorText);
                 throw new Error(`게시물 등록 실패: ${res.status} - ${errorText}`);
             }
 
@@ -1577,6 +1759,35 @@
         } catch (err) {
             console.error("❌ 게시 실패:", err);
             alert("게시 실패: " + err.message);
+        }
+    }
+
+    function renderExistingImages() {
+        const existingImagesDiv = document.getElementById('existingImages');
+
+        if (existingImages && existingImages.length > 0) {
+            existingImagesDiv.innerHTML = `
+            <label style="font-weight: 500; margin-bottom: 8px; display: block;">기존 이미지:</label>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                ${existingImages.map((img, index) => `
+                    <div style="position: relative; display: inline-block;">
+                        <img src="${baseUrl}/images/${img.imageUrl}"
+                             style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
+                        <button type="button" onclick="removeExistingImage(${index})"
+                                style="position: absolute; top: -5px; right: -5px; width: 20px; height: 20px;
+                                       background: #ef4444; color: white; border: none; border-radius: 50%;
+                                       cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;">×</button>
+                    </div>
+                `).join('')}
+            </div>
+            ${imagesToDelete.length > 0 ? `
+                <div style="margin-top: 8px; padding: 8px; background: #fef2f2; border-radius: 6px; font-size: 12px; color: #dc2626;">
+                    삭제 예정: ${imagesToDelete.length}개 이미지
+                </div>
+            ` : ''}
+        `;
+        } else {
+            existingImagesDiv.innerHTML = '';
         }
     }
 
@@ -1635,7 +1846,55 @@
     // 메인 메뉴 토글
     function toggleMainMenu() {
         const menu = document.getElementById('main-menu');
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        if (menu) {
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        } else {
+            console.warn("main-menu 요소를 찾을 수 없습니다.");
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        // 햄버거 메뉴 외부 클릭 시 닫기
+        if (!e.target.closest('.hamburger-menu') && !e.target.closest('.menu-options')) {
+            const mainMenu = document.getElementById('main-menu');
+            if (mainMenu) {
+                mainMenu.style.display = 'none';
+            }
+        }
+
+        // 필터 드롭다운 외부 클릭 시 닫기
+        if (!e.target.closest('.filter-dropdown')) {
+            const filterOptions = document.getElementById('filter-options');
+            if (filterOptions) {
+                filterOptions.style.display = 'none';
+            }
+        }
+
+        // 게시물 메뉴 외부 클릭 시 닫기
+        if (!e.target.closest('.post-menu')) {
+            document.querySelectorAll('.menu-dropdown').forEach(m => m.style.display = 'none');
+        }
+    });
+
+    // 수정된 removeExistingImage 함수
+    function removeExistingImage(index) {
+        if (confirm('이 이미지를 삭제하시겠습니까?')) {
+            const removedImage = existingImages[index];
+
+            // 삭제할 이미지 목록에 추가
+            if (removedImage.imageId) {
+                imagesToDelete.push(removedImage.imageId);
+            }
+
+            // 기존 이미지 목록에서 제거
+            existingImages.splice(index, 1);
+
+            // 화면 다시 렌더링
+            renderExistingImages();
+
+            console.log("🗑️ 삭제 예정 이미지:", imagesToDelete);
+            console.log("🖼️ 남은 기존 이미지:", existingImages);
+        }
     }
 
     // 서브메뉴 표시
@@ -1766,6 +2025,7 @@
     }
 
 
+    // 1. uploadImage 함수 수정 - imageId 반환하도록
     async function uploadImage(file) {
         const formData = new FormData();
         formData.append("file", file);
@@ -1784,14 +2044,100 @@
             const data = await res.json();
             console.log("📤 이미지 업로드 응답:", data);
 
-            // 실제 파일명을 반환해야 함 (imageId가 아니라)
-            return data.filename || data.fileName || data.imageUrl;  // imageId 제거
+            // imageId를 우선으로 반환 (Long 타입)
+            return data.imageId || data.id;
         } catch {
+            // JSON 파싱 실패 시 텍스트에서 ID 추출 시도
             const text = await res.text();
-            const match = text.match(/파일 업로드 성공: (.+)/);
-            return match ? match[1] : null;
+            console.log("📤 텍스트 응답:", text);
+
+            // 숫자 ID 추출 시도
+            const idMatch = text.match(/imageId[":=\s]+(\d+)/i) || text.match(/id[":=\s]+(\d+)/i);
+            if (idMatch) {
+                return parseInt(idMatch[1]);
+            }
+
+            throw new Error("이미지 ID를 찾을 수 없습니다");
         }
     }
+
+    function openImageModal(imageSrc, allImages = [], startIndex = 0) {
+        currentImages = allImages.length > 0 ? allImages : [imageSrc];
+        currentImageIndex = startIndex;
+
+        document.getElementById('modalImage').src = imageSrc;
+        document.getElementById('imageModal').style.display = 'flex';
+        updateImageCounter();
+        updateNavigationButtons();
+
+        // ESC 키로 닫기
+        document.addEventListener('keydown', handleImageModalKeydown);
+    }
+
+    // 이미지 모달 닫기
+    function closeImageModal() {
+        document.getElementById('imageModal').style.display = 'none';
+        document.removeEventListener('keydown', handleImageModalKeydown);
+    }
+
+    // 이전 이미지
+    function showPrevImage() {
+        if (currentImages.length > 1) {
+            currentImageIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length;
+            document.getElementById('modalImage').src = currentImages[currentImageIndex];
+            updateImageCounter();
+        }
+    }
+
+    // 다음 이미지
+    function showNextImage() {
+        if (currentImages.length > 1) {
+            currentImageIndex = (currentImageIndex + 1) % currentImages.length;
+            document.getElementById('modalImage').src = currentImages[currentImageIndex];
+            updateImageCounter();
+        }
+    }
+
+    // 이미지 카운터 업데이트
+    function updateImageCounter() {
+        document.getElementById('imageCounter').textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
+    }
+
+    // 네비게이션 버튼 표시/숨김
+    function updateNavigationButtons() {
+        const prevBtn = document.getElementById('prevImageBtn');
+        const nextBtn = document.getElementById('nextImageBtn');
+
+        if (currentImages.length <= 1) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        } else {
+            prevBtn.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+    }
+
+    // 키보드 이벤트 처리
+    function handleImageModalKeydown(e) {
+        switch(e.key) {
+            case 'Escape':
+                closeImageModal();
+                break;
+            case 'ArrowLeft':
+                showPrevImage();
+                break;
+            case 'ArrowRight':
+                showNextImage();
+                break;
+        }
+    }
+
+    // 모달 배경 클릭 시 닫기
+    document.addEventListener('click', function(e) {
+        if (e.target.id === 'imageModal') {
+            closeImageModal();
+        }
+    });
 
     // DOM 로드 완료 시 초기화
     document.addEventListener("DOMContentLoaded", initializePage);
@@ -1832,6 +2178,9 @@
             <span class="close" onclick="closeEditPostModal()">&times;</span>
         </div>
         <div class="modal-body">
+            <!-- 기존 이미지 표시 영역 추가 -->
+            <div id="existingImages" style="margin-bottom: 16px;"></div>
+
             <div class="form-group">
                 <label>제목</label>
                 <input type="text" id="editPostTitle" placeholder="제목을 입력하세요...">
@@ -1842,6 +2191,7 @@
             </div>
             <div class="form-group">
                 <label>새 이미지 (선택사항)</label>
+                <!-- ID를 editPostImage로 수정 -->
                 <input type="file" id="editPostImage" accept="image/*" multiple>
             </div>
         </div>
@@ -1851,6 +2201,7 @@
         </div>
     </div>
 </div>
+
 
 
 <!-- 게시물 작성 모달 -->
@@ -1877,9 +2228,9 @@
     </svg>
 </div>
 
-<!-- 메뉴 옵션 패널 -->
+<!-- 메뉴 옵션 패널 (ID 추가) -->
 <div id="main-menu" class="menu-options">
-    <div class="menu-item-option has-submenu" onmouseenter="showSubmenu('design-submenu')" onmouseleave="hideSubmenu('design-submenu')">
+    <div class="menu-item-option has-submenu" onclick="toggleSubmenu('design-submenu')">
         <span>디자인</span>
         <div id="design-submenu" class="submenu">
             <div class="submenu-item" onclick="setTheme('light')">라이트</div>
@@ -1887,7 +2238,7 @@
         </div>
     </div>
 
-    <div class="menu-item-option has-submenu" onmouseenter="showSubmenu('feed-submenu')" onmouseleave="hideSubmenu('feed-submenu')">
+    <div class="menu-item-option has-submenu" onclick="toggleSubmenu('feed-submenu')">
         <span>피드</span>
         <div id="feed-submenu" class="submenu">
             <div class="submenu-item" onclick="setFeedType('추천')">추천</div>
@@ -1917,6 +2268,25 @@
     <div class="write-footer">
         <button class="write-btn cancel" onclick="closeWritePanel()">취소</button>
         <button class="write-btn submit" onclick="submitQuickPost()">게시</button>
+    </div>
+</div>
+
+<div id="imageModal" class="modal" style="display: none; background: rgba(0, 0, 0, 0.9);">
+    <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+        <!-- 닫기 버튼 -->
+        <span onclick="closeImageModal()" style="position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1001;">&times;</span>
+
+        <!-- 이전/다음 버튼 -->
+        <button id="prevImageBtn" onclick="showPrevImage()" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); border: none; color: white; font-size: 30px; padding: 10px 15px; cursor: pointer; border-radius: 5px; z-index: 1001;">❮</button>
+        <button id="nextImageBtn" onclick="showNextImage()" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); border: none; color: white; font-size: 30px; padding: 10px 15px; cursor: pointer; border-radius: 5px; z-index: 1001;">❯</button>
+
+        <!-- 이미지 -->
+        <img id="modalImage" src="" alt="확대 이미지" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px;">
+
+        <!-- 이미지 정보 -->
+        <div id="imageInfo" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: white; text-align: center; background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 20px;">
+            <span id="imageCounter">1 / 1</span>
+        </div>
     </div>
 </div>
 
