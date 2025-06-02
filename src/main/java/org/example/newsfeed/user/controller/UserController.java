@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.example.newsfeed.global.util.RequestToId.requestToId;
 
@@ -66,21 +67,28 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserResponseDto>> findUsers(
-            @RequestParam (required = false) String username,
+            @RequestParam(required = false) String username,
             HttpServletRequest request
-    ){
-        Long userId = requestToId(request,jwtProvider);
+    ) {
+        Long userId = requestToId(request, jwtProvider);
         String keyword = (username == null) ? "" : username;
-        List<UserResponseDto> userResponseDtoList = userService.findUsers(keyword,userId);
+        List<UserResponseDto> userResponseDtoList = userService.findUsers(keyword, userId);
 
+        // 모든 userId 추출
+        List<Long> userIds = userResponseDtoList.stream()
+                .map(UserResponseDto::getUserId)
+                .toList();
 
-        // 각 유저에 대해 followerCount 설정
+        // userId → followerCount 맵 조회
+        Map<Long, Long> followerCountMap = followService.getFollowerCounts(userIds);
+
+        // 각 DTO에 followerCount 설정
         for (UserResponseDto userDto : userResponseDtoList) {
-            Long targetUserId = userDto.getUserId();
-            Long followerCount = followService.getFollowerCount(targetUserId);
-            userDto.setFollowerCount(followerCount);
+            Long count = followerCountMap.getOrDefault(userDto.getUserId(), 0L);
+            userDto.setFollowerCount(count);
         }
 
-        return new ResponseEntity<>(userResponseDtoList, HttpStatus.OK);
+        return ResponseEntity.ok(userResponseDtoList);
     }
+
 }
