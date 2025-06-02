@@ -5,15 +5,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.newsfeed.follow.service.FollowService;
+import org.example.newsfeed.global.exception.UsernameSearchRequiredException;
 import org.example.newsfeed.global.util.JwtProvider;
 import org.example.newsfeed.global.util.RequestToId;
 import org.example.newsfeed.user.dto.PasswordUpdateRequestDto;
 import org.example.newsfeed.user.dto.ProfileUpdateRequestDto;
 import org.example.newsfeed.user.dto.UserResponseDto;
 import org.example.newsfeed.user.service.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
