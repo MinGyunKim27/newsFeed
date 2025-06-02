@@ -69,14 +69,16 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDto>> findUsers(
+    public ResponseEntity<Page<UserResponseDto>> findUsers(
             @RequestParam(required = false) String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "0") int size,
             HttpServletRequest request
     ) {
         Long userId = requestToId(request, jwtProvider);
         String keyword = (username == null) ? "" : username;
 
-        List<UserResponseDto> result = userService.findUsersWithFollowerCount(keyword, userId);
+        Page<UserResponseDto> result = userService.findUsersWithFollowerCount(keyword, userId, page, size);
         return ResponseEntity.ok(result);
     }
 

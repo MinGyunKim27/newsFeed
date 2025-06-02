@@ -11,6 +11,9 @@ import org.example.newsfeed.global.util.RequestToId;
 import org.example.newsfeed.user.dto.*;
 import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,29 +63,22 @@ public class UserService {
         return new UserResponseDto(user);
     }
 
-    public List<UserResponseDto> findUsers(String username,Long id) {
 
-        return userRepository.findByUsernameContainingAndIdIsNot(username,id)
-                .stream()
-                .map(UserResponseDto::toDto)
-                .toList();
-    }
+    public Page<UserResponseDto> findUsersWithFollowerCount(String keyword, Long currentUserId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findByUsernameContainingAndIdIsNot(keyword, currentUserId, pageable);
 
-    public List<UserResponseDto> findUsersWithFollowerCount(String keyword, Long currentUserId) {
-        List<UserResponseDto> users = findUsers(keyword, currentUserId);
-
-        List<Long> userIds = users.stream()
-                .map(UserResponseDto::getUserId)
+        List<Long> userIds = userPage.stream()
+                .map(User::getId)
                 .toList();
 
         Map<Long, Long> followerCountMap = followService.getFollowerCounts(userIds);
 
-        for (UserResponseDto dto : users) {
-            Long count = followerCountMap.getOrDefault(dto.getUserId(), 0L);
-            dto.setFollowerCount(count);
-        }
-
-        return users;
+        return userPage.map(user -> {
+            UserResponseDto dto = new UserResponseDto(user);
+            dto.setFollowerCount(followerCountMap.getOrDefault(user.getId(), 0L));
+            return dto;
+        });
     }
 
 }
