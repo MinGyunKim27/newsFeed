@@ -65,12 +65,8 @@ public class UserController {
     // api/users/search/username
     @GetMapping("/search/username")
     public ResponseEntity<Page<UserResponseDto>> findUsers(
-            @RequestParam(required = false, defaultValue = "") String username, Pageable pageable,
-            HttpServletRequest request
+            @RequestParam(required = true) String username, Pageable pageable
     ) {
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        Long userId = jwtProvider.getUserId(token);
 
         // 검색어 없을 시 예외처리
         if(username.trim().isEmpty()) {
