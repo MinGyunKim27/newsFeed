@@ -4,6 +4,7 @@ package org.example.newsfeed.user.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.newsfeed.follow.service.FollowService;
 import org.example.newsfeed.global.exception.UsernameSearchRequiredException;
 import org.example.newsfeed.global.util.JwtProvider;
 import org.example.newsfeed.global.util.RequestToId;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.example.newsfeed.global.util.RequestToId.requestToId;
 
@@ -27,12 +29,18 @@ import static org.example.newsfeed.global.util.RequestToId.requestToId;
 public class UserController {
 
     private final UserService userService;
+    private final FollowService followService;
     private final JwtProvider jwtProvider;
 
     // api/users/{userId}
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(userService.getUser(userId));
+
+        Long followerCount = followService.getFollowerCount(userId);
+        UserResponseDto userResponseDto = userService.getUser(userId);
+        userResponseDto.setFollowerCount(followerCount);
+
+        return ResponseEntity.ok(userResponseDto);
     }
 
     // api/users/profile
@@ -41,11 +49,13 @@ public class UserController {
             @RequestBody ProfileUpdateRequestDto requestDto,
             HttpServletRequest request) {
 
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        Long userId = jwtProvider.getUserId(token);
+        Long userId = requestToId(request,jwtProvider);
+        Long followerCount = followService.getFollowerCount(userId);
 
-        return ResponseEntity.ok(userService.updateProfile(userId, requestDto));
+        UserResponseDto userResponseDto = userService.updateProfile(userId, requestDto);
+        userResponseDto.setFollowerCount(followerCount);
+
+        return ResponseEntity.ok(userResponseDto);
     }
 
     // api/users/password
@@ -54,25 +64,21 @@ public class UserController {
             @RequestBody PasswordUpdateRequestDto requestDto,
             HttpServletRequest request
     ) {
-        Long Id = requestToId(request, jwtProvider);
-
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        Long userId = jwtProvider.getUserId(token);
+        Long userId = requestToId(request,jwtProvider);
         return ResponseEntity.ok(userService.updatePassword(userId, requestDto));
     }
 
-    // api/users/search/username
-    @GetMapping("/search/username")
-    public ResponseEntity<Page<UserResponseDto>> findUsers(
-            @RequestParam(required = true) String username, Pageable pageable
+    @GetMapping
+    public ResponseEntity<List<UserResponseDto>> findUsers(
+            @RequestParam(required = false) String username,
+            HttpServletRequest request
     ) {
+        Long userId = requestToId(request, jwtProvider);
+        String keyword = (username == null) ? "" : username;
 
-        // 검색어 없을 시 예외처리
-        if(username.trim().isEmpty()) {
-            throw new UsernameSearchRequiredException();
-        }
-
-        return ResponseEntity.ok(userService.findUsers(username, pageable));
+        List<UserResponseDto> result = userService.findUsersWithFollowerCount(keyword, userId);
+        return ResponseEntity.ok(result);
     }
+
+
 }

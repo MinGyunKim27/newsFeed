@@ -34,7 +34,6 @@ public class PostController {
 
         String token = request.getHeader("Authorization").substring(7);
         Long userId = jwtProvider.getUserId(token);
-
         Long postId = postService.createPost(dto, userId);
 
         // 반환할 URI 생성
@@ -80,9 +79,10 @@ public class PostController {
     public ResponseEntity<PostListResponseDto> getPostListByUser(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "latest",required = false) String sort  // 추가
     ) {
-        Page<PostResponseDto> list = postService.getPostListByUser(page, size, userId);
+        Page<PostResponseDto> list = postService.getPostListByUser(page, size, userId,sort);
         return ResponseEntity.ok(new PostListResponseDto(list));
     }
 

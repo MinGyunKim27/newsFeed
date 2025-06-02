@@ -2,93 +2,830 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
-    <title>회원가입</title>
+    <title>PicFlow - 회원가입</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f3f4f6;
+            background: linear-gradient(-45deg, #f093fb, #f5576c, #4facfe, #00f2fe);
+            background-size: 400% 400%;
+            animation: flowingBackground 15s ease infinite;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            padding: 20px 0;
+        }
+
+        @keyframes flowingBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 떠다니는 배경 요소들 */
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            top: 5%;
+            left: 15%;
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            top: 15%;
+            right: 15%;
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            bottom: 15%;
+            left: 10%;
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 20% 80% 80% 20% / 20% 20% 80% 80%;
+            animation-delay: 4s;
+        }
+
+        .shape:nth-child(4) {
+            bottom: 25%;
+            right: 25%;
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%;
+            animation-delay: 1s;
+        }
+
+        .shape:nth-child(5) {
+            top: 40%;
+            left: 5%;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg) scale(1);
+                opacity: 0.1;
+            }
+            50% {
+                transform: translateY(-30px) rotate(180deg) scale(1.1);
+                opacity: 0.2;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
         }
 
         .form-container {
-            background-color: white;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px 50px;
+            border-radius: 20px;
+            box-shadow:
+                    0 8px 32px rgba(0, 0, 0, 0.1),
+                    0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        h2 {
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 폼 컨테이너 흘러가는 효과 */
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+            transparent,
+            rgba(245, 87, 108, 0.1),
+            transparent
+            );
+            animation: shimmer 4s ease infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .logo {
             text-align: center;
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .logo h1 {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
+        }
+
+        .logo p {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group {
             margin-bottom: 24px;
+            position: relative;
         }
 
         label {
-            font-weight: bold;
-            margin-top: 10px;
             display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .input-wrapper {
+            position: relative;
         }
 
         input {
             width: 100%;
-            padding: 10px;
-            margin-top: 6px;
-            margin-bottom: 20px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
         }
 
-        button {
+        input:focus {
+            border-color: #f5576c;
+            background: white;
+            box-shadow:
+                    0 0 0 3px rgba(245, 87, 108, 0.1),
+                    0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        input:focus + .input-line::after {
+            transform: scaleX(1);
+        }
+
+        .input-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
             width: 100%;
-            background-color: #3b82f6;
+            height: 2px;
+            background: #e5e7eb;
+            border-radius: 1px;
+        }
+
+        .input-line::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+            border-radius: 1px;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        /* 비밀번호 강도 표시 */
+        .password-strength {
+            margin-top: 8px;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .password-strength.show {
+            opacity: 1;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .strength-weak { background: #ef4444; width: 33.33%; }
+        .strength-medium { background: #f59e0b; width: 66.66%; }
+        .strength-strong { background: #10b981; width: 100%; }
+
+        .strength-text {
+            font-size: 12px;
+            margin-top: 4px;
+            transition: color 0.3s ease;
+        }
+
+        .register-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
             color: white;
             border: none;
-            padding: 12px;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 6px;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+            margin-top: 8px;
         }
 
-        button:hover {
-            background-color: #2563eb;
+        .register-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent
+            );
+            transition: left 0.5s ease;
+        }
+
+        .register-btn:hover::before {
+            left: 100%;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.6);
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+        .register-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 로딩 애니메이션 */
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+            animation: loadingBounce 1.4s ease-in-out infinite both;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+        .loading-dot:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes loadingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .divider {
+            text-align: center;
+            margin: 32px 0;
+            position: relative;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+        }
+
+        .divider span {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0 16px;
+            position: relative;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .login-link a {
+            color: #f5576c;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .login-link a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+            transition: width 0.3s ease;
+        }
+
+        .login-link a:hover::after {
+            width: 100%;
+        }
+
+        /* 입력 검증 메시지 */
+        .validation-message {
+            font-size: 12px;
+            margin-top: 4px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .validation-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .validation-message.error {
+            color: #ef4444;
+        }
+
+        .validation-message.success {
+            color: #10b981;
+        }
+
+        /* 성공/에러 알림 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(400px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* 이메일 도메인 추천 */
+        .email-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            max-height: 120px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .email-suggestion {
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .email-suggestion:hover {
+            background: #f3f4f6;
+        }
+
+        /* 반응형 */
+        @media (max-width: 480px) {
+            .form-container {
+                margin: 20px;
+                padding: 30px 30px;
+            }
+
+            .logo h1 {
+                font-size: 28px;
+            }
+
+            input {
+                padding: 14px 16px;
+            }
+
+            .register-btn {
+                padding: 14px 20px;
+            }
+        }
+
+        /* 다크모드 대응 */
+        @media (prefers-color-scheme: dark) {
+            .form-container {
+                background: rgba(45, 45, 45, 0.95);
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+
+            label {
+                color: #e5e7eb;
+            }
+
+            input {
+                background: rgba(55, 65, 81, 0.8);
+                border-color: #4b5563;
+                color: #f3f4f6;
+            }
+
+            input:focus {
+                background: #374151;
+                border-color: #f472b6;
+            }
+
+            .logo p {
+                color: #9ca3af;
+            }
+
+            .divider {
+                color: #6b7280;
+            }
+
+            .divider span {
+                background: rgba(45, 45, 45, 0.95);
+            }
+
+            .email-suggestions {
+                background: #374151;
+                border-color: #4b5563;
+            }
+
+            .email-suggestion:hover {
+                background: #4b5563;
+            }
         }
     </style>
 </head>
-<body>
-<div class="form-container">
-    <h2>회원가입</h2>
-    <form id="signup-form">
-        <label for="email">이메일</label>
-        <input type="email" id="email" required />
+<body class="dark-theme">
+<!-- 떠다니는 배경 요소들 -->
+<div class="floating-shapes">
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+</div>
 
-        <label for="password">비밀번호</label>
-        <input type="password" id="password" required />
+<div class="container">
+    <div class="form-container">
+        <div class="logo">
+            <h1>PicFlow</h1>
+            <p>당신만의 특별한 순간을 시작하세요</p>
+        </div>
 
-        <label for="username">이름</label>
-        <input type="text" id="username" required />
+        <form id="signup-form">
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <div class="input-wrapper">
+                    <input type="email" id="email" required autocomplete="email" />
+                    <div class="input-line"></div>
+                    <div class="email-suggestions" id="emailSuggestions"></div>
+                </div>
+                <div class="validation-message" id="emailValidation"></div>
+            </div>
 
-        <button type="submit">가입하기</button>
-    </form>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" required autocomplete="new-password" />
+                    <div class="input-line"></div>
+                </div>
+                <div class="password-strength" id="passwordStrength">
+                    <div class="strength-bar" id="strengthBar"></div>
+                </div>
+                <div class="strength-text" id="strengthText"></div>
+                <div class="validation-message" id="passwordValidation"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="username">사용자명</label>
+                <div class="input-wrapper">
+                    <input type="text" id="username" required autocomplete="username" />
+                    <div class="input-line"></div>
+                </div>
+                <div class="validation-message" id="usernameValidation"></div>
+            </div>
+
+            <button type="submit" class="register-btn" id="registerBtn">
+                <span class="btn-text">가입하기</span>
+                <div class="loading">
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                </div>
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>또는</span>
+        </div>
+
+        <div class="login-link">
+            <p>이미 계정이 있으신가요? <a href="login.html">로그인</a></p>
+        </div>
+    </div>
 </div>
 
 <script>
     const baseUrl = "http://localhost:8080";
 
+    // 알림 표시 함수
+    function showNotification(message, type = 'success') {
+        const existingNotification = document.querySelector('.notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => notification.classList.add('show'), 100);
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    // 로딩 상태 토글
+    function toggleLoading(isLoading) {
+        const btn = document.getElementById('registerBtn');
+        const btnText = btn.querySelector('.btn-text');
+        const loading = btn.querySelector('.loading');
+
+        if (isLoading) {
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            loading.style.display = 'flex';
+        } else {
+            btn.disabled = false;
+            btnText.style.display = 'block';
+            loading.style.display = 'none';
+        }
+    }
+
+    // 검증 메시지 표시
+    function showValidation(elementId, message, type = 'error') {
+        const element = document.getElementById(elementId);
+        element.textContent = message;
+        element.className = `validation-message ${type} show`;
+
+        if (type === 'error') {
+            setTimeout(() => {
+                element.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    // 비밀번호 강도 확인
+    function checkPasswordStrength(password) {
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+        const strengthContainer = document.getElementById('passwordStrength');
+
+        if (password.length === 0) {
+            strengthContainer.classList.remove('show');
+            return;
+        }
+
+        strengthContainer.classList.add('show');
+
+        let strength = 0;
+        let message = '';
+
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+        strengthBar.className = 'strength-bar';
+
+        if (strength <= 2) {
+            strengthBar.classList.add('strength-weak');
+            message = '약함 - 더 복잡한 비밀번호를 사용하세요';
+            strengthText.style.color = '#ef4444';
+        } else if (strength <= 3) {
+            strengthBar.classList.add('strength-medium');
+            message = '보통 - 특수문자를 추가해보세요';
+            strengthText.style.color = '#f59e0b';
+        } else {
+            strengthBar.classList.add('strength-strong');
+            message = '강함 - 안전한 비밀번호입니다';
+            strengthText.style.color = '#10b981';
+        }
+
+        strengthText.textContent = message;
+    }
+
+    // 이메일 도메인 추천
+    function showEmailSuggestions(input) {
+        const suggestions = ['gmail.com', 'naver.com', 'daum.net', 'hanmail.net', 'kakao.com'];
+        const suggestionsContainer = document.getElementById('emailSuggestions');
+
+        const emailValue = input.value;
+        const atIndex = emailValue.indexOf('@');
+
+        if (atIndex === -1 || emailValue.length - atIndex <= 1) {
+            suggestionsContainer.style.display = 'none';
+            return;
+        }
+
+        const domain = emailValue.substring(atIndex + 1);
+        const username = emailValue.substring(0, atIndex);
+
+        const filteredSuggestions = suggestions.filter(s =>
+            s.toLowerCase().includes(domain.toLowerCase()) && s !== domain
+        );
+
+        if (filteredSuggestions.length === 0) {
+            suggestionsContainer.style.display = 'none';
+            return;
+        }
+
+        suggestionsContainer.innerHTML = filteredSuggestions
+            .map(suggestion =>
+                `<div class="email-suggestion" onclick="selectEmailSuggestion('${username}@${suggestion}')">${username}@${suggestion}</div>`
+            ).join('');
+
+        suggestionsContainer.style.display = 'block';
+    }
+
+    function selectEmailSuggestion(email) {
+        document.getElementById('email').value = email;
+        document.getElementById('emailSuggestions').style.display = 'none';
+    }
+
+    // 입력 필드 이벤트 리스너
+    document.getElementById('email').addEventListener('input', function() {
+        const email = this.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (email && !emailRegex.test(email)) {
+            showValidation('emailValidation', '올바른 이메일 형식을 입력해주세요', 'error');
+        } else if (email && emailRegex.test(email)) {
+            showValidation('emailValidation', '사용 가능한 이메일입니다', 'success');
+        }
+
+        showEmailSuggestions(this);
+    });
+
+    document.getElementById('password').addEventListener('input', function() {
+        checkPasswordStrength(this.value);
+
+        if (this.value.length > 0 && this.value.length < 6) {
+            showValidation('passwordValidation', '비밀번호는 최소 6자 이상이어야 합니다', 'error');
+        } else if (this.value.length >= 6) {
+            showValidation('passwordValidation', '', 'success');
+        }
+    });
+
+    document.getElementById('username').addEventListener('input', function() {
+        const username = this.value;
+
+        if (username.length > 0 && username.length < 2) {
+            showValidation('usernameValidation', '사용자명은 최소 2자 이상이어야 합니다', 'error');
+        } else if (username.length >= 2) {
+            showValidation('usernameValidation', '사용 가능한 사용자명입니다', 'success');
+        }
+    });
+
+    // 문서 클릭 시 이메일 추천 숨기기
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.input-wrapper')) {
+            document.getElementById('emailSuggestions').style.display = 'none';
+        }
+    });
+
+    // 회원가입 폼 제출
     document.getElementById("signup-form").addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const payload = {
-            email: document.getElementById("email").value,
-            password: document.getElementById("password").value,
-            username: document.getElementById("username").value
-        };
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const username = document.getElementById("username").value.trim();
+
+        // 유효성 검사
+        if (!email || !password || !username) {
+            showNotification("모든 필드를 입력해주세요.", 'error');
+            return;
+        }
+
+        if (password.length < 6) {
+            showNotification("비밀번호는 최소 6자 이상이어야 합니다.", 'error');
+            return;
+        }
+
+        if (username.length < 2) {
+            showNotification("사용자명은 최소 2자 이상이어야 합니다.", 'error');
+            return;
+        }
+
+        toggleLoading(true);
+
+        const payload = { email, password, username };
 
         try {
             const res = await fetch(`${baseUrl}/api/auth/signup`, {
@@ -98,18 +835,41 @@
             });
 
             if (res.ok) {
-                alert("✅ 회원가입 성공!");
-                window.location.href = "login.html";
+                showNotification("회원가입 성공! 로그인 페이지로 이동합니다. 🎉", 'success');
+
+                // 페이지 전환 애니메이션
+                setTimeout(() => {
+                    document.body.style.opacity = '0';
+                    document.body.style.transform = 'translateX(-50px)';
+                    setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 300);
+                }, 1500);
+
             } else {
                 const error = await res.text();
-                alert("❌ 회원가입 실패: " + error);
+                showNotification(`회원가입 실패: ${error}`, 'error');
             }
         } catch (err) {
-            console.error("❌ 에러 발생", err);
-            alert("❌ 요청 실패: " + err.message);
+            console.error("회원가입 에러:", err);
+            showNotification("네트워크 오류가 발생했습니다. 다시 시도해주세요.", 'error');
+        } finally {
+            toggleLoading(false);
+        }
+    });
+
+    // 페이지 로드 애니메이션
+    window.addEventListener('load', () => {
+        document.body.style.opacity = '1';
+    });
+
+    // 엔터 키로 폼 제출
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            document.getElementById('signup-form').dispatchEvent(new Event('submit'));
         }
     });
 </script>
 </body>
 </html>
-r

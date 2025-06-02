@@ -17,7 +17,7 @@ public interface PostService {
 
     Page<PostResponseDto> getPostList(int page, int size);
 
-    Page<PostResponseDto> getPostListByUser(int page, int size,Long userId);
+    Page<PostResponseDto> getPostListByUser(int page, int size,Long userId,String sort);
 
     void updatePost(Long postId, UpdatePostRequestDto dto, Long userId);
 }

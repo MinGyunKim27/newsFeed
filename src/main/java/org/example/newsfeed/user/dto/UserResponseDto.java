@@ -1,17 +1,19 @@
 package org.example.newsfeed.user.dto;
 
+import lombok.Setter;
 import org.example.newsfeed.user.entity.User;
 import lombok.Getter;
 
 @Getter
 public class UserResponseDto {
 
-    private Long userId;
-    private String username;
-    private String email;
-    private String profileImage;
-    private String bio;
-    private long followersCount;
+    private final Long userId;
+    private final String username;
+    private final String email;
+    private final String profileImage;
+    private final String bio;
+    @Setter
+    private Long followerCount;
 
     public UserResponseDto(User user, long followersCount) {
         this.userId = user.getId();

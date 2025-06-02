@@ -1,0 +1,871 @@
+/* 다크 테마 스타일 */
+.dark-theme {
+    background-color: #1a1a1a;
+    color: #e5e7eb;
+}
+
+.dark-theme .sidebar {
+    background-color: #2d2d2d;
+    border-right: 1px solid #3f3f3f;
+}
+
+.dark-theme .sidebar h1 {
+    background: linear-gradient(135deg, #2557f6, #c089f4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: logoGlowDark 2s ease-in-out infinite alternate;
+}
+
+@keyframes logoGlowDark {
+    0% {
+        filter: brightness(1) drop-shadow(0 0 5px rgba(96, 165, 250, 0.3));
+    }
+    100% {
+        filter: brightness(1.3) drop-shadow(0 0 15px rgba(96, 165, 250, 0.6));
+    }
+}
+
+.dark-theme .sidebar h1:hover {
+    color: #9c3df8;
+}
+
+.dark-theme .sidebar .menu-item {
+    color: #d1d5db;
+}
+
+.dark-theme .sidebar .menu-item:hover {
+    background-color: #374151;
+    color: #f3f4f6;
+}
+
+.dark-theme .sidebar .menu-item svg {
+    stroke: #9ca3af;
+}
+
+.dark-theme .sidebar .menu-item:hover svg {
+    stroke: #60a5fa;
+}
+
+.dark-theme .profile-card {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .profile-card:hover {
+    background-color: #323232;
+}
+
+.dark-theme .userName {
+    color: #f3f4f6;
+}
+
+.dark-theme .profile-card:hover .userName {
+    color: #60a5fa;
+}
+
+.dark-theme .user-handle {
+    color: #9ca3af;
+}
+
+.dark-theme .profile-card:hover .user-handle {
+    color: #d1d5db;
+}
+
+.dark-theme .user-bio {
+    color: #d1d5db;
+}
+
+.dark-theme .profile-card:hover .user-bio {
+    color: #f3f4f6;
+}
+
+.dark-theme .edit-profile-btn {
+    background: linear-gradient(135deg, #1e7e34, #155724);
+}
+
+.dark-theme .edit-profile-btn:hover {
+    background: linear-gradient(135deg, #155724, #0f4c1e);
+}
+
+.dark-theme .post {
+    background-color: #2d2d2d !important;
+    border: 1px solid #3f3f3f !important;
+}
+
+.dark-theme .post h3 {
+    color: #f3f4f6 !important;
+}
+
+.dark-theme .post p {
+    color: #d1d5db !important;
+}
+
+.dark-theme .author-info strong {
+    color: #f3f4f6 !important;
+}
+
+.dark-theme .author-info span {
+    color: #9ca3af !important;
+}
+
+.dark-theme .post-actions .action {
+    color: #9ca3af !important;
+}
+
+.dark-theme .post-actions .action:hover {
+    background-color: #374151 !important;
+    color: #60a5fa !important;
+}
+
+.dark-theme .comment-section {
+    border-top: 1px solid #3f3f3f !important;
+}
+
+.dark-theme .comment-item {
+    border-bottom: 1px solid #3f3f3f !important;
+}
+
+.dark-theme .comment-item strong {
+    color: #f3f4f6 !important;
+}
+
+.dark-theme .comment-item p {
+    color: #d1d5db !important;
+}
+
+.dark-theme .comment-form textarea {
+    background-color: #374151;
+    border: 1px solid #4b5563;
+    color: #f3f4f6;
+}
+
+.dark-theme .comment-form button {
+    background: #3b82f6;
+}
+
+.dark-theme .modal-content,
+.dark-theme .create-modal-content {
+    background-color: #2d2d2d;
+    color: #e5e7eb;
+}
+
+.dark-theme .modal-header {
+    border-bottom: 1px solid #3f3f3f;
+}
+
+.dark-theme .modal-footer {
+    border-top: 1px solid #3f3f3f;
+}
+
+.dark-theme .form-group label {
+    color: #f3f4f6;
+}
+
+.dark-theme .form-group input,
+.dark-theme .form-group textarea,
+.dark-theme .input-field {
+    background-color: #374151;
+    border: 1px solid #4b5563;
+    color: #f3f4f6;
+}
+
+.dark-theme .close {
+    color: #9ca3af;
+}
+
+.dark-theme .menu-options {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .menu-item-option:hover {
+    background-color: #374151;
+}
+
+.dark-theme .submenu {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .submenu-item:hover {
+    background-color: #374151;
+}
+
+.dark-theme .write-panel {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .write-header {
+    border-bottom: 1px solid #3f3f3f;
+    color: #f3f4f6;
+}
+
+.dark-theme .write-footer {
+    border-top: 1px solid #3f3f3f;
+}
+
+.dark-theme .write-input {
+    background-color: #374151;
+    border: 1px solid #4b5563;
+    color: #f3f4f6;
+}
+
+.dark-theme .menu-dropdown {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .menu-dropdown button:hover {
+    background-color: #374151 !important;
+}
+
+.dark-theme .hamburger-menu {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+    color: #e5e7eb;
+}
+
+.dark-theme .hamburger-menu:hover {
+    background-color: #374151;
+}
+
+.dark-theme .stat-item:hover {
+    background-color: #374151;
+}
+
+.dark-theme .stat-number {
+    color: #f3f4f6;
+}
+
+.dark-theme .stat-item:hover .stat-number {
+    color: #60a5fa;
+}
+
+.dark-theme .stat-label {
+    color: #9ca3af;
+}
+
+.dark-theme .stat-item:hover .stat-label {
+    color: #d1d5db;
+}
+
+.dark-theme .text-title-container h2 {
+    color: #f3f4f6;
+}
+
+.dark-theme #follower-count {
+    color: #d1d5db;
+}
+
+/* 검색 페이지 다크 테마 스타일 */
+.dark-theme .main {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    color: #e5e7eb;
+}
+
+.dark-theme #searchInput {
+    background-color: #374151;
+    border: 2px solid #4b5563;
+    color: #f3f4f6;
+}
+
+.dark-theme #searchInput:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme #searchInput::placeholder {
+    color: #9ca3af;
+}
+
+.dark-theme .search-box button {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.dark-theme .search-box button:hover {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+.dark-theme .result-item {
+    background: linear-gradient(135deg, #2d2d2d 0%, #323232 100%);
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .result-item:hover {
+    background: linear-gradient(135deg, #323232 0%, #374151 100%);
+    border-color: #4b5563;
+}
+
+.dark-theme .result-info strong {
+    color: #f3f4f6;
+}
+
+.dark-theme .result-item:hover .result-info strong {
+    color: #60a5fa;
+}
+
+.dark-theme .result-info p {
+    color: #9ca3af;
+}
+
+.dark-theme .result-item:hover .result-info p {
+    color: #d1d5db;
+}
+
+.dark-theme .display-flex strong {
+    color: #f3f4f6;
+}
+
+.dark-theme .empty-state h3 {
+    color: #f3f4f6;
+}
+
+.dark-theme .empty-state p {
+    color: #9ca3af;
+}
+
+.dark-theme .loading-state {
+    color: #9ca3af;
+}
+
+/* 사용자 프로필 페이지 다크 테마 스타일 */
+.dark-theme .profile-card {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .profile-card:hover {
+    background-color: #323232;
+}
+
+.dark-theme .userName {
+    color: #f3f4f6;
+}
+
+.dark-theme .profile-card:hover .userName {
+    color: #60a5fa;
+}
+
+.dark-theme .user-handle {
+    color: #9ca3af;
+}
+
+.dark-theme .profile-card:hover .user-handle {
+    color: #d1d5db;
+}
+
+.dark-theme .user-bio {
+    color: #d1d5db;
+}
+
+.dark-theme .profile-card:hover .user-bio {
+    color: #f3f4f6;
+}
+
+.dark-theme #follower-count {
+    color: #d1d5db;
+}
+
+.dark-theme .text-title-container h2 {
+    color: #f3f4f6;
+}
+
+.dark-theme .post {
+    background-color: #2d2d2d !important;
+    border: 1px solid #3f3f3f !important;
+}
+
+.dark-theme .post h3 {
+    color: #f3f4f6 !important;
+}
+
+.dark-theme .post p {
+    color: #d1d5db !important;
+}
+
+.dark-theme .author-info strong {
+    color: #f3f4f6 !important;
+}
+
+.dark-theme .author-info span {
+    color: #9ca3af !important;
+}
+
+.dark-theme .post-actions .action {
+    color: #9ca3af !important;
+}
+
+.dark-theme .post-actions .action:hover {
+    background-color: #374151 !important;
+    color: #60a5fa !important;
+}
+
+.dark-theme .comment-section {
+    border-top: 1px solid #3f3f3f !important;
+}
+
+.dark-theme .comment-item {
+    border-bottom: 1px solid #3f3f3f !important;
+}
+
+.dark-theme .comment-item strong {
+    color: #f3f4f6 !important;
+}
+
+.dark-theme .comment-item p {
+    color: #d1d5db !important;
+}
+
+.dark-theme .comment-form textarea {
+    background-color: #374151;
+    border: 1px solid #4b5563;
+    color: #f3f4f6;
+}
+
+.dark-theme .comment-form button {
+    background: #3b82f6;
+}
+
+/* 뉴스피드 다크 테마 스타일 */
+.dark-theme .feed-container {
+    background-color: #1a1a1a;
+    color: #e5e7eb;
+}
+
+.dark-theme .post-trigger {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+    color: #e5e7eb;
+}
+
+.dark-theme .post-trigger span {
+    color: #9ca3af;
+}
+
+.dark-theme .post-trigger button {
+    background: #3b82f6;
+    color: white;
+}
+
+.dark-theme .post {
+    background-color: #2d2d2d !important;
+    border: 1px solid #3f3f3f !important;
+    color: #e5e7eb;
+}
+
+.dark-theme .post h3 {
+    color: #f3f4f6 !important;
+}
+
+.dark-theme .post p {
+    color: #d1d5db !important;
+}
+
+.dark-theme .author-details strong {
+    color: #f3f4f6 !important;
+}
+
+.dark-theme .post-time {
+    color: #9ca3af !important;
+}
+
+.dark-theme .post-actions .action {
+    color: #9ca3af !important;
+}
+
+.dark-theme .post-actions .action:hover {
+    background-color: #374151 !important;
+    color: #60a5fa !important;
+}
+
+.dark-theme .post-actions .like-action:hover {
+    color: #ef4444 !important;
+}
+
+.dark-theme .comment-section {
+    border-top: 1px solid #3f3f3f !important;
+}
+
+.dark-theme .comment-item {
+    color: #d1d5db;
+}
+
+.dark-theme .comment-form textarea {
+    background-color: #374151;
+    border: 1px solid #4b5563;
+    color: #f3f4f6;
+}
+
+.dark-theme .comment-form button {
+    background: #3b82f6;
+}
+
+.dark-theme .filter-dropdown {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+    color: #e5e7eb;
+}
+
+.dark-theme .filter-dropdown:hover {
+    border-color: #60a5fa;
+    background-color: #374151;
+}
+
+.dark-theme .filter-options {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .filter-option:hover {
+    background-color: #374151;
+}
+
+.dark-theme .modal-content {
+    background-color: #2d2d2d;
+    color: #e5e7eb;
+}
+
+.dark-theme .input-field {
+    background-color: #374151;
+    border: 1px solid #4b5563;
+    color: #f3f4f6;
+}
+
+.dark-theme .drop-zone {
+    background-color: #374151;
+    border: 2px dashed #4b5563;
+    color: #9ca3af;
+}
+
+.dark-theme .drop-zone:hover {
+    border-color: #60a5fa;
+    background-color: #3f3f3f;
+}
+
+.dark-theme .modal-button.cancel {
+    background: #4b5563;
+    color: #f3f4f6;
+}
+
+.dark-theme .modal-button.submit {
+    background: #3b82f6;
+    color: white;
+}
+
+.dark-theme .follow-btn-small {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.dark-theme .menu-dropdown {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .menu-dropdown button {
+    color: #e5e7eb;
+}
+
+.dark-theme .menu-dropdown button:hover {
+    background-color: #374151 !important;
+}
+
+.dark-theme .write-panel {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .write-header {
+    border-bottom: 1px solid #3f3f3f;
+    color: #f3f4f6;
+}
+
+.dark-theme .write-footer {
+    border-top: 1px solid #3f3f3f;
+}
+
+.dark-theme .write-input {
+    background-color: #374151;
+    border: 1px solid #4b5563;
+    color: #f3f4f6;
+}
+
+.dark-theme .write-btn.cancel {
+    background: #4b5563;
+    color: #f3f4f6;
+}
+
+.dark-theme .write-btn.submit {
+    background: #3b82f6;
+}
+
+.dark-theme #editPostModal > div {
+    background-color: #2d2d2d !important;
+    color: #e5e7eb;
+}
+
+.dark-theme #editPostTitle,
+.dark-theme #editPostContent,
+.dark-theme #editImageUpload {
+    background-color: #374151;
+    border: 1px solid #4b5563;
+    color: #f3f4f6;
+}
+
+/* 다크 테마 - 게시물 내부 구분선을 회색으로 */
+.dark-theme .post hr {
+    border-color: #4b5563 !important;
+    border-top: 1px solid #4b5563 !important;
+}
+
+.dark-theme .post-actions {
+    border-top: 1px solid #4b5563 !important;
+}
+
+.dark-theme .comment-section {
+    border-top: 1px solid #4b5563 !important;
+}
+
+.dark-theme .comment-item {
+    border-bottom: 1px solid #4b5563 !important;
+}
+
+.dark-theme .author-info {
+    border-bottom: 1px solid #4b5563 !important;
+}
+
+/* 기타 구분선들도 회색으로 */
+.dark-theme .profile-card .text-title-container {
+    border-top: 1px solid #4b5563 !important;
+}
+
+.dark-theme .modal-header {
+    border-bottom: 1px solid #4b5563 !important;
+}
+
+.dark-theme .modal-footer {
+    border-top: 1px solid #4b5563 !important;
+}
+
+.dark-theme .write-header {
+    border-bottom: 1px solid #4b5563 !important;
+}
+
+.dark-theme .write-footer {
+    border-top: 1px solid #4b5563 !important;
+}
+
+/* 사이드바 구분선 */
+.dark-theme .sidebar {
+    border-right: 1px solid #4b5563 !important;
+}
+
+/* 메뉴 옵션 구분선 */
+.dark-theme .logout-item {
+    border-top: 1px solid #4b5563 !important;
+}
+
+/* 다크 테마 - 게시물 내부 구분선을 회색으로 (기존에 추가한 것) */
+.dark-theme .post hr {
+    border-color: #4b5563 !important;
+    border-top: 1px solid #4b5563 !important;
+}
+
+.dark-theme .post-actions {
+    border-top: 1px solid #4b5563 !important;
+}
+
+.dark-theme .comment-section {
+    border-top: 1px solid #4b5563 !important;
+}
+
+.dark-theme .comment-item {
+    border-bottom: 1px solid #4b5563 !important;
+}
+
+/* 새로 추가해야 할 부분들 */
+
+/* 사용자 프로필 페이지 (user-profile.html) 다크 테마 */
+.dark-theme .profile-card {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .profile-card:hover {
+    background-color: #323232;
+}
+
+.dark-theme .userName {
+    color: #f3f4f6;
+}
+
+.dark-theme .profile-card:hover .userName {
+    color: #60a5fa;
+}
+
+.dark-theme .user-handle {
+    color: #9ca3af;
+}
+
+.dark-theme .profile-card:hover .user-handle {
+    color: #d1d5db;
+}
+
+.dark-theme .user-bio {
+    color: #d1d5db;
+}
+
+.dark-theme .profile-card:hover .user-bio {
+    color: #f3f4f6;
+}
+
+.dark-theme #follower-count {
+    color: #d1d5db;
+}
+
+.dark-theme .text-title-container h2 {
+    color: #f3f4f6;
+}
+
+.dark-theme .follow-btn {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.dark-theme .follow-btn:hover {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+.dark-theme .message-btn {
+    background-color: #374151;
+    border: 2px solid #4b5563;
+    color: #e5e7eb;
+}
+
+.dark-theme .message-btn:hover {
+    background-color: #4b5563;
+    border-color: #60a5fa;
+    color: #60a5fa;
+}
+
+/* 내 페이지 (mypage.html) 다크 테마 - edit-profile-btn은 이미 있음 */
+.dark-theme .edit-profile-btn {
+    background: linear-gradient(135deg, #1e7e34, #155724);
+}
+
+.dark-theme .edit-profile-btn:hover {
+    background: linear-gradient(135deg, #155724, #0f4c1e);
+}
+
+/* 인라인 hr 태그도 회색으로 */
+.dark-theme hr {
+    border-color: #4b5563 !important;
+    border-top: 1px solid #4b5563 !important;
+}
+
+/* 이미지 모달 다크 테마 */
+.dark-theme #imageModal {
+    background: rgba(0, 0, 0, 0.95);
+}
+
+.dark-theme #imageModal button {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.dark-theme #imageModal button:hover {
+    background: rgba(255, 255, 255, 0.4) !important;
+}
+
+.dark-theme #imageInfo {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* 필터 드롭다운 다크 테마 (사용자 프로필에 있음) */
+.dark-theme .filter-dropdown {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+    color: #e5e7eb;
+}
+
+.dark-theme .filter-dropdown:hover {
+    border-color: #60a5fa;
+    background-color: #374151;
+}
+
+.dark-theme .filter-options {
+    background-color: #2d2d2d;
+    border: 1px solid #3f3f3f;
+}
+
+.dark-theme .filter-option:hover {
+    background-color: #374151;
+}
+
+/* 다크 테마 - 게시물 내부 구분선을 회색으로 */
+.dark-theme .post hr {
+    border-color: #4b5563 !important;
+    border-top: 1px solid #4b5563 !important;
+}
+
+.dark-theme .post-actions {
+    border-top: 1px solid #4b5563 !important;
+}
+
+.dark-theme .comment-section {
+    border-top: 1px solid #4b5563 !important;
+}
+
+.dark-theme .comment-item {
+    border-bottom: 1px solid #4b5563 !important;
+}
+
+/* 게시물 내부의 다른 구분선들도 회색으로 */
+.dark-theme .author-info {
+    border-bottom: 1px solid #4b5563 !important;
+}
+
+/* 프로필 카드 내부 구분선 */
+.dark-theme .profile-card .text-title-container {
+    border-top: 1px solid #4b5563 !important;
+}
+
+/* 모달 구분선들 */
+.dark-theme .modal-header {
+    border-bottom: 1px solid #4b5563 !important;
+}
+
+.dark-theme .modal-footer {
+    border-top: 1px solid #4b5563 !important;
+}
+
+/* 작성 패널 구분선 */
+.dark-theme .write-header {
+    border-bottom: 1px solid #4b5563 !important;
+}
+
+.dark-theme .write-footer {
+    border-top: 1px solid #4b5563 !important;
+}
+
+/* 사이드바 구분선 */
+.dark-theme .sidebar {
+    border-right: 1px solid #4b5563 !important;
+}
+
+/* 메뉴 옵션 구분선 */
+.dark-theme .logout-item {
+    border-top: 1px solid #4b5563 !important;
+}
+
+/* 일반적인 hr 태그도 회색으로 */
+.dark-theme hr {
+    border-color: #4b5563 !important;
+    border-top: 1px solid #4b5563 !important;
+}
+
+/* 게시물 내부의 이미지와 텍스트 사이 구분선 (인라인 스타일로 추가된 hr) */
+.dark-theme .post hr[style] {
+    border-color: #4b5563 !important;
+    border-top: 1px solid #4b5563 !important;
+}
+

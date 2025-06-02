@@ -3,7 +3,12 @@ package org.example.newsfeed.post.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.example.newsfeed.post.entitiy.Post;
+import org.example.newsfeed.image.entity.Image;
+import org.example.newsfeed.post.entity.Post;
+import org.example.newsfeed.image.dto.ImageUploadResponseDto;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @Builder
@@ -16,7 +21,7 @@ public class PostResponseDto {
 
     private String content;
 
-    private String imageUrl;
+    private List<ImageUploadResponseDto> images;
 
     private String author;
 
@@ -24,13 +29,16 @@ public class PostResponseDto {
 
     private Long authorId;
 
-    public PostResponseDto(Post post) {
+    private LocalDateTime createdAt;
+
+    public PostResponseDto(Post post,List<ImageUploadResponseDto> dto) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.imageUrl = post.getImageUrl();
+        this.images = dto;
         this.author = post.getUser().getUsername();
         this.authorImageUrl = post.getUser().getProfileImage();
         this.authorId = post.getUser().getId();
+        this.createdAt = post.getCreatedAt();
     }
 }

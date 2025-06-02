@@ -3,6 +3,7 @@ package org.example.newsfeed.user.service;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.newsfeed.follow.service.FollowService;
 import org.example.newsfeed.follow.repository.FollowRepository;
 import org.example.newsfeed.global.config.PasswordEncoder;
 import org.example.newsfeed.global.exception.PasswordNotMatchException;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.example.newsfeed.global.util.RequestToId.requestToId;
 
@@ -27,6 +29,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FollowService followService;
     private final FollowRepository followRepository;
 
     // 프로필 조회
@@ -80,12 +83,29 @@ public class UserService {
         return new UserResponseDto(user, followersCount);
     }
 
+    public List<UserResponseDto> findUsers(String username,Long id) {
 
-    public Page<UserResponseDto> findUsers(String username, Pageable pageable) {
-        Page<User> usersPage = userRepository.findByUsernameContaining(username, pageable);
-
-        return usersPage.map(user -> {long followersCount = followRepository.countByFollowingId(user.getId());
-            return new UserResponseDto(user, followersCount);
-        });
+        return userRepository.findByUsernameContainingAndIdIsNot(username,id)
+                .stream()
+                .map(UserResponseDto::toDto)
+                .toList();
     }
+
+    public List<UserResponseDto> findUsersWithFollowerCount(String keyword, Long currentUserId) {
+        List<UserResponseDto> users = findUsers(keyword, currentUserId);
+
+        List<Long> userIds = users.stream()
+                .map(UserResponseDto::getUserId)
+                .toList();
+
+        Map<Long, Long> followerCountMap = followService.getFollowerCounts(userIds);
+
+        for (UserResponseDto dto : users) {
+            Long count = followerCountMap.getOrDefault(dto.getUserId(), 0L);
+            dto.setFollowerCount(count);
+        }
+
+        return users;
+    }
+
 }

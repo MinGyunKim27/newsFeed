@@ -5,7 +5,7 @@ import org.example.newsfeed.global.exception.*;
 import org.example.newsfeed.like.dto.LikeResponseDto;
 import org.example.newsfeed.like.entity.Like;
 import org.example.newsfeed.like.repository.LikeRepository;
-import org.example.newsfeed.post.entitiy.Post;
+import org.example.newsfeed.post.entity.Post;
 import org.example.newsfeed.post.repository.PostRepository;
 import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;
