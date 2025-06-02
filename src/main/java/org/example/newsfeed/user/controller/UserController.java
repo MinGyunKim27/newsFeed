@@ -72,23 +72,10 @@ public class UserController {
     ) {
         Long userId = requestToId(request, jwtProvider);
         String keyword = (username == null) ? "" : username;
-        List<UserResponseDto> userResponseDtoList = userService.findUsers(keyword, userId);
 
-        // 모든 userId 추출
-        List<Long> userIds = userResponseDtoList.stream()
-                .map(UserResponseDto::getUserId)
-                .toList();
-
-        // userId → followerCount 맵 조회
-        Map<Long, Long> followerCountMap = followService.getFollowerCounts(userIds);
-
-        // 각 DTO에 followerCount 설정
-        for (UserResponseDto userDto : userResponseDtoList) {
-            Long count = followerCountMap.getOrDefault(userDto.getUserId(), 0L);
-            userDto.setFollowerCount(count);
-        }
-
-        return ResponseEntity.ok(userResponseDtoList);
+        List<UserResponseDto> result = userService.findUsersWithFollowerCount(keyword, userId);
+        return ResponseEntity.ok(result);
     }
+
 
 }
