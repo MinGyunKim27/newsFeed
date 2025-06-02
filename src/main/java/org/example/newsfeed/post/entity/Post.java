@@ -1,4 +1,4 @@
-package org.example.newsfeed.post.entitiy;
+package org.example.newsfeed.post.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.newsfeed.global.common.entity.BaseEntity;
+import org.example.newsfeed.image.entity.Image;
 import org.example.newsfeed.user.entity.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "post")
@@ -34,14 +38,18 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    // 이미지URL
-    @Column(length = 500, nullable = true)
-    private String imageUrl;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
 
-    public void update(String title, String content, String imageUrl) {
+    @Column(name = "like_count")
+    private Long likeCount = 0L;  // 좋아요 수 저장 필드
+
+    public void update(String title, String content, List<Image> images) {
         this.title = title;
         this.content = content;
-        this.imageUrl = imageUrl;
+        this.images.clear(); // 기존 이미지 제거
+        this.images.addAll(images); // 새 이미지 추가
     }
+
 
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.newsfeed.global.common.entity.BaseEntity;
-import org.example.newsfeed.post.entitiy.Post;
+import org.example.newsfeed.post.entity.Post;
 import org.example.newsfeed.user.entity.User;
 
 @Entity

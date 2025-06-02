@@ -27,15 +27,25 @@ body {
 
 .sidebar h1 {
     font-size: 24px;
-    color: #007aff;
     margin-bottom: 40px;
     margin-left: 24px;
+    margin-top: 24px;
     transition: color 0.3s ease, transform 0.2s ease;
     cursor: pointer;
+    background: linear-gradient(135deg, #3253e8, #cea2f8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: logoGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes logoGlow {
+    0% { filter: brightness(1); }
+    100% { filter: brightness(1.2); }
 }
 
 .sidebar h1:hover {
-    color: #0056b3;
+    color: #764ba2;
     transform: scale(1.05);
 }
 
@@ -78,7 +88,7 @@ body {
     top: 0;
     width: 3px;
     height: 100%;
-    background-color: #007aff;
+    background-color: #456ff6;
     animation: slideIn 0.3s ease;
 }
 
@@ -95,7 +105,7 @@ body {
 }
 
 .sidebar .menu-item:hover svg {
-    stroke: #007aff;
+    stroke: #5360f4;
     transform: rotate(2deg) scale(1.05);
 }
 
@@ -130,7 +140,7 @@ body {
     left: -100%;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, transparent, #007aff, transparent);
+    background: linear-gradient(90deg, transparent, #4538f8, transparent);
     transition: left 0.6s ease;
 }
 
@@ -151,7 +161,7 @@ body {
 }
 
 .post:hover h3 {
-    color: #007aff;
+    color: #4538f8;
 }
 
 .post p {
@@ -238,7 +248,7 @@ body {
 
 .post-actions .action:hover {
     background-color: #f3f4f6;
-    color: #007aff;
+    color: #4538f8;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
 }
@@ -251,7 +261,7 @@ body {
     transform: translateX(-50%);
     width: 0;
     height: 2px;
-    background-color: #007aff;
+    background-color: #4538f8;
     animation: expandWidth 0.3s ease forwards;
 }
 
@@ -311,7 +321,7 @@ body {
 .post-trigger:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    border-color: #007aff;
+    border-color: #4538f8;
     background: linear-gradient(145deg, #ffffff, #f8fafc);
 }
 
@@ -347,9 +357,9 @@ body {
 }
 
 .post-trigger button:hover {
-    background: #007aff;
+    background: #4538f8;
     color: white;
-    border-color: #007aff;
+    border-color: #4538f8;
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
 }
@@ -377,18 +387,18 @@ body {
 }
 
 .comment-input:hover {
-    border-color: #007aff;
+    border-color: #4538f8;
     box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
 }
 
 .comment-input:focus {
-    border-color: #007aff;
+    border-color: #4538f8;
     box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
     outline: none;
 }
 
 .comment-submit {
-    background-color: #3b82f6;
+    background-color: #4538f8;
     color: white;
     border: none;
     border-radius: 8px;
@@ -416,7 +426,7 @@ body {
 }
 
 .comment-submit:hover {
-    background-color: #2563eb;
+    background-color: #4538f8;
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
 }
@@ -478,19 +488,6 @@ body {
     overflow: hidden;
 }
 
-.modal-button::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: all 0.4s ease;
-}
-
 .modal-button:hover::after {
     width: 200px;
     height: 200px;
@@ -511,13 +508,13 @@ body {
 
 .modal-content input[type="text"]:hover,
 .modal-content textarea:hover {
-    border-color: #007aff;
+    border-color: #4538f8;
     box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
 }
 
 .modal-content input[type="text"]:focus,
 .modal-content textarea:focus {
-    border-color: #007aff;
+    border-color: #4538f8;
     box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
 }
 
@@ -538,7 +535,7 @@ body {
 }
 
 .modal-button.submit:hover {
-    background-color: #2563eb;
+    background-color: #4538f8;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
@@ -577,7 +574,7 @@ body {
 .post .author-info img:hover {
     transform: scale(1.15) rotate(5deg) !important;
     box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3) !important;
-    border: 2px solid #007aff !important;
+    border: 2px solid #4538f8 !important;
 }
 
 .follow-btn-small {
@@ -625,7 +622,7 @@ body {
 }
 
 .follow-btn-small.following {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, #3181fa, #dc2626);
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
 }
 
@@ -639,7 +636,7 @@ body {
 }
 
 .post-actions .action:hover svg {
-    transform: scale(1.2) rotate(10deg);
+    transform: scale(1.2);
 }
 
 /* 스크롤바 스타일링 */
@@ -723,3 +720,252 @@ body {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+.like-action:hover {
+    color: #ef4444 !important;
+}
+
+.like-action.liked {
+    color: #ef4444 !important;
+}
+
+.like-action.liked svg {
+    fill: #ef4444;
+}
+
+
+/* 오른쪽 하단 작성 페이지 */
+.write-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    height: 400px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+}
+
+.write-header {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+
+.write-body {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.write-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.write-textarea {
+    flex: 1;
+    resize: none;
+    min-height: 120px;
+}
+
+.write-footer {
+    padding: 16px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.write-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.write-btn.cancel {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.write-btn.submit {
+    background: #4538f8;
+    color: white;
+}
+
+/* 플로팅 작성 버튼 */
+.floating-write-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    background: #4538f8;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    z-index: 999;
+}
+
+/* 왼쪽 하단 햄버거 메뉴 버튼 */
+.hamburger-menu {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 1000;
+}
+
+.hamburger-menu:hover {
+    background: #f9fafb;
+}
+
+/* 메뉴 옵션 패널 */
+.menu-options {
+    position: fixed;
+    bottom: 80px;
+    left: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    padding: 8px;
+    min-width: 180px;
+    display: none;
+    z-index: 1001;
+}
+
+.menu-item-option {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.3s ease;
+}
+
+.menu-item-option:hover {
+    background: #f3f4f6;
+}
+
+.menu-item-option.has-submenu::after {
+    content: '›';
+    font-size: 16px;
+    color: #6b7280;
+}
+
+/* 서브메뉴 */
+.submenu {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 8px;
+    min-width: 120px;
+    display: none;
+    margin-left: 8px;
+}
+
+.submenu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+    font-size: 14px;
+}
+
+.submenu-item:hover {
+    background: #f3f4f6;
+}
+
+.logout-item {
+    color: #ef4444;
+    border-top: 1px solid #f3f4f6;
+    margin-top: 4px;
+    padding-top: 12px;
+}
+
+.filter-dropdown {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.filter-dropdown:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+}
+
+.filter-options {
+    position: absolute;
+    top: 40px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    min-width: 120px;
+    z-index: 100;
+    display: none;
+}
+
+.filter-option {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.filter-option:hover {
+    background: #f3f4f6;
+}
+
+.drop-zone {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+    background: #fafafa;
+}
+
+.drop-zone:hover, .drop-zone.drag-over {
+    border-color: #4538f8;
+    background: #f0f8ff;
+}
+

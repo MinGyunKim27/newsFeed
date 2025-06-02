@@ -9,7 +9,7 @@ import org.example.newsfeed.global.exception.CommentNotFoundException;
 import org.example.newsfeed.global.exception.NoPermissionException;
 import org.example.newsfeed.global.exception.PostNotFoundException;
 import org.example.newsfeed.global.exception.UserNotFoundException;
-import org.example.newsfeed.post.entitiy.Post;
+import org.example.newsfeed.post.entity.Post;
 import org.example.newsfeed.post.repository.PostRepository;
 import org.example.newsfeed.user.entity.User;
 import org.example.newsfeed.user.repository.UserRepository;

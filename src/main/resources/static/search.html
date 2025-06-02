@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>PicFlow 검색</title>
+    <link rel="stylesheet" href="/css/theme.css">
     <style>
         body {
             margin: 0;
@@ -46,16 +47,25 @@
 
         .sidebar h1 {
             font-size: 24px;
-            color: #007aff;
             margin-bottom: 40px;
             margin-left: 24px;
             margin-top: 24px;
             transition: color 0.3s ease, transform 0.2s ease;
             cursor: pointer;
+            background: linear-gradient(135deg, #3253e8, #cea2f8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
         }
 
         .sidebar h1:hover {
-            color: #0056b3;
+            color: #4538f8;
             transform: scale(1.05);
         }
 
@@ -98,7 +108,7 @@
             top: 0;
             width: 3px;
             height: 100%;
-            background-color: #007aff;
+            background-color: #4538f8;
             animation: slideIn 0.3s ease;
         }
 
@@ -115,7 +125,7 @@
         }
 
         .sidebar .menu-item:hover svg {
-            stroke: #007aff;
+            stroke: #4538f8;
             transform: rotate(2deg) scale(1.05);
         }
 
@@ -153,7 +163,7 @@
         }
 
         #searchInput:focus {
-            border-color: #007aff;
+            border-color: #4538f8;
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1), 0 4px 12px rgba(0, 0, 0, 0.1);
             transform: translateY(-1px);
         }
@@ -165,7 +175,7 @@
 
         .search-box button {
             padding: 16px 28px;
-            background: linear-gradient(135deg, #007aff, #0056b3);
+            background: linear-gradient(135deg, #007aff, #4538f8);
             border: none;
             color: white;
             font-size: 16px;
@@ -192,7 +202,7 @@
         }
 
         .search-box button:hover {
-            background: linear-gradient(135deg, #0056b3, #004494);
+            background: linear-gradient(135deg, #5d52fb, #4538f8);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
         }
@@ -240,7 +250,7 @@
             left: -100%;
             width: 100%;
             height: 3px;
-            background: linear-gradient(90deg, transparent, #007aff, transparent);
+            background: linear-gradient(90deg, transparent, #4538f8, transparent);
             transition: left 0.6s ease;
         }
 
@@ -269,7 +279,7 @@
         }
 
         .result-item:hover img {
-            border-color: #007aff;
+            border-color: #4538f8;
             transform: scale(1.05);
             box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
         }
@@ -289,7 +299,7 @@
         }
 
         .result-item:hover .result-info strong {
-            color: #007aff;
+            color: #4538f8;
         }
 
         .result-info p {
@@ -357,7 +367,7 @@
             width: 32px;
             height: 32px;
             border: 3px solid #f3f4f6;
-            border-top: 3px solid #007aff;
+            border-top: 3px solid #4538f8;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
@@ -385,7 +395,7 @@
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #007aff;
+            background: #4538f8;
         }
 
         /* 반응형 디자인 */
@@ -453,7 +463,7 @@
 
             .result-info strong {
                 font-size: 16px;
-                color: #2777fa;
+                color: #4538f8;
             }
 
             .result-info p {
@@ -498,11 +508,126 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-weigh
+            font-weight: bold;
+        }
+
+        /* 왼쪽 하단 햄버거 메뉴 버튼 */
+        .hamburger-menu {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+
+        .hamburger-menu:hover {
+            background: #f9fafb;
+        }
+
+        /* 메뉴 옵션 패널 */
+        .menu-options {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            padding: 8px;
+            min-width: 180px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .menu-item-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.3s ease;
+        }
+
+        .menu-item-option:hover {
+            background: #f3f4f6;
+        }
+
+        .menu-item-option.has-submenu::after {
+            content: '›';
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        /* 서브메뉴 */
+        .submenu {
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 8px;
+            min-width: 120px;
+            display: none;
+            margin-left: 8px;
+        }
+
+        .submenu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+            font-size: 14px;
+        }
+
+        .submenu-item:hover {
+            background: #f3f4f6;
+        }
+
+        .logout-item {
+            color: #ef4444;
+            border-top: 1px solid #f3f4f6;
+            margin-top: 4px;
+            padding-top: 12px;
+        }
+
+        /* 플로팅 작성 버튼 */
+        .floating-write-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #6f65fb, #4538f8);
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-write-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+        }
+
+
 
     </style>
 </head>
-<body>
+<body class="dark-theme">
 <div class="sidebar">
     <h1>PicFlow</h1>
     <div class="menu-wrapper">
@@ -592,7 +717,7 @@
                     const img = isUser
                         ? item.profileImage
                             ? `${baseUrl}/images/${item.profileImage}`
-                            : "https://via.placeholder.com/32x32?text=No+Img"
+                            : "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8IS0tIOq3uOudvOuUlOyWuO2KuCDsoJXsnZggLS0+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnR3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3NjRiYTI7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJwZXJzb25HcmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmZmZmY7c3RvcC1vcGFjaXR5OjAuOSIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eTowLjciIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8IS0tIOybkO2YhSDrsLDqsr0gKOq3uOudvOuUlOyWuO2KuCkgLS0+CiAgPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9InVybCgjYmdHcmFkaWVudCkiLz4KICA8IS0tIOyCrOumhCDsi6TroKjsmIvsnIQgKOuNlCDshLjroKjrkJzsmYQg65SU7J6Q7J2EKSAtLT4KICA8IS0tIOuquOumrCAtLT4KICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjE0IiByPSI3IiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgogIDwhLS0g66qJ7YG1ICjrjZQg7J6Q7Jew7Iqk7Yuw7JuQIOqzoOyEoCkgLS0+CiAgPHBhdGggZD0iTTYgMzYgQzYgMjcsIDEyIDIzLCAyMCAyMyBDMjggMjMsIDM0IDI3LCAzNCAzNiBDMzQgMzgsIDM0IDQwLCAzNCA0MCBMOSA0MCBDOCA0MCwgNiAzOCwgNiAzNiBaIiBmaWxsPSJ1cmwoI3BlcnNvbkdyYWRpZW50KSIvPgo8L3N2Zz4K"
                         : item.imageUrl
                             ? `${baseUrl}/images/${item.imageUrl}`
                             : "";
@@ -614,8 +739,65 @@
             });
     }
 
+    // 테마 초기화 함수
+    function initializeTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.className = savedTheme === 'dark' ? 'dark-theme' : 'light-theme';
+    }
+
+
+    // 테마 알림 함수
+    function showThemeNotification(message) {
+        const existingNotification = document.querySelector('.theme-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        const notification = document.createElement('div');
+        notification.className = 'theme-notification';
+        notification.textContent = message;
+        notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--notification-bg, #10b981);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        font-weight: 500;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // 페이지 로드 시 테마 적용
+    document.addEventListener("DOMContentLoaded", initializeTheme);
+
     function goToUserProfile(userId) {
         window.location.href = `/user-profile.html?userId=${userId}`;
+    }
+
+    // 서브메뉴
+    function toggleSubmenu(submenuId) {
+        const display = document.getElementById(submenuId);
+        display.style.display = display.style.display === 'block' ? 'none' : 'block';
     }
 
     // openModal 함수 추가
@@ -700,6 +882,48 @@
         }
     }
 
+    // 메인 메뉴 토글
+    function toggleMainMenu() {
+        const menu = document.getElementById('main-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // 서브메뉴 표시
+    function showSubmenu(submenuId) {
+        document.getElementById(submenuId).style.display = 'block';
+    }
+
+    // 서브메뉴 숨기기
+    function hideSubmenu(submenuId) {
+        document.getElementById(submenuId).style.display = 'none';
+    }
+
+    // 테마 설정 (수정된 버전)
+    function setTheme(theme) {
+        document.body.className = theme === 'dark' ? 'dark-theme' : 'light-theme';
+        localStorage.setItem('theme', theme);
+        toggleMainMenu();
+        showThemeNotification(`${theme === 'dark' ? '다크' : '라이트'} 테마로 변경되었습니다.`);
+    }
+
+    // 로그아웃
+    function logout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            localStorage.clear();
+            window.location.replace('/login.html');
+        }
+    }
+
+    // 문서 클릭 시 메뉴 닫기
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.hamburger-menu') && !e.target.closest('.menu-options')) {
+            const mainMenu = document.getElementById('main-menu');
+            if (mainMenu) mainMenu.style.display = 'none';
+        }
+    });
+
 </script>
 
 <!-- 게시물 작성 모달 -->
@@ -716,5 +940,32 @@
         </div>
     </div>
 </div>
+
+<!-- 왼쪽 하단 햄버거 메뉴 -->
+<div class="hamburger-menu" onclick="toggleMainMenu()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+</div>
+
+<!-- 메뉴 옵션 패널 -->
+<div id="main-menu" class="menu-options">
+    <div class="menu-item-option has-submenu" onclick="toggleSubmenu('design-submenu')">
+        <span>디자인</span>
+        <div id="design-submenu" class="submenu">
+            <div class="submenu-item" onclick="setTheme('light')">라이트</div>
+            <div class="submenu-item" onclick="setTheme('dark')">다크</div>
+        </div>
+    </div>
+
+    <div class="menu-item-option logout-item" onclick="logout()">
+        <span>로그아웃</span>
+    </div>
+</div>
+
+<!-- 오른쪽 하단 플로팅 작성 버튼 -->
+<button class="floating-write-btn" onclick="openModal()">+</button>
 </body>
 </html>
