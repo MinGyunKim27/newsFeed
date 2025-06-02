@@ -22,4 +22,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
     //페이징 조회용
     Page<User> findByUsernameContaining(String username, Pageable pageable);
 
+    List<User> findByUsernameContainingAndIdIsNot(String username,Long id);
+
 }

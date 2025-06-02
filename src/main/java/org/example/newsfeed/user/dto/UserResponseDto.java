@@ -15,16 +15,15 @@ public class UserResponseDto {
     @Setter
     private Long followerCount;
 
-    public UserResponseDto(User user, long followersCount) {
+    public UserResponseDto(User user) {
         this.userId = user.getId();
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.profileImage = user.getProfileImage();
         this.bio = user.getBio();
-        this.followersCount = followersCount;
     }
 
     public static UserResponseDto toDto(User user) {
-        return new UserResponseDto(user, 0);
+        return new UserResponseDto(user);
     }
 }
