@@ -11,6 +11,7 @@ import org.example.newsfeed.post.dto.UpdatePostRequestDto;
 import org.example.newsfeed.post.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,22 +27,18 @@ import java.net.URI;
 public class PostController {
 
     private final PostService postService;
-    private final JwtProvider jwtProvider;
 
     /**
      * 게시글 생성
      * @param dto 게시글 생성 요청 데이터
-     * @param request HTTP 요청 (Authorization 헤더에서 JWT 추출)
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return 생성된 게시글의 ID와 Location 헤더 포함
      */
     @PostMapping
     public ResponseEntity<Long> createPost(
             @RequestBody @Validated CreatePostRequestDto dto,
-            HttpServletRequest request
+            @AuthenticationPrincipal long userId
     ) {
-        // JWT 토큰에서 사용자 ID 추출
-        String token = request.getHeader("Authorization").substring(7);
-        Long userId = jwtProvider.getUserId(token);
 
         // 게시글 생성
         Long postId = postService.createPost(dto, userId);
@@ -58,7 +55,9 @@ public class PostController {
      * @return 게시글 상세 DTO
      */
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> getPost(@PathVariable Long postId) {
+    public ResponseEntity<PostResponseDto> getPost(
+            @PathVariable Long postId
+    ) {
         PostResponseDto dto = postService.findById(postId);
         return ResponseEntity.ok(dto);
     }
@@ -66,16 +65,14 @@ public class PostController {
     /**
      * 게시글 삭제
      * @param postId 삭제할 게시글 ID
-     * @param request Authorization 헤더에서 사용자 인증
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return 204 No Content
      */
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(
             @PathVariable Long postId,
-            HttpServletRequest request
+            @AuthenticationPrincipal long userId
     ) {
-        String token = request.getHeader("Authorization").substring(7);
-        Long userId = jwtProvider.getUserId(token);
 
         postService.deletePost(postId, userId);
         return ResponseEntity.noContent().build();
@@ -121,18 +118,15 @@ public class PostController {
      * 게시글 수정
      * @param postId 수정할 게시글 ID
      * @param dto 수정 요청 데이터
-     * @param request Authorization 헤더에서 사용자 인증
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return 204 No Content
      */
     @PutMapping("/{postId}")
     public ResponseEntity<Void> updatePost(
             @PathVariable Long postId,
             @RequestBody @Validated UpdatePostRequestDto dto,
-            HttpServletRequest request
+            @AuthenticationPrincipal long userId
     ) {
-        String token = request.getHeader("Authorization").substring(7);
-        Long userId = jwtProvider.getUserId(token);
-
         postService.updatePost(postId, dto, userId);
         return ResponseEntity.noContent().build();
     }

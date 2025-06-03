@@ -7,6 +7,7 @@ import org.example.newsfeed.like.dto.LikeResponseDto;
 import org.example.newsfeed.like.service.LikeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,21 +22,20 @@ import java.util.List;
 public class LikeController {
 
     private final LikeService likeService;
-    private final JwtProvider jwtProvider;
 
     /**
      * 좋아요 생성 (사용자가 게시글에 좋아요를 누름)
      *
      * @param postId 좋아요 대상 게시글 ID
-     * @param request 인증 토큰이 포함된 HTTP 요청
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return HTTP 201 Created 응답
      */
     @PostMapping("/api/posts/{postId}/likes")
-    public ResponseEntity<Void> createLike(@PathVariable Long postId, HttpServletRequest request) {
+    public ResponseEntity<Void> createLike(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal long userId) {
         // JWT 토큰에서 사용자 ID 추출
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        Long userId = jwtProvider.getUserId(token);
+
 
         likeService.createLike(postId, userId);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -48,7 +48,9 @@ public class LikeController {
      * @return 좋아요한 사용자 정보 리스트
      */
     @GetMapping("/api/posts/{postId}/likes")
-    public ResponseEntity<List<LikeResponseDto>> getLikeUserList(@PathVariable Long postId) {
+    public ResponseEntity<List<LikeResponseDto>> getLikeUserList(
+            @PathVariable Long postId
+    ) {
         return new ResponseEntity<>(likeService.getLikeUserList(postId), HttpStatus.OK);
     }
 
@@ -59,7 +61,9 @@ public class LikeController {
      * @return 좋아요 수 (Long)
      */
     @GetMapping("/api/posts/{postId}/likes/count")
-    public ResponseEntity<Long> getLikeCount(@PathVariable Long postId) {
+    public ResponseEntity<Long> getLikeCount(
+            @PathVariable Long postId
+    ) {
         return new ResponseEntity<>(likeService.getLikeCount(postId), HttpStatus.OK);
     }
 
@@ -67,15 +71,13 @@ public class LikeController {
      * 좋아요 취소 (사용자가 게시글 좋아요를 취소함)
      *
      * @param postId 게시글 ID
-     * @param request 인증 토큰이 포함된 HTTP 요청
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return HTTP 200 OK 응답
      */
     @DeleteMapping("/api/posts/{postId}/likes")
-    public ResponseEntity<Void> deleteLike(@PathVariable Long postId, HttpServletRequest request) {
-        // JWT 토큰에서 사용자 ID 추출
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        Long userId = jwtProvider.getUserId(token);
+    public ResponseEntity<Void> deleteLike(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal long userId) {
 
         likeService.deleteLike(postId, userId);
 

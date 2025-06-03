@@ -10,6 +10,7 @@ import org.example.newsfeed.user.dto.UserResponseDto;
 import org.example.newsfeed.user.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,6 @@ public class UserController {
 
     private final UserService userService;
     private final FollowService followService;
-    private final JwtProvider jwtProvider;
 
     /**
      * 사용자 정보 조회 API
@@ -38,7 +38,9 @@ public class UserController {
      * @return 사용자 정보 + 팔로워 수를 포함한 응답 DTO
      */
     @GetMapping("/{userId}")
-    public ResponseEntity<UserResponseDto> getUser(@PathVariable Long userId) {
+    public ResponseEntity<UserResponseDto> getUser(
+            @PathVariable Long userId
+    ) {
         Long followerCount = followService.getFollowerCount(userId);         // 팔로워 수 조회
         UserResponseDto userResponseDto = userService.getUser(userId);       // 사용자 정보 조회
         userResponseDto.setFollowerCount(followerCount);                     // 팔로워 수 추가
@@ -50,15 +52,15 @@ public class UserController {
      * 사용자 프로필 수정 API
      *
      * @param requestDto 프로필 수정 요청 DTO (닉네임, 소개글 등)
-     * @param request HTTP 요청 객체 (Authorization 헤더 포함)
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return 수정된 사용자 정보 + 팔로워 수 포함 응답 DTO
      */
     @PutMapping("/profile")
     public ResponseEntity<UserResponseDto> updateProfile(
             @Validated @RequestBody ProfileUpdateRequestDto requestDto,
-            HttpServletRequest request) {
+            @AuthenticationPrincipal long userId) {
 
-        Long userId = requestToId(request, jwtProvider);                     // JWT에서 userId 추출
+                // JWT에서 userId 추출
         Long followerCount = followService.getFollowerCount(userId);        // 팔로워 수 조회
 
         UserResponseDto userResponseDto = userService.updateProfile(userId, requestDto); // 프로필 업데이트
@@ -71,15 +73,14 @@ public class UserController {
      * 사용자 비밀번호 변경 API
      *
      * @param requestDto 현재 비밀번호 + 새 비밀번호를 담은 DTO
-     * @param request HTTP 요청 객체 (Authorization 헤더 포함)
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return 비밀번호 변경 후 사용자 정보 반환
      */
     @PutMapping("/password")
     public ResponseEntity<UserResponseDto> updatePassword(
             @Validated @RequestBody PasswordUpdateRequestDto requestDto,
-            HttpServletRequest request
+            @AuthenticationPrincipal long userId
     ) {
-        Long userId = requestToId(request, jwtProvider);                     // JWT에서 userId 추출
         return ResponseEntity.ok(userService.updatePassword(userId, requestDto));
     }
 
@@ -89,7 +90,7 @@ public class UserController {
      * @param username 검색할 사용자 이름 (선택값)
      * @param page 페이지 번호 (기본값 0)
      * @param size 페이지 크기 (기본값 0)
-     * @param request HTTP 요청 객체 (Authorization 헤더 포함)
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return 검색된 사용자 리스트 (페이지 형태)
      */
     @GetMapping
@@ -97,9 +98,8 @@ public class UserController {
             @RequestParam(required = false) String username,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "0") int size,
-            HttpServletRequest request
+            @AuthenticationPrincipal long userId
     ) {
-        Long userId = requestToId(request, jwtProvider);                     // JWT에서 userId 추출
         String keyword = (username == null) ? "" : username;                // 검색어 없으면 빈 문자열 처리
 
         Page<UserResponseDto> result = userService.findUsersWithFollowerCount(keyword, userId, page, size);
