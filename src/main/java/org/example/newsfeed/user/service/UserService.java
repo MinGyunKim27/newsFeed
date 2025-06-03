@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.example.newsfeed.global.util.RequestToId.requestToId;
+import static org.example.newsfeed.user.dto.UserResponseDto.toDto;
 
 /**
  * 사용자(User) 관련 비즈니스 로직을 담당하는 서비스 클래스입니다.
@@ -40,7 +41,7 @@ public class UserService {
     public UserResponseDto getUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-        return new UserResponseDto(user);
+        return toDto(user);
     }
 
     /**
@@ -57,8 +58,7 @@ public class UserService {
         user.updateProfile(requestDto.getUsername(), requestDto.getProfileImage(), requestDto.getBio());
 
         userRepository.save(user); // 변경 감지를 활용한 저장
-
-        return new UserResponseDto(user);
+        return toDto(user);
     }
 
     /**
@@ -83,7 +83,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        return new UserResponseDto(user);
+        return toDto(user);
     }
 
     /**
