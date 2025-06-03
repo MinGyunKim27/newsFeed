@@ -1294,7 +1294,7 @@
         document.getElementById("overlay").style.display = "flex";
     }
 
-    // 페이지 초기화
+    // 디버깅을 위한 페이지 초기화 함수 수정
     async function initializePage() {
         // 토큰 확인
         if (!token) {
@@ -1309,6 +1309,19 @@
             window.location.href = "/";
             return;
         }
+
+        // currentUserId 확인
+        if (!currentUserId) {
+            alert("로그인 정보가 없습니다.");
+            window.location.href = "/login.html";
+            return;
+        }
+
+        console.log("페이지 초기화 시작:", {
+            token: token ? "있음" : "없음",
+            userId: userId,
+            currentUserId: currentUserId
+        });
 
         try {
             // 순차적으로 데이터 로드
@@ -1344,7 +1357,7 @@
         }
     }
 
-    // 사용자의 좋아요 상태 확인 함수
+    // 수정된 loadUserLikeStatus 함수
     async function loadUserLikeStatus(postId) {
         try {
             const res = await fetch(`${baseUrl}/api/posts/${postId}/likes`, {
@@ -1355,28 +1368,51 @@
                 const likeUserList = await res.json();
                 const likeElement = document.querySelector(`#like-count-${postId}`).parentElement;
 
-                // 현재 사용자가 좋아요 누른 사람 목록에 있는지 확인
-                const userLiked = likeUserList.some(like => like.userId == currentUser?.id);
+                // currentUserId 사용 (localStorage에서 가져온 현재 로그인한 사용자 ID)
+                const userLiked = likeUserList.some(like => like.userId == currentUserId);
+
+                console.log(`게시물 ${postId} 좋아요 상태:`, {
+                    currentUserId: currentUserId,
+                    likeUserList: likeUserList,
+                    userLiked: userLiked
+                });
 
                 if (userLiked) {
                     likeElement.classList.add('liked');
                     likeElement.style.color = '#ef4444';
+                    // SVG도 채우기
+                    const svg = likeElement.querySelector('svg');
+                    if (svg) {
+                        svg.style.fill = '#ef4444';
+                    }
                 } else {
                     likeElement.classList.remove('liked');
                     likeElement.style.color = '#6b7280';
+                    // SVG 채우기 제거
+                    const svg = likeElement.querySelector('svg');
+                    if (svg) {
+                        svg.style.fill = 'none';
+                    }
                 }
             }
         } catch (err) {
             console.error(`좋아요 상태 로딩 실패 (${postId}):`, err);
         }
     }
-
     // 좋아요 토글 함수
+    // 좋아요 토글 함수도 개선
     async function toggleLike(postId, likeElement) {
         try {
             const countSpan = likeElement.querySelector('span');
             const currentCount = parseInt(countSpan.textContent) || 0;
             const isLiked = likeElement.classList.contains('liked');
+
+            console.log(`좋아요 토글 시작:`, {
+                postId: postId,
+                currentCount: currentCount,
+                isLiked: isLiked,
+                currentUserId: currentUserId
+            });
 
             if (isLiked) {
                 // 좋아요 취소
@@ -1389,6 +1425,16 @@
                     likeElement.classList.remove('liked');
                     countSpan.textContent = currentCount - 1;
                     likeElement.style.color = '#6b7280';
+
+                    // SVG 채우기 제거
+                    const svg = likeElement.querySelector('svg');
+                    if (svg) {
+                        svg.style.fill = 'none';
+                    }
+
+                    console.log(`좋아요 취소 완료: ${postId}`);
+                } else {
+                    throw new Error(`좋아요 취소 실패: ${res.status}`);
                 }
             } else {
                 // 좋아요 추가
@@ -1401,11 +1447,21 @@
                     likeElement.classList.add('liked');
                     countSpan.textContent = currentCount + 1;
                     likeElement.style.color = '#ef4444';
+
+                    // SVG 채우기 추가
+                    const svg = likeElement.querySelector('svg');
+                    if (svg) {
+                        svg.style.fill = '#ef4444';
+                    }
+
+                    console.log(`좋아요 추가 완료: ${postId}`);
+                } else {
+                    throw new Error(`좋아요 추가 실패: ${res.status}`);
                 }
             }
         } catch (err) {
             console.error('좋아요 처리 실패:', err);
-            alert('좋아요 처리 중 오류가 발생했습니다.');
+            alert('좋아요 처리 중 오류가 발생했습니다: ' + err.message);
         }
     }
 
