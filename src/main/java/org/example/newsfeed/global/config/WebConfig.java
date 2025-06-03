@@ -46,4 +46,11 @@ public class WebConfig implements WebMvcConfigurer {
 
         return filterRegistrationBean;
     }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 요청 경로 /images/** → 실제 파일 위치 C:/upload/images/
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:///C:/upload/images/");
+    }
 }
