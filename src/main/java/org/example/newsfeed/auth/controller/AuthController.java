@@ -29,7 +29,6 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtProvider jwtProvider;
-    private final AuthUtil authUtil;
     private final FollowService followService;
 
 
