@@ -11,6 +11,7 @@ import org.example.newsfeed.global.util.JwtProvider;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -29,20 +30,15 @@ public class CommentController {
      * 댓글 생성 API
      * @param dto 댓글 내용 DTO
      * @param postId 댓글이 달릴 게시글 ID
-     * @param request 인증 토큰을 포함한 요청
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return 생성된 댓글 응답 DTO
      */
     @PostMapping("/api/posts/{postId}/comments")
     public ResponseEntity<CommentResponseDto> createComment(
             @Valid @RequestBody CreateCommentRequestDto dto,
             @PathVariable Long postId,
-            HttpServletRequest request
+            @AuthenticationPrincipal Long userId
     ) {
-        // JWT 토큰에서 사용자 ID 추출
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        Long userId = jwtProvider.getUserId(token);
-
         // 댓글 생성 후 201 응답
         return new ResponseEntity<>(commentService.createComment(dto.getContent(), postId, userId), HttpStatus.CREATED);
     }
@@ -70,7 +66,9 @@ public class CommentController {
      * @return 댓글 개수(Long)
      */
     @GetMapping("/api/posts/{postId}/comments/count")
-    public ResponseEntity<Long> getCommentList(@PathVariable Long postId) {
+    public ResponseEntity<Long> getCommentList(
+            @PathVariable Long postId
+    ) {
         return new ResponseEntity<>(commentService.getCommentTotalCount(postId), HttpStatus.OK);
     }
 
@@ -78,35 +76,28 @@ public class CommentController {
      * 댓글 수정 API
      * @param dto 수정할 댓글 내용 DTO
      * @param commentId 수정할 댓글 ID
-     * @param request 인증 토큰을 포함한 요청
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return 수정된 댓글 응답 DTO
      */
     @PutMapping("/api/comments/{commentId}")
     public ResponseEntity<CommentResponseDto> updateComment(
             @Valid @RequestBody CreateCommentRequestDto dto,
             @PathVariable Long commentId,
-            HttpServletRequest request
+            @AuthenticationPrincipal Long userId
     ) {
-        // JWT 토큰에서 사용자 ID 추출
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        Long userId = jwtProvider.getUserId(token);
-
         return new ResponseEntity<>(commentService.updateComment(dto.getContent(), commentId, userId), HttpStatus.OK);
     }
 
     /**
      * 댓글 삭제 API
      * @param commentId 삭제할 댓글 ID
-     * @param request 인증 토큰을 포함한 요청
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return HTTP 200 OK (본문 없음)
      */
     @DeleteMapping("/api/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId, HttpServletRequest request) {
-        // JWT 토큰에서 사용자 ID 추출
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader.substring(7);
-        Long userId = jwtProvider.getUserId(token);
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal Long userId) {
 
         commentService.deleteComment(commentId, userId);
 

@@ -12,6 +12,7 @@ import org.example.newsfeed.global.util.JwtProvider;
 import org.example.newsfeed.user.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,15 +68,14 @@ public class AuthController {
      * 사용자 회원 탈퇴를 진행합니다
      *
      * @param withdrawRequestDto 사용자 비밀번호 정보
-     * @param request 서블릿 리퀘스트(토큰 추출용)
+     * @param userId 인증된 사용자 ID (JWT 기반 @AuthenticationPrincipal에서 추출)
      * @return 상태코드 반환
      */
     @DeleteMapping("/withdraw")
     public ResponseEntity<Void> withdraw(
             @Validated @RequestBody WithdrawRequestDto withdrawRequestDto,
-            HttpServletRequest request
+            @AuthenticationPrincipal long userId
     ){
-        Long userId = requestToId(request,jwtProvider);
         followService.deleteAllFollowByUserId(userId);
         authService.withdraw(withdrawRequestDto, userId);
 
