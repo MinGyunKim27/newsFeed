@@ -63,9 +63,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            [ -f ${{ env.DEPLOY_DIR }}/.env ] && export $(cat ${{ env.DEPLOY_DIR }}/.env | xargs)
-            pkill -f 'java -jar' || true
-            cd ${{ env.DEPLOY_DIR }}
-            setsid nohup java -jar $(ls -t *.jar | head -n1) > app.log 2>&1 &
+            bash /home/ubuntu/app/run-deploy.sh
 
       
