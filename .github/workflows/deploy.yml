@@ -66,5 +66,6 @@ jobs:
             [ -f ${{ env.DEPLOY_DIR }}/.env ] && export $(cat ${{ env.DEPLOY_DIR }}/.env | xargs)
             pkill -f 'java -jar' || true
             cd ${{ env.DEPLOY_DIR }}
-            nohup java -jar $(ls -t *.jar | head -n1) > app.log 2>&1 &
+            setsid nohup java -jar $(ls -t *.jar | head -n1) > app.log 2>&1 &
+
       
