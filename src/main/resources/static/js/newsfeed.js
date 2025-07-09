@@ -124,12 +124,12 @@ async function loadPosts(page = 0, append = false) {
                 `<div class="post-menu" style="margin-left: auto; position: relative;">
                             <button class="menu-btn" onclick="togglePostMenu(${post.id})" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #6b7280; padding: 8px;">⋯</button>
                             <div id="post-menu-${post.id}" class="menu-dropdown" style="display: none; position: absolute; right: 0; top: 35px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; min-width: 120px;">
-                                <button onclick="editPost(${post.id}); hidePostMenu(${post.id})"
+                                <button class="change-btn" onclick="editPost(${post.id}); hidePostMenu(${post.id})"
                                         style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; border-bottom: 1px solid #f3f4f6;" 
                                         onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='none'">
                                     수정
                                 </button>
-                                <button onclick="deletePost(${post.id}); hidePostMenu(${post.id})"
+                                <button class="delete-btn" onclick="deletePost(${post.id}); hidePostMenu(${post.id})"
                                         style="width: 100%; padding: 12px 16px; border: none; background: none; text-align: left; cursor: pointer; color: #ef4444;" 
                                         onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
                                     삭제
@@ -257,13 +257,64 @@ function loadComments(postId) {
     })
         .then(res => res.json())
         .then(data => {
-            const list = data.content.map(c => `
-                <div class="comment-item">
-                    <strong>${c.name}</strong><br>${c.content}
-                </div>
-            `).join("") || "<p>(댓글 없음)</p>";
-            document.getElementById(`comment-list-${postId}`).innerHTML = list;
-            document.getElementById(`comment-count-${postId}`).textContent = data.content.length;
+            const commentList = document.getElementById(`comment-list-${postId}`);
+
+            if (!data.content || data.content.length === 0) {
+                commentList.innerHTML = "<p style='color: #6b7280; font-size: 14px; text-align: center; padding: 12px;'>댓글이 없습니다.</p>";
+            } else {
+                const commentsHtml = data.content.map(comment => `
+                    <div class="comment-item" style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; text-align: left !important;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; text-align: left !important;">
+                            <div style="display: flex; align-items: center; text-align: left !important;">
+                                <strong style="font-size: 14px; color: #374151; text-align: left !important;">${comment.name || '익명'}</strong>
+                                <span style="font-size: 12px; color: #9ca3af; margin-left: 8px; text-align: left !important;">${formatDate(comment.createdAt)}</span>
+                            </div>
+
+                            ${comment.userId == userId ? `
+                                <div class="comment-menu" style="position: relative;">
+                                    <button class="comment-menu-btn" onclick="toggleCommentMenu(${comment.id})"
+                                            style="background: none; border: none; cursor: pointer; font-size: 14px; color: #6b7280; padding: 4px;">⋯</button>
+                                    <div id="comment-menu-${comment.id}" class="comment-dropdown"
+                                         style="display: none; position: absolute; right: 0; top: 20px; background: white; border: 1px solid #e5e7eb; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 100; min-width: 80px;">
+                                        <button onclick="editComment(${comment.id}, '${comment.content.replace(/'/g, "\\'")}'); hideCommentMenu(${comment.id})"
+                                                class="comment-edit-btn"
+                                                style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 12px;"
+                                                onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='none'">
+                                            수정
+                                        </button>
+                                        <button onclick="deleteComment(${comment.id}, ${postId}); hideCommentMenu(${comment.id})"
+                                                class="comment-delete-btn"
+                                                style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; color: #ef4444; font-size: 12px;"
+                                                onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
+                                            삭제
+                                        </button>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <p id="comment-text-${comment.id}" style="margin: 0; font-size: 14px; line-height: 1.4; color: #4b5563; text-align: left !important;">${comment.content || ''}</p>
+
+                        <!-- 수정 입력 필드 (숨겨진 상태) -->
+                        <div id="comment-edit-${comment.id}" style="display: none; margin-top: 8px; text-align: left !important;">
+                            <textarea id="comment-edit-input-${comment.id}"
+                                      style="width: 100%; padding: 8px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 14px; resize: vertical; min-height: 60px; box-sizing: border-box; text-align: left !important;">${comment.content || ''}</textarea>
+                            <div style="margin-top: 8px; text-align: right;">
+                                <button onclick="cancelEditComment(${comment.id})"
+                                        style="padding: 4px 12px; margin-right: 8px; background: #e5e7eb; color: #374151; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">취소</button>
+                                <button onclick="saveEditComment(${comment.id}, ${postId})"
+                                        style="padding: 4px 12px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">저장</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join("");
+                commentList.innerHTML = commentsHtml;
+            }
+
+            // 댓글 수 업데이트
+            const countEl = document.getElementById(`comment-count-${postId}`);
+            if (countEl) {
+                countEl.textContent = data.content.length;
+            }
         })
         .catch(err => {
             console.error("❌ 댓글 로딩 에러:", err);
@@ -999,6 +1050,33 @@ document.addEventListener('click', function(e) {
     if (!e.target.closest('.post-menu')) {
         document.querySelectorAll('.menu-dropdown').forEach(m => m.style.display = 'none');
     }
+
+    // 댓글 메뉴 닫기 - 새로 추가!
+    if (!e.target.closest('.comment-menu')) {
+        document.querySelectorAll('.comment-dropdown').forEach(m => m.style.display = 'none');
+    }
+
+    // 서브메뉴 외부 클릭 시 닫기
+    if (!e.target.closest('.has-submenu') && !e.target.closest('.submenu')) {
+        document.querySelectorAll('.submenu').forEach(submenu => {
+            submenu.style.display = 'none';
+        });
+    }
+
+    // 이미지 모달 배경 클릭 시 닫기
+    if (e.target.id === 'imageModal') {
+        closeImageModal();
+    }
+
+    // 모달 배경 클릭 시 닫기
+    if (e.target.id === 'overlay') {
+        closeModal();
+    }
+
+    // 수정 모달 배경 클릭 시 닫기
+    if (e.target.id === 'editPostModal') {
+        closeEditPostModal();
+    }
 });
 
 // 필터 설정 함수 추가
@@ -1033,6 +1111,100 @@ function removeExistingImage(index) {
 
         console.log("🗑️ 삭제 예정 이미지:", imagesToDelete);
         console.log("🖼️ 남은 기존 이미지:", existingImages);
+    }
+}
+
+// 댓글 메뉴 토글 함수 추가
+function toggleCommentMenu(commentId) {
+    const menu = document.getElementById(`comment-menu-${commentId}`);
+    const isVisible = menu.style.display === 'block';
+
+    // 다른 모든 댓글 메뉴 닫기
+    document.querySelectorAll('.comment-dropdown').forEach(m => m.style.display = 'none');
+
+    // 현재 메뉴 토글
+    menu.style.display = isVisible ? 'none' : 'block';
+}
+
+// 댓글 메뉴 숨기기 함수 추가
+function hideCommentMenu(commentId) {
+    document.getElementById(`comment-menu-${commentId}`).style.display = 'none';
+}
+
+// 댓글 수정 모드로 전환 함수 추가
+function editComment(commentId, currentContent) {
+    // 기존 텍스트 숨기기
+    document.getElementById(`comment-text-${commentId}`).style.display = 'none';
+    // 수정 폼 보이기
+    document.getElementById(`comment-edit-${commentId}`).style.display = 'block';
+    // 텍스트 에어리어에 포커스
+    document.getElementById(`comment-edit-input-${commentId}`).focus();
+}
+
+// 댓글 수정 취소 함수 추가
+function cancelEditComment(commentId) {
+    // 수정 폼 숨기기
+    document.getElementById(`comment-edit-${commentId}`).style.display = 'none';
+    // 기존 텍스트 보이기
+    document.getElementById(`comment-text-${commentId}`).style.display = 'block';
+}
+
+// 댓글 수정 저장 함수 추가
+async function saveEditComment(commentId, postId) {
+    const newContent = document.getElementById(`comment-edit-input-${commentId}`).value.trim();
+
+    if (!newContent) {
+        alert('댓글 내용을 입력해주세요.');
+        return;
+    }
+
+    try {
+        const res = await fetch(`${baseUrl}/api/comments/${commentId}`, {
+            method: 'PUT',
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ content: newContent })
+        });
+
+        if (res.ok) {
+            // 수정된 내용으로 업데이트
+            document.getElementById(`comment-text-${commentId}`).textContent = newContent;
+            // 수정 모드 종료
+            cancelEditComment(commentId);
+            alert('댓글이 수정되었습니다.');
+        } else {
+            throw new Error(`HTTP ${res.status}`);
+        }
+    } catch (err) {
+        console.error('댓글 수정 실패:', err);
+        alert('댓글 수정 중 오류가 발생했습니다: ' + err.message);
+    }
+}
+
+// 댓글 삭제 함수 추가
+async function deleteComment(commentId, postId) {
+    if (!confirm('정말로 이 댓글을 삭제하시겠습니까?')) return;
+
+    try {
+        const res = await fetch(`${baseUrl}/api/comments/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (res.ok) {
+            alert('댓글이 삭제되었습니다.');
+            // 댓글 목록 새로고침
+            loadComments(postId);
+        } else {
+            throw new Error(`HTTP ${res.status}`);
+        }
+    } catch (err) {
+        console.error('댓글 삭제 실패:', err);
+        alert('댓글 삭제 중 오류가 발생했습니다: ' + err.message);
     }
 }
 
@@ -1108,4 +1280,28 @@ function addFileToInput(file, inputId) {
     const dt = new DataTransfer();
     dt.items.add(file);
     input.files = dt.files;
+}
+
+// formatDate 함수가 loadComments 내부가 아닌 전역에 있어야 하므로 확인하고 없으면 추가
+if (typeof formatDate === 'undefined') {
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        try {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return '방금 전';
+            if (diffMins < 60) return `${diffMins}분 전`;
+            if (diffHours < 24) return `${diffHours}시간 전`;
+            if (diffDays < 7) return `${diffDays}일 전`;
+
+            return date.toLocaleDateString('ko-KR');
+        } catch (err) {
+            return '';
+        }
+    }
 }
