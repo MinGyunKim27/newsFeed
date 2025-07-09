@@ -10,6 +10,7 @@ import lombok.Getter;
 @Getter
 public class PasswordUpdateRequestDto {
 
+
     /**
      * 현재 비밀번호입니다.
      * 최소 8자 이상이어야 하며, 유효성 검사가 적용됩니다.
