@@ -1,6 +1,6 @@
 // static/js/newsfeed.js
 
-const baseUrl = "http://localhost:8080";
+const baseUrl = "http://44.223.6.43:8080";
 let currentPage = 0;
 let isLoading = false;
 let hasMore = true;
